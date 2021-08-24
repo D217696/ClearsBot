@@ -1,0 +1,6 @@
+{
+  "en": {
+    "rank-entry": "{0}) {1}: {2} completions \n",
+    "rank-entry-active": "**{0}) {1}: {2} completions** \n"
+  }
+}

@@ -1,0 +1,15 @@
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\ClearsBot
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\ClearsBot.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\ClearsBot.deps.json
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\ClearsBot.runtimeconfig.json
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\ClearsBot.pdb
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Discord.Net.Commands.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Discord.Net.Core.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Discord.Net.Rest.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Discord.Net.Webhook.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Discord.Net.WebSocket.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\Newtonsoft.Json.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\System.Interactive.Async.dll
+C:\Users\Labra\OneDrive\Bureaublad\New folder (5)\System.Linq.Async.dll
