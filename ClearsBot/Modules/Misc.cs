@@ -445,46 +445,46 @@ namespace ClearsBot.Modules
             await message.ModifyAsync(x => x.Content = $"Found {newCompletions - completions} new activities");
         }
 
-        [Command("Test")]
-        public async Task Test(string raidString = "")
-        {
-            Raid raid = Raids.raids[Context.Guild.Id].Where(x => x.Shortcuts.Contains(raidString)).FirstOrDefault();
-            var users = Users.users[Context.Guild.Id].Select(user => (user, completionCount: user.Completions.Values.Where(GetCriteriaForRaid(raid)).Count())).OrderByDescending(x => x.completionCount);
-            var embed = new EmbedBuilder();
-            ulong targetUserId = GetTargetUser(Context);
-            foreach (var user in users.Take(10))
-            {
-                if (user.user.DiscordID == targetUserId)
-                {
-                    embed.Description += string.Format(Langauges.languages[Guilds.guilds[Context.Guild.Id].Language]["rank-entry-active"], users.ToList().IndexOf(user) + 1, user.user.Username, user.completionCount);
-                    continue;
-                }
+        //[Command("Test")]
+        //public async Task Test(string raidString = "")
+        //{
+        //    Raid raid = Raids.raids[Context.Guild.Id].Where(x => x.Shortcuts.Contains(raidString)).FirstOrDefault();
+        //    var users = Users.users[Context.Guild.Id].Select(user => (user, completionCount: user.Completions.Values.Where(GetCriteriaForRaid(raid)).Count())).OrderByDescending(x => x.completionCount);
+        //    var embed = new EmbedBuilder();
+        //    ulong targetUserId = GetTargetUser(Context);
+        //    foreach (var user in users.Take(10))
+        //    {
+        //        if (user.user.DiscordID == targetUserId)
+        //        {
+        //            embed.Description += string.Format(Langauges.languages[Guilds.guilds[Context.Guild.Id].Language]["rank-entry-active"], users.ToList().IndexOf(user) + 1, user.user.Username, user.completionCount);
+        //            continue;
+        //        }
 
-                embed.Description += string.Format(Langauges.languages[Guilds.guilds[Context.Guild.Id].Language]["rank-entry"], users.ToList().IndexOf(user) + 1, user.user.Username, user.completionCount);
-            }
+        //        embed.Description += string.Format(Langauges.languages[Guilds.guilds[Context.Guild.Id].Language]["rank-entry"], users.ToList().IndexOf(user) + 1, user.user.Username, user.completionCount);
+        //    }
 
-            foreach(var user in users.Where(x => x.user.DiscordID == targetUserId))
-            {
-                if (users.Take(10).Contains(user)) continue;
-                embed.Description += string.Format(Langauges.languages[Guilds.guilds[Context.Guild.Id].Language]["rank-entry-active"], users.ToList().IndexOf(user) + 1, user.user.Username, user.completionCount);
-            }
+        //    foreach(var user in users.Where(x => x.user.DiscordID == targetUserId))
+        //    {
+        //        if (users.Take(10).Contains(user)) continue;
+        //        embed.Description += string.Format(Langauges.languages[Guilds.guilds[Context.Guild.Id].Language]["rank-entry-active"], users.ToList().IndexOf(user) + 1, user.user.Username, user.completionCount);
+        //    }
 
-            await ReplyAsync(embed: embed.Build());
-            //if (Guilds.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < Permissions.PermissionLevels.AdminUser)
-            //{
-            //    await ReplyAsync("No permission");
-            //    return;
-            //}
+        //    await ReplyAsync(embed: embed.Build());
+        //    //if (Guilds.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < Permissions.PermissionLevels.AdminUser)
+        //    //{
+        //    //    await ReplyAsync("No permission");
+        //    //    return;
+        //    //}
 
-            //foreach (User user in Users.users[Context.Guild.Id])
-            //{
-            //    user.DateLastPlayed = new DateTime(2017, 01, 01, 0, 0, 0);
-            //    user.Completions = new Dictionary<long, Completion>();
-            //    user.Characters = new List<Character>();
-            //}
+        //    //foreach (User user in Users.users[Context.Guild.Id])
+        //    //{
+        //    //    user.DateLastPlayed = new DateTime(2017, 01, 01, 0, 0, 0);
+        //    //    user.Completions = new Dictionary<long, Completion>();
+        //    //    user.Characters = new List<Character>();
+        //    //}
 
-            //await ReplyAsync("Set every datelastplayed to 2017/01/01");
-        }
+        //    //await ReplyAsync("Set every datelastplayed to 2017/01/01");
+        //}
 
         [Command("lev")]
         [Alias("levi")]
@@ -727,62 +727,78 @@ namespace ClearsBot.Modules
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
             }
 
-            List<User> users = GetListOfUsersSorted(raid, guildId, lastResetWithTime, nextResetWithTime);
-            int rank = 1;
-            string completions = "";
-            foreach (User user in users.Take(count))
-            {
-                if (user.DiscordID == userId)
-                {
-                    completions += $"**{rank}) {user.Username}: {user.Completions.Values.Where(criteria).Count()} completions**\n";
-                }
-                else
-                {
-                    completions += $"{rank}) {user.Username}: {user.Completions.Values.Where(criteria).Count()} completions\n";
-                }
-                rank++;
-            }
+            var orderdUsersX = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(criteria).Count())).ToList();
+            var orderdUsersWithRankX = orderdUsersX.Select(x => (x.user, x.completions, rank: orderdUsersX.IndexOf(x) + 1));
+            embed.AddField($"Completions {timespanText}", CreateLeaderboardString(orderdUsersWithRankX, userId, count, true), true);
 
-            List<User> usersFromTargetUser = Users.GetUsers(guildId, userId);
-            foreach (User user in usersFromTargetUser.OrderBy(x => users.IndexOf(x)))
-            {
-                if (users.Take(count).Contains(user)) continue;
-                int userrank = users.IndexOf(user) + 1;
-                completions += $"\n{userrank}) {user.Username}: {user.Completions.Values.Where(criteria).Count()} completions";
-            }
-            if (usersFromTargetUser.Count == 0)
-            {
-                completions += "\n You haven't registered";
-            }
-
-            embed.AddField($"Completions {timespanText}", completions, true);
-
-            string completionLeaderboard = "";
             var users2 = Users.users[guildId].Where(x => x.Completions.Count > 0);
-            DateTime OffsetDate = new DateTime(2017, 09, 05, 17, 0, 0);
-            var usersAndMaxPeriodCounts = users2.Select(u => (u, MaxPeriodCount: u.Completions.GroupBy(y => Convert.ToInt32(Math.Floor((y.Value.Period - OffsetDate).TotalHours / hoursToDivideBy))).Max(g => g.Where(z => z.Value.StartingPhaseIndex <= 0).Count())));
+            Func<KeyValuePair<long, Completion>, int> getWeekNumberFromDate = y => Convert.ToInt32(Math.Floor((y.Value.Period - Bungie.ReleaseDate).TotalHours / hoursToDivideBy));
+            Func<KeyValuePair<long, Completion>, bool> getCompletionNoRaid = z => z.Value.StartingPhaseIndex <= 0;
+            var usersAndMaxPeriodCounts = users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(g => g.Where(getCompletionNoRaid).Count())));
             if (raid != null)
             {
-                usersAndMaxPeriodCounts = users2.Select(u => (u, MaxPeriodCount: u.Completions.GroupBy(y => Convert.ToInt32(Math.Floor((y.Value.Period - OffsetDate).TotalHours / hoursToDivideBy))).Max(g => g.Where(z => z.Value.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(z.Value.RaidHash) && z.Value.Time > raid.CompletionTime).Count())));
-            }
-            var orderedUsers = usersAndMaxPeriodCounts.OrderByDescending(u => u.MaxPeriodCount).ToList();
-            rank = 1;
-            foreach ((User, int) user in orderedUsers.Take(10))
-            {
-                if (user.Item1.DiscordID == userId)
-                {
-                    completionLeaderboard += $"**{rank}) {user.Item1.Username}: {user.Item2} completions** \n";
-                }
-                else
-                {
-                    completionLeaderboard += $"{rank}) {user.Item1.Username}: {user.Item2} completions \n";
-                }
-                rank++;
+                Func<KeyValuePair<long, Completion>, bool> getCompletionRaid = z => z.Value.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(z.Value.RaidHash) && z.Value.Time > raid.CompletionTime;
+                usersAndMaxPeriodCounts = users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(g => g.Where(getCompletionRaid).Count())));
             }
 
+            //IEnumerable<(User, int)> br = null;
+            //foreach (Raid raidFromList in Raids.raids[guildId])
+            //{
+            //    Func<KeyValuePair<long, Completion>, bool> getCompletionRaid = z => z.Value.StartingPhaseIndex <= raidFromList.StartingPhaseIndexToBeFresh && raidFromList.Hashes.Contains(z.Value.RaidHash) && z.Value.Time > raidFromList.CompletionTime;
+            //    Func<IGrouping<int, KeyValuePair<long, Completion>>, int> getCompletionCount = g => g.Where(getCompletionRaid).Count();
+            //    br.Concat(users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(getCompletionCount))));
+            //}
+
+            //var x = br.GroupBy(x => x.Item1).Select(y => (user: y.Key, completions: y.Sum(x => x.Item2)));
+
+            //if (raid == null)
+            //{
+            //    IEnumerable<(User, int)> br = null;
+            //    foreach (Raid raidFrom in Raids.raids[guildId])
+            //    {
+            //        br.Concat(users2.Select(user => (user: user, completions: user.Completions.Values.GroupBy(y => Convert.ToInt32(Math.Floor((y.Period - Bungie.ReleaseDate).TotalHours / hoursToDivideBy))).Max(g => g.Where(z => z.StartingPhaseIndex <= raidFrom.StartingPhaseIndexToBeFresh && raidFrom.Hashes.Contains(z.RaidHash) && z.Time > raidFrom.CompletionTime).Count()))));
+            //    }
+
+            //    usersAndMaxPeriodCounts = br.GroupBy(x => x.Item1).Select(y => (user: y.Key, completions: y.Sum(x => x.Item2)));
+            //}
+
+            var orderedUsers = usersAndMaxPeriodCounts.OrderByDescending(u => u.completions).ToList();
+            var orderedUsersWithRank = orderedUsers.Select(x => (x.user, x.completions, rank: orderedUsers.IndexOf(x) + 1));
+
             embed.AddField("-", "-", true);
-            embed.AddField("Completion leaderboard", completionLeaderboard, true);
+            embed.AddField("Completion leaderboard", CreateLeaderboardString(orderedUsersWithRank, userId, count), true);
             return embed;
+        }
+
+        public static string CreateLeaderboardString(IEnumerable<(User user, int completions, int rank)> users, ulong userDiscordId = 0, int count = 10, bool registerMessage = false)
+        {
+            string leaderboard = "";
+            foreach((User user, int completions, int rank) user in users.Take(count))
+            {
+                if (user.user.DiscordID == userDiscordId) 
+                { 
+                    leaderboard += $"**{user.rank}) {user.user.Username}: {user.completions} completions** \n"; 
+                    continue; 
+                }
+
+                leaderboard += $"{user.rank}) {user.user.Username}: {user.completions} completions \n";
+            }
+
+            foreach((User user, int completions, int rank) user in users.Where(x => x.user.DiscordID == userDiscordId))
+            {
+                if (users.Take(count).Contains(user)) continue;
+                leaderboard += $"\n {user.rank}) {user.user.Username}: {user.completions} completions";
+            }
+            
+            if (registerMessage)
+            {
+                if (users.Where(x => x.user.DiscordID == userDiscordId).Count() <= 0)
+                {
+                    leaderboard += "\n You haven't registered.";
+                }
+            }
+
+            return leaderboard.Length <= 1024 ? leaderboard : "leaderboard string was too long.";
         }
 
         public static ulong GetTargetUser(SocketCommandContext context)

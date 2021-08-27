@@ -10,6 +10,7 @@ namespace ClearsBot.Objects
     {
         public string Username { get; set; }
         public ulong DiscordID { get; set; }
+        public ulong GuildID { get; set; } = 0;
         public long SteamID { get; set; }
         public long MembershipId { get; set; }
         public int MembershipType { get; set; }

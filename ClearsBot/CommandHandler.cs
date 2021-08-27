@@ -39,7 +39,7 @@ namespace ClearsBot
             await Raids.Initialize();
             await Guilds.Initialize();
             await Users.Initialize();
-            await Langauges.Initialize();
+            await Languages.Initialize();
 
             foreach (SocketGuild guild in _client.Guilds)
             {

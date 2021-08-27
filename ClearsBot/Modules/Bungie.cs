@@ -13,6 +13,7 @@ namespace ClearsBot.Modules
 {
     public class Bungie
     {
+        public static DateTime ReleaseDate = new DateTime(2017, 09, 05, 17, 0, 0);
         public readonly HttpClient client = new HttpClient();
         public readonly WebClient webClient = new WebClient();
 
@@ -235,6 +236,100 @@ namespace ClearsBot.Modules
                 ErrorMessage = "Success"
             };
         }
+
+        public async Task<GetCompletionsResponse> GetCompletionsForUserAsync(User user)
+        {
+            GetHistoricalStatsForAccount getHistoricalStatsForAccount = JsonConvert.DeserializeObject<GetHistoricalStatsForAccount>(await MakeRequest($"Platform/Destiny2/{user.MembershipType}/Account/{user.MembershipId}/Stats/"));
+            if (getHistoricalStatsForAccount.ErrorCode != 1)
+            {
+                await Users.labsDMs.SendMessageAsync("GetCompletionsResponse returned an error " + getHistoricalStatsForAccount.Message);
+                return new GetCompletionsResponse() { Code = getHistoricalStatsForAccount.ErrorCode, ErrorMessage = getHistoricalStatsForAccount.Message };
+            }
+            List<Task<GetActivityHistoryResponse>> tasks = new List<Task<GetActivityHistoryResponse>>();
+            foreach (DestinyHistoricalStatsPerCharacter character in getHistoricalStatsForAccount.Response.Characters)
+            {
+                Character characterFromUser = user.Characters.Where(x => x.CharacterID == character.CharacterId).FirstOrDefault();
+                if (characterFromUser == null)
+                {
+                    user.Characters.Add(new Character()
+                    {
+                        CharacterID = character.CharacterId,
+                        Deleted = character.Deleted,
+                        Handled = false
+                    });
+                    characterFromUser = user.Characters.Where(x => x.CharacterID == character.CharacterId).FirstOrDefault();
+                }
+
+                if (characterFromUser.Handled) continue;
+
+                tasks.Add(Task.Run(() => GetCharacterPagesAsync(user.MembershipType, user.MembershipId, characterFromUser, user.DateLastPlayed)));
+            }
+
+            List<Task<GetFreshForCompletionResponse>> TasksToGetPGCR = new List<Task<GetFreshForCompletionResponse>>();
+
+            foreach (var res in await Task.WhenAll(tasks))
+            {
+                foreach (GetActivityHistory page in res.Pages)
+                {
+                    if (page.ErrorCode != 1)
+                    {
+                        await Users.labsDMs.SendMessageAsync("GetCompletionsResponse returned an error " + page.Message);
+                        return new GetCompletionsResponse() { Code = page.ErrorCode, ErrorMessage = page.Message };
+                    }
+
+                    foreach (DestinyHistoricalStatsPeriodGroup activity in page.Response.Activities)
+                    {
+                        if (!(activity.Values["completionReason"].Basic.DisplayValue == "Objective Completed" && activity.Values["completed"].Basic.Value == 1.0)) continue;
+                        if (user.Completions.ContainsKey(activity.ActivityDetails.InstanceId)) continue;
+                        if (activity.Period > new DateTime(2020, 10, 10, 0, 0, 0))
+                        {
+                            user.Completions.Add(activity.ActivityDetails.InstanceId, new Completion()
+                            {
+                                InstanceID = activity.ActivityDetails.InstanceId,
+                                Period = activity.Period,
+                                RaidHash = activity.ActivityDetails.ReferenceId,
+                                Kills = activity.Values["kills"].Basic.Value,
+                                Time = TimeSpan.FromSeconds(activity.Values["activityDurationSeconds"].Basic.Value),
+                                StartingPhaseIndex = 0
+                            });
+
+                            continue;
+                        }
+
+                        await Task.Delay(100);
+                        TasksToGetPGCR.Add(Task.Run(() => GetFreshForCompletion(new Completion()
+                        {
+                            InstanceID = activity.ActivityDetails.InstanceId,
+                            Period = activity.Period,
+                            RaidHash = activity.ActivityDetails.ReferenceId,
+                            Kills = activity.Values["kills"].Basic.Value,
+                            Time = TimeSpan.FromSeconds(activity.Values["activityDurationSeconds"].Basic.Value)
+                        })));
+                    }
+                }
+                if (res.Character.Deleted) user.Characters.Where(x => x.CharacterID == res.Character.CharacterID).FirstOrDefault().Handled = true;
+            }
+
+            foreach (var res in await Task.WhenAll(TasksToGetPGCR))
+            {
+                if (res.Code != 1) return new GetCompletionsResponse() { Code = res.Code, ErrorMessage = res.ErrorMessage };
+
+                user.Completions.Add(res.Completion.InstanceID, res.Completion);
+            }
+
+            if (user.Completions.Count > 0)
+            {
+                user.DateLastPlayed = user.Completions.OrderByDescending(x => x.Value.Period).FirstOrDefault().Value.Period;
+            }
+
+            return new GetCompletionsResponse()
+            {
+                Code = 1,
+                User = user,
+                ErrorMessage = "Success"
+            };
+        }
+
         public async Task<GetFreshForCompletionResponse> GetFreshForCompletion(Completion completion)
         {
             GetFreshForCompletionResponse getFreshForCompletionResponse = new GetFreshForCompletionResponse();
@@ -308,6 +403,7 @@ namespace ClearsBot.Modules
         }
         public async Task<SearchDestinyPlayer> SearchDestinyPlayerAsync(string membershipId, string membershipType = "")
         {
+            membershipId = membershipId.Replace("#", "%23");
             HttpResponseMessage response = await client.GetAsync($"https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/{membershipType}/{membershipId}/");
             string json = await response.Content.ReadAsStringAsync();
             SearchDestinyPlayer players = JsonConvert.DeserializeObject<SearchDestinyPlayer>(json);
@@ -353,6 +449,7 @@ namespace ClearsBot.Modules
     }
     public class GetCompletionsResponse
     {
+        public User User { get; set; }
         public int Code { get; set; }
         public string ErrorMessage { get; set; }
     }

@@ -26,9 +26,9 @@ namespace ClearsBot.Modules
         public static async Task Initialize()
         {
             var user = await Program._client.Rest.GetUserAsync(204722865818304512);
-            await user.SendMessageAsync("init done!");
-            //labsDMs = await user.CreateDMChannelAsync();
-            //await labsDMs.SendMessageAsync("init done!");
+            //await user.SendMessageAsync("init done!");
+            labsDMs = await user.CreateDMChannelAsync();
+            await labsDMs.SendMessageAsync("init done!");
 
             if (!Directory.Exists(configFolder)) Directory.CreateDirectory(configFolder);
 
@@ -63,99 +63,65 @@ namespace ClearsBot.Modules
         {
             while (true)
             {
-                if (busy)
-                {
-                    Console.WriteLine("skipped updating");
-                    Thread.Sleep(1000 * 60 * 5);
-                    continue;
-                }
-
-                Console.WriteLine("Updating users");
-                await UpdateUsersLoop();
-                Console.WriteLine("Done updating");
-                Thread.Sleep(1000 * 60 * 30);
+                if (DateTime.Now.Minute % 5 == 0) await AddUsersToUpdateUsersList();
+                if (DateTime.Now.Minute % 30 == 0) _ = UpdateUsersAsync();
+                Thread.Sleep(1000 * 60);
             }
         }
 
-        public static async Task UpdateUsersLoop()
+        public static async Task AddUsersToUpdateUsersList()
         {
-            bool loopNotDone = true;
+            try
+            {
+                bool loopNotDone = true;
 
-            while (!busy && loopNotDone)
+                while (!busy && loopNotDone)
+                {
+                    foreach (var guild in users)
+                    {
+                        foreach (User user in guild.Value)
+                        {
+                            if (user.GuildID == 0) user.GuildID = guild.Key;
+                            if (DateTime.UtcNow - user.DateLastPlayed > new TimeSpan(1, 0, 0))
+                            {
+                                if (usersToUpdate.Contains(user)) continue;
+                                usersToUpdate.Add(user);
+                            }
+                        }
+                    }
+                    loopNotDone = false;
+                }
+            }
+            catch(Exception ex)
             {
 
             }
-            //while (!busy && loopNotDone)
-            //{
-
-                //    //Dictionary<ulong, List<User>> usersCopy = new Dictionary<ulong, List<User>>(users);
-                //    //foreach (KeyValuePair<ulong, List<User>> guild in usersCopy)
-                //    //{
-                //    //    Guild guildFromBot = Guilds.guilds[guild.Key];
-                //    //    SocketGuild socketGuild = Program._client.Guilds.Where(x => x.Id == guild.Key).FirstOrDefault();
-                //    //    var usersFromGuild = await((IGuild)socketGuild).GetUsersAsync();
-
-                //    //    foreach (User user in guild.Value)
-                //    //    {
-                //    //        if (busy) continue;
-                //    //        _ = await bungie.GetCompletionsForUserAsync(guild.Key, user.DiscordID, user.MembershipId);
-                //    //        SaveUsers();
-                //    //        Console.WriteLine("updated: " + user.Username);
-                //    //        int completions = 0;
-                //    //        foreach (Raid raid in Raids.raids[guild.Key])
-                //    //        {
-                //    //            completions += user.Completions.Where(x => x.Value.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(x.Value.RaidHash) && x.Value.Time >= raid.CompletionTime).Count();
-                //    //        }
-
-                //    //        bool milestoneReached = false;
-                //    //        if (guildFromBot.Milestones == null) continue;
-                //    //        foreach (Milestone milestone in guildFromBot.Milestones.OrderByDescending(x => x.Completions).ToList())
-                //    //        {
-                //    //            if (milestoneReached) continue;
-                //    //            var userFromGuild = usersFromGuild.Where(x => x.Id == user.DiscordID).FirstOrDefault();
-                //    //            if (userFromGuild == null) continue;
-                //    //            foreach (Milestone milestone1 in guildFromBot.Milestones.OrderByDescending(x => x.Completions).ToList())
-                //    //            {
-                //    //                if (milestone1.Role == milestone.Role) continue;
-                //    //                if (!userFromGuild.RoleIds.Contains(milestone1.Role)) continue;
-                //    //                SocketRole milestoneRole = socketGuild.GetRole(milestone1.Role);
-                //    //                await userFromGuild.RemoveRoleAsync(milestoneRole);
-                //    //                Console.WriteLine($"Removed {milestoneRole.Name} from {userFromGuild.Username}");
-                //    //            }
-
-                //    //            if (completions >= milestone.Completions)
-                //    //            {
-                //    //                SocketRole milestone2Role = socketGuild.GetRole(milestone.Role);
-                //    //                if (userFromGuild.RoleIds.Contains(milestone.Role)) continue;
-                //    //                await userFromGuild.AddRoleAsync(milestone2Role);
-                //    //                Console.WriteLine($"Added {milestone2Role.Name} to {userFromGuild.Username}");
-                //    //                milestoneReached = true;
-                //    //            }
-                //    //        }
-                //    //    }
-
-                //    //    foreach (Raid raid in Raids.raids[guild.Key])
-                //    //    {
-                //    //        List<User> users = Misc.GetListOfUsersSorted(raid, guild.Key);
-
-                //    //        if (users.Count < 1) continue;
-                //    //        await GiveRoleToUser(usersFromGuild.Where(x => x.Id == users[0].DiscordID).FirstOrDefault(), socketGuild.GetRole(raid.FirstRole), usersFromGuild);
-                //    //        if (users.Count < 2) continue;
-                //    //        await GiveRoleToUser(usersFromGuild.Where(x => x.Id == users[1].DiscordID).FirstOrDefault(), socketGuild.GetRole(raid.SecondRole), usersFromGuild);
-                //    //        if (users.Count < 3) continue;
-                //    //        await GiveRoleToUser(usersFromGuild.Where(x => x.Id == users[2].DiscordID).FirstOrDefault(), socketGuild.GetRole(raid.ThirdRole), usersFromGuild);
-                //    //    }
-
-                //    //    List<User> totalUsers = Misc.GetListOfUsersSorted(null, guild.Key);
-                //    //    if (totalUsers.Count < 1) continue;
-                //    //    await GiveRoleToUser(usersFromGuild.Where(x => x.Id == totalUsers[0].DiscordID).FirstOrDefault(), socketGuild.GetRole(guildFromBot.FirstRole), usersFromGuild);
-                //    //    if (totalUsers.Count < 2) continue;
-                //    //    await GiveRoleToUser(usersFromGuild.Where(x => x.Id == totalUsers[1].DiscordID).FirstOrDefault(), socketGuild.GetRole(guildFromBot.SecondRole), usersFromGuild);
-                //    //    if (totalUsers.Count < 3) continue;
-                //    //    await GiveRoleToUser(usersFromGuild.Where(x => x.Id == totalUsers[2].DiscordID).FirstOrDefault(), socketGuild.GetRole(guildFromBot.ThirdRole), usersFromGuild);
-                //    //}
-                //}
         }
+
+        public static async Task UpdateUsersAsync()
+        {
+            foreach(User user in usersToUpdate)
+            {
+                GetCompletionsResponse getCompletionsResponse = await bungie.GetCompletionsForUserAsync(user);
+                if (getCompletionsResponse.Code == 1)
+                {
+                    if (users[getCompletionsResponse.User.GuildID].FirstOrDefault(x => x.MembershipId == getCompletionsResponse.User.MembershipId) != null)
+                    {
+                        users[getCompletionsResponse.User.GuildID].FirstOrDefault(x => x.MembershipId == getCompletionsResponse.User.MembershipId).Completions = getCompletionsResponse.User.Completions;
+                        users[getCompletionsResponse.User.GuildID].FirstOrDefault(x => x.MembershipId == getCompletionsResponse.User.MembershipId).Characters = getCompletionsResponse.User.Characters;
+                        users[getCompletionsResponse.User.GuildID].FirstOrDefault(x => x.MembershipId == getCompletionsResponse.User.MembershipId).DateLastPlayed = getCompletionsResponse.User.DateLastPlayed;
+                    }
+                }
+                else
+                {
+                    await labsDMs.SendMessageAsync("Couldnt update users. " + getCompletionsResponse.ErrorMessage);
+                    break;
+                }
+            }
+            usersToUpdate = new List<User>();
+            SaveUsers();
+        }
+        
         public static async Task GiveRoleToUser(IGuildUser user, IRole role, IReadOnlyCollection<IGuildUser> users)
         {
             if (role == null) return;
