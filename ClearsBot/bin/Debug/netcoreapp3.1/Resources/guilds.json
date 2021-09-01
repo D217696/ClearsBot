@@ -1,46 +1,25 @@
 {
-  "787327259752660995": {
-    "GuildId": 787327259752660995,
-    "Prefix": "!",
-    "Language": "en",
-    "FirstRole": 871764632048640042,
-    "SecondRole": 871764632929443910,
-    "ThirdRole": 871764633608941658,
-    "AdminUser": 204722865818304512,
-    "AdminRole": 0,
-    "ModRoles": [],
-    "Milestones": [
-      {
-        "Completions": 1000,
-        "Role": 871806923358502973
-      },
-      {
-        "Completions": 500,
-        "Role": 871812308261818389
-      }
-    ]
-  },
-  "534813987091513381": {
-    "GuildId": 534813987091513381,
-    "Prefix": "$",
-    "Language": "en",
-    "FirstRole": 0,
-    "SecondRole": 0,
-    "ThirdRole": 0,
-    "AdminUser": 204722865818304512,
-    "AdminRole": 0,
-    "ModRoles": [],
-    "Milestones": []
-  },
   "867207403481333790": {
     "GuildId": 867207403481333790,
     "Prefix": "$",
     "Language": "en",
-    "FirstRole": 0,
-    "SecondRole": 0,
-    "ThirdRole": 0,
+    "FirstRole": 877346868965830697,
+    "SecondRole": 877346870110851144,
+    "ThirdRole": 877346871167840296,
     "AdminUser": 204722865818304512,
-    "AdminRole": 0,
+    "AdminRole": 867320375821860864,
+    "ModRoles": [],
+    "Milestones": []
+  },
+  "363054150566674432": {
+    "GuildId": 363054150566674432,
+    "Prefix": "$",
+    "Language": "en",
+    "FirstRole": 881263669093224498,
+    "SecondRole": 881263669802070058,
+    "ThirdRole": 881263670489935903,
+    "AdminUser": 204722865818304512,
+    "AdminRole": 363058582142320640,
     "ModRoles": [],
     "Milestones": []
   }

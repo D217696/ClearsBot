@@ -108,6 +108,7 @@ namespace ClearsBot.Modules
             await ReplyAsync(embed: CreateLeaderboardMessage(-21, 28, raidString, Context.Guild.Id, targetUserId, 624, "this month", countString).Build());
         }
 
+
         [Command("Weekly")]
         public async Task Weekly(string raidString = "", string countString = "", string date = "")
         {
@@ -124,7 +125,7 @@ namespace ClearsBot.Modules
         [Command("Daily")]
         public async Task Daily(string raidString = "", string countString = "", string date = "")
         {
-            DateTime startDate = DateTime.UtcNow.TimeOfDay < new TimeSpan(17, 0, 0) ? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day - 1, 17, 0, 0) : new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 17, 0, 0);
+            DateTime startDate = DateTime.UtcNow.TimeOfDay < new TimeSpan(17, 0, 0) ? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 17, 0, 0).AddDays(-1) : new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 17, 0, 0);
 
             ulong targetUserId = GetTargetUser(Context);
             if (targetUserId == 0)
@@ -727,7 +728,7 @@ namespace ClearsBot.Modules
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
             }
 
-            var orderdUsersX = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(criteria).Count())).ToList();
+            var orderdUsersX = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(criteria).Count())).OrderByDescending(x => x.completions).ToList();
             var orderdUsersWithRankX = orderdUsersX.Select(x => (x.user, x.completions, rank: orderdUsersX.IndexOf(x) + 1));
             embed.AddField($"Completions {timespanText}", CreateLeaderboardString(orderdUsersWithRankX, userId, count, true), true);
 
