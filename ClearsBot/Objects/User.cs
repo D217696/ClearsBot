@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace ClearsBot.Objects
 {
+    public class GroupedUser
+    {
+        public ulong DiscordID { get; set; } = 0;
+        public List<User> Users { get; set; } = new List<User>();
+    }
+
     public class User
     {
         public string Username { get; set; }
@@ -17,6 +23,7 @@ namespace ClearsBot.Objects
         public DateTime DateLastPlayed { get; set; }
         public List<Character> Characters { get; set; } = new List<Character>();
         public Dictionary<long, Completion> Completions { get; set; } = new Dictionary<long, Completion>();
+        public DateTime DateRegistered { get; set; } = DateTime.UtcNow;
     }
 
     public class Completion

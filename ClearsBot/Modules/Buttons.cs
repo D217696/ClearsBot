@@ -50,5 +50,35 @@ namespace ClearsBot.Modules
             await Context.Channel.SendMessageAsync($"{userToRemove.Username} has been unregistered");
             Users.busy = false;
         }
+
+        [Button("reglist")]
+        public async Task RegListButton(SocketMessageComponent Context)
+        {
+            string[] parameters = Context.Data.CustomId.Split("_");
+            if (Context.User.Id != ulong.Parse(parameters[3])) return;
+            var embed = new EmbedBuilder
+            {
+                Title = $"Users page ({parameters[2]}/{Math.Ceiling((double)Users.users[ulong.Parse(parameters[1])].Count() / 10)} total users: {Users.users[ulong.Parse(parameters[1])].Count()})"
+            };
+
+            foreach (User user in Misc.GetUsersByPage(ulong.Parse(parameters[1]), int.Parse(parameters[2])))
+            {
+                embed.Description += $"<@!{user.DiscordID}>: {user.Username} \n";
+            }
+
+            var componentBuilder = new ComponentBuilder();
+
+            if (int.Parse(parameters[2]) != 1)
+            {
+                componentBuilder.WithButton(new ButtonBuilder().WithStyle(ButtonStyle.Primary).WithLabel("previous").WithCustomId($"reglist_{parameters[1]}_{int.Parse(parameters[2]) - 1}_{parameters[3]}"));
+            }
+
+            if (int.Parse(parameters[2]) != Math.Ceiling((double)Users.users[ulong.Parse(parameters[1])].Count() / 10))
+            {
+                componentBuilder.WithButton(new ButtonBuilder().WithStyle(ButtonStyle.Danger).WithLabel("next").WithCustomId($"reglist_{parameters[1]}_{int.Parse(parameters[2]) + 1}_{parameters[3]}"));
+            }
+
+            await Context.Message.ModifyAsync(x => { x.Embed = embed.Build(); x.Components = componentBuilder.Build(); } );
+        }
     }
 }

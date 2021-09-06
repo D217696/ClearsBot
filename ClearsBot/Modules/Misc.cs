@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ClearsBot.Modules
@@ -95,6 +96,19 @@ namespace ClearsBot.Modules
             await ReplyAsync(embed: embed.Build());
         }
 
+        [Command("Yearly")]
+        public async Task Yearly(string raidString = "", string countString = "", string date = "")
+        {
+            ulong targetUserId = GetTargetUser(Context);
+            if (targetUserId == 0)
+            {
+                await ReplyAsync("Targeted user has not registered");
+                return;
+            }
+
+            await ReplyAsync(embed: CreateLeaderboardMessage(-358, 365, raidString, Context.Guild.Id, targetUserId, 8760, "this year", countString).Build());
+        }
+
         [Command("Monthly")]
         public async Task Monthly(string raidString = "", string countString = "", string date = "")
         {
@@ -105,7 +119,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: CreateLeaderboardMessage(-21, 28, raidString, Context.Guild.Id, targetUserId, 624, "this month", countString).Build());
+            await ReplyAsync(embed: CreateLeaderboardMessage(-21, 28, raidString, Context.Guild.Id, targetUserId, 672, "this month", countString).Build());
         }
 
 
@@ -345,7 +359,28 @@ namespace ClearsBot.Modules
         [Command("reglist")]
         public async Task GetUsers()
         {
-            await ReplyAsync($"Number of bungie profiles being tracked: **{Users.users[Context.Guild.Id].Count()}** \nNumber of different discord users being tracked: **{Users.users[Context.Guild.Id].GroupBy(x => x.DiscordID).Count()}**");
+            var embed = new EmbedBuilder
+            {
+                Title = $"Users page (1/{Math.Ceiling((decimal)Users.users[Context.Guild.Id].Count() / 10)} total users: {Users.users[Context.Guild.Id].Count()})"
+            };
+
+            foreach (User user in GetUsersByPage(Context.Guild.Id))
+            {
+                embed.Description += $"<@!{user.DiscordID}>: {user.Username} \n";
+            }
+
+            if (Math.Ceiling((double)Users.users[Context.Guild.Id].Count() / 10) > 1)
+            {
+                var componentBuilder = new ComponentBuilder();
+
+                componentBuilder.WithButton(new ButtonBuilder().WithStyle(ButtonStyle.Danger).WithLabel("next").WithCustomId($"reglist_{Context.Guild.Id}_2_{Context.User.Id}"));
+                await ReplyAsync(embed: embed.Build(), component: componentBuilder.Build());
+                return;
+            }
+
+            await ReplyAsync(embed: embed.Build());
+
+            //await ReplyAsync($"Number of bungie profiles being tracked: **{Users.users[Context.Guild.Id].Count()}** \nNumber of different discord users being tracked: **{Users.users[Context.Guild.Id].GroupBy(x => x.DiscordID).Count()}**");
         }
 
         [Command("CreateMilestone")]
@@ -550,6 +585,18 @@ namespace ClearsBot.Modules
             await Rank("vog");
         }
 
+
+        public static IEnumerable<User> GetUsersByPage(ulong guildId, int index = 1)
+        {
+            //List<GroupedUser> users = (List<GroupedUser>) Users.users[guildId].GroupBy(x => x.DiscordID).Select(x => new GroupedUser()
+            //{
+            //    DiscordID = x.Select(y => y.DiscordID).FirstOrDefault(),
+            //    Users = x.Where(y => y.DiscordID == x.FirstOrDefault().DiscordID).ToList()
+            //}).OrderBy(x => x.Users.Max(y => y.DateRegistered));
+
+            return Users.users[guildId].Where(x => Users.users[guildId].IndexOf(x) <= (index * 10) - 1 && Users.users[guildId].IndexOf(x) > (index * 10) - 11);
+        }
+
         public static EmbedBuilder GetCompletionsForUser(User user, ulong guildId)
         {
             var embed = new EmbedBuilder() { Title = $"Raid completions for {user.Username}" };
@@ -741,27 +788,6 @@ namespace ClearsBot.Modules
                 Func<KeyValuePair<long, Completion>, bool> getCompletionRaid = z => z.Value.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(z.Value.RaidHash) && z.Value.Time > raid.CompletionTime;
                 usersAndMaxPeriodCounts = users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(g => g.Where(getCompletionRaid).Count())));
             }
-
-            //IEnumerable<(User, int)> br = null;
-            //foreach (Raid raidFromList in Raids.raids[guildId])
-            //{
-            //    Func<KeyValuePair<long, Completion>, bool> getCompletionRaid = z => z.Value.StartingPhaseIndex <= raidFromList.StartingPhaseIndexToBeFresh && raidFromList.Hashes.Contains(z.Value.RaidHash) && z.Value.Time > raidFromList.CompletionTime;
-            //    Func<IGrouping<int, KeyValuePair<long, Completion>>, int> getCompletionCount = g => g.Where(getCompletionRaid).Count();
-            //    br.Concat(users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(getCompletionCount))));
-            //}
-
-            //var x = br.GroupBy(x => x.Item1).Select(y => (user: y.Key, completions: y.Sum(x => x.Item2)));
-
-            //if (raid == null)
-            //{
-            //    IEnumerable<(User, int)> br = null;
-            //    foreach (Raid raidFrom in Raids.raids[guildId])
-            //    {
-            //        br.Concat(users2.Select(user => (user: user, completions: user.Completions.Values.GroupBy(y => Convert.ToInt32(Math.Floor((y.Period - Bungie.ReleaseDate).TotalHours / hoursToDivideBy))).Max(g => g.Where(z => z.StartingPhaseIndex <= raidFrom.StartingPhaseIndexToBeFresh && raidFrom.Hashes.Contains(z.RaidHash) && z.Time > raidFrom.CompletionTime).Count()))));
-            //    }
-
-            //    usersAndMaxPeriodCounts = br.GroupBy(x => x.Item1).Select(y => (user: y.Key, completions: y.Sum(x => x.Item2)));
-            //}
 
             var orderedUsers = usersAndMaxPeriodCounts.OrderByDescending(u => u.completions).ToList();
             var orderedUsersWithRank = orderedUsers.Select(x => (x.user, x.completions, rank: orderedUsers.IndexOf(x) + 1));

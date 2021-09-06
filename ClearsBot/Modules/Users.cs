@@ -115,7 +115,7 @@ namespace ClearsBot.Modules
                 else
                 {
                     await labsDMs.SendMessageAsync("Couldnt update users. " + getCompletionsResponse.ErrorMessage);
-                    break;
+                    return;
                 }
             }
             usersToUpdate = new List<User>();
@@ -189,7 +189,8 @@ namespace ClearsBot.Modules
                 MembershipId = requestData.MembershipId,
                 MembershipType = requestData.MembershipType,
                 DateLastPlayed = requestData.DateLastPlayed,
-                Characters = characters
+                Characters = characters,
+                DateRegistered = DateTime.UtcNow
             };
 
             users[guildID].Add(user);
