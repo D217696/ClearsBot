@@ -2,7 +2,7 @@
   "787327259752660995": [
     {
       "DisplayName": "Leviathan",
-      "CompletionTime": "00:10:00",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "levi",
         "lev",
@@ -37,14 +37,14 @@
         4206123728
       ],
       "Color": "0, 255, 215, 0",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539548251906068,
       "SecondRole": 871539548562260019,
       "ThirdRole": 871539549606649876
     },
     {
       "DisplayName": "Eater of Worlds",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "eow",
         "eater"
@@ -55,14 +55,14 @@
         809170886
       ],
       "Color": "0, 255, 165, 0",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539550265159770,
       "SecondRole": 871539551099813898,
       "ThirdRole": 871539551607324713
     },
     {
       "DisplayName": "Spire of Stars",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "sos",
         "spire",
@@ -74,14 +74,14 @@
         3213556450
       ],
       "Color": "0, 255, 0, 255",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539552655929344,
       "SecondRole": 871539552983089213,
       "ThirdRole": 871539554195226674
     },
     {
       "DisplayName": "Last Wish",
-      "CompletionTime": "00:17:45",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "lw"
       ],
@@ -92,14 +92,14 @@
         2214608157
       ],
       "Color": "0, 253, 201, 255",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539557437423676,
       "SecondRole": 871539558360154173,
       "ThirdRole": 871539558989303869
     },
     {
       "DisplayName": "Scourge of the Past",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "sotp",
         "scourge"
@@ -116,7 +116,7 @@
     },
     {
       "DisplayName": "Crown of Sorrow",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "cos",
         "crown"
@@ -126,14 +126,14 @@
         3333172150
       ],
       "Color": "0, 165, 42, 42",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533636141338664,
       "SecondRole": 871533636799832124,
       "ThirdRole": 871533637420601444
     },
     {
       "DisplayName": "Garden of Salvation",
-      "CompletionTime": "00:11:30",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "gos",
         "garden"
@@ -145,14 +145,14 @@
         3845997235
       ],
       "Color": "0, 0, 255, 0",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533638062321725,
       "SecondRole": 871533638825672734,
       "ThirdRole": 871533639480012810
     },
     {
       "DisplayName": "Deep Stone Crypt",
-      "CompletionTime": "00:12:50",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "dsc"
       ],
@@ -161,14 +161,14 @@
         3976949817
       ],
       "Color": "0, 137, 207, 240",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533640209817670,
       "SecondRole": 871533641082224640,
       "ThirdRole": 871533641447120897
     },
     {
       "DisplayName": "Vault of Glass",
-      "CompletionTime": "00:19:30",
+      "CompletionTime": "00:01:00",
       "Shortcuts": [
         "vog",
         "vault"
@@ -180,7 +180,7 @@
         1681562271
       ],
       "Color": "Transparent",
-      "StartingPhaseIndexToBeFresh": 0,
+      "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533642504101928,
       "SecondRole": 871533643091296308,
       "ThirdRole": 871533644035018772

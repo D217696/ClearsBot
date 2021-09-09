@@ -481,6 +481,57 @@ namespace ClearsBot.Modules
             await message.ModifyAsync(x => x.Content = $"Found {newCompletions - completions} new activities");
         }
 
+        [Command("Fastest")]
+        public async Task Fastest(string raidString = "")
+        {
+            Raid raid = null;
+            if(raidString != "")
+            {
+                raid = Raids.raids[Context.Guild.Id].FirstOrDefault(x => x.Shortcuts.Contains(raidString) || x.DisplayName.ToLower().Contains(raidString));
+            }
+
+            ulong targetUserId = GetTargetUser(Context);
+
+            await ReplyAsync(embed: GetFastestListForUser(Users.users[Context.Guild.Id].FirstOrDefault(x => x.DiscordID == targetUserId), raid, Context.Guild.Id).Build(), component: GetButtonsForUser(Users.users[Context.Guild.Id].Where(x => x.DiscordID == targetUserId).ToList(), Context.Guild.Id, "fastest", Users.users[Context.Guild.Id].FirstOrDefault(x => x.DiscordID == targetUserId), raidString).Build());
+        }
+
+        public static EmbedBuilder GetFastestListForUser(User user, Raid raid, ulong guildID)
+        {
+            var embed = new EmbedBuilder();
+            string list = "";
+            List<Completion> completions = new List<Completion>();
+            if (raid == null)
+            {
+                embed.WithTitle($"Fastest raid completions for {user.Username}");
+                foreach (Raid raidFromList in Raids.raids[guildID])
+                {
+                    completions.AddRange(user.Completions.Values.Where(GetCriteriaForRaid(raidFromList)));
+                }
+            }
+            else
+            {
+                embed.WithTitle($"Fastest {raid.DisplayName} completions for {user.Username}");
+                embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
+                completions = user.Completions.Values.Where(GetCriteriaForRaid(raid)).ToList();
+            }
+
+            if (completions.Count <= 10)
+            {
+                foreach (Completion completion in completions.OrderBy(x => x.Time).Take(completions.Count))
+                {
+                    list += $"[{Raids.raids[guildID].FirstOrDefault(x => x.Hashes.Contains(completion.RaidHash)).DisplayName}: {String.Format("{0:hh\\:mm\\:ss}", completion.Time)}](https://raid.report/pgcr/{completion.InstanceID}) \n";
+                }
+            }
+            else
+            {
+                foreach (Completion completion in completions.OrderBy(x => x.Time).Take(10))
+                {
+                    list += $"[{Raids.raids[guildID].FirstOrDefault(x => x.Hashes.Contains(completion.RaidHash)).DisplayName}: {String.Format("{0:hh\\:mm\\:ss}", completion.Time)}](https://raid.report/pgcr/{completion.InstanceID}) \n";
+                }
+            }
+            embed.Description = list;
+            return embed;
+        }
         //[Command("Test")]
         //public async Task Test(string raidString = "")
         //{
@@ -624,7 +675,7 @@ namespace ClearsBot.Modules
             return x => raid.Hashes.Contains(x.RaidHash) && x.Time > raid.CompletionTime && x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh;
         }
 
-        public static ComponentBuilder GetButtonsForUser(List<User> users, ulong guildId, string command, User firstUser = null)
+        public static ComponentBuilder GetButtonsForUser(List<User> users, ulong guildId, string command, User firstUser = null, string extra = "")
         {
             var componentBuilder = new ComponentBuilder();
 
@@ -633,7 +684,14 @@ namespace ClearsBot.Modules
             foreach (User user in users)
             {
                 if (user == firstUser) continue;
-                componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), 0);
+                if (extra == "")
+                {
+                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), 0);
+                }
+                else
+                {
+                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}_{extra}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), 0);
+                }
                 buttons++;
                 if (buttons % 5 == 0) buttonRow++;
             }
