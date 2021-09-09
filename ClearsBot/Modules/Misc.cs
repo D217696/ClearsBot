@@ -505,14 +505,14 @@ namespace ClearsBot.Modules
                 embed.WithTitle($"Fastest raid completions for {user.Username}");
                 foreach (Raid raidFromList in Raids.raids[guildID])
                 {
-                    completions.AddRange(user.Completions.Values.Where(GetCriteriaForRaid(raidFromList)));
+                    completions.AddRange(user.Completions.Values.Where(x => x.StartingPhaseIndex <= raidFromList.StartingPhaseIndexToBeFresh && raidFromList.Hashes.Contains(x.RaidHash)));
                 }
             }
             else
             {
                 embed.WithTitle($"Fastest {raid.DisplayName} completions for {user.Username}");
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
-                completions = user.Completions.Values.Where(GetCriteriaForRaid(raid)).ToList();
+                completions = user.Completions.Values.Where(x => x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(x.RaidHash)).ToList();
             }
 
             if (completions.Count <= 10)
