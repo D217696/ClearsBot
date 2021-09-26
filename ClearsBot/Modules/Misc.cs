@@ -805,6 +805,52 @@ namespace ClearsBot.Modules
             Users.busy = false;
         }
 
+        public EmbedBuilder CreateLeaderboardMessageNew(DateTime startDate, string raidString, ulong guildId, ulong userId, int hours, string countString, string timespanText)
+        {
+            int currentPeriodIndex = Convert.ToInt32(Math.Floor((startDate - Bungie.ReleaseDate).TotalHours / hours));
+            
+            var completions = Users.users[guildId].FirstOrDefault(x => x.DiscordID == userId).Completions.Values.Where(x => Convert.ToInt32(Math.Floor((x.Period - Bungie.ReleaseDate).TotalHours / hours)) == currentPeriodIndex );
+            bool ParseSucceeded = int.TryParse(countString, out int count);
+            if (!ParseSucceeded) count = 10;
+
+
+            Raid raid = Raids.raids[guildId].Where(x => x.Shortcuts.Contains(raidString)).FirstOrDefault();
+
+            var embed = new EmbedBuilder();
+            Func<Completion, bool> criteria = null;
+            if (raid == null)
+            {
+                criteria = x => x.StartingPhaseIndex <= 0 && Convert.ToInt32(Math.Floor((x.Period - Bungie.ReleaseDate).TotalHours / hours)) == currentPeriodIndex;
+                embed.WithTitle($"Top {count} for all raid completions {timespanText} ()");
+            }
+            else
+            {
+                criteria = x => raid.Hashes.Contains(x.RaidHash) && x.Time > raid.CompletionTime && x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && Convert.ToInt32(Math.Floor((x.Period - Bungie.ReleaseDate).TotalHours / hours)) == currentPeriodIndex;
+                embed.WithTitle($"Top {count} for {raid.DisplayName} completions {timespanText} ()");
+                embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
+            }
+
+            var orderdUsersX = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(criteria).Count())).OrderByDescending(x => x.completions).ToList();
+            var orderdUsersWithRankX = orderdUsersX.Select(x => (x.user, x.completions, rank: orderdUsersX.IndexOf(x) + 1));
+            embed.AddField($"Completions {timespanText}", CreateLeaderboardString(orderdUsersWithRankX, userId, count, true), true);
+
+            //var users2 = Users.users[guildId].Where(x => x.Completions.Count > 0);
+            //Func<KeyValuePair<long, Completion>, int> getWeekNumberFromDate = y => Convert.ToInt32(Math.Floor((y.Value.Period - Bungie.ReleaseDate).TotalHours / hours));
+            //Func<KeyValuePair<long, Completion>, bool> getCompletionNoRaid = z => z.Value.StartingPhaseIndex <= 0;
+            //var usersAndMaxPeriodCounts = users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(g => g.Where(getCompletionNoRaid).Count())));
+            //if (raid != null)
+            //{
+            //    Func<KeyValuePair<long, Completion>, bool> getCompletionRaid = z => z.Value.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(z.Value.RaidHash) && z.Value.Time > raid.CompletionTime;
+            //    usersAndMaxPeriodCounts = users2.Select(user => (user, completions: user.Completions.GroupBy(getWeekNumberFromDate).Max(g => g.Where(getCompletionRaid).Count())));
+            //}
+
+            //var orderedUsers = usersAndMaxPeriodCounts.OrderByDescending(u => u.completions).ToList();
+            //var orderedUsersWithRank = orderedUsers.Select(x => (x.user, x.completions, rank: orderedUsers.IndexOf(x) + 1));
+
+            //embed.AddField("-", "-", true);
+            //embed.AddField("Completion leaderboard", CreateLeaderboardString(orderedUsersWithRank, userId, count), true);
+            return embed;
+        }
         public EmbedBuilder CreateLeaderboardMessage(int daysToAddToLastReset, int offsetDaysToEndDate, string raidString, ulong guildId, ulong userId, int hoursToDivideBy, string timespanText, string countString, DateTime? startDate = null)
         {
             bool ParseSucceeded = int.TryParse(countString, out int count);
@@ -821,20 +867,23 @@ namespace ClearsBot.Modules
 
             var embed = new EmbedBuilder();
             Func<Completion, bool> criteria = null;
+            IEnumerable<(User, int, int)> orderdUsersWithRankX = null;
             if (raid == null)
             {
                 criteria = x => x.StartingPhaseIndex <= 0 && x.Period > lastResetWithTime && x.Period < nextResetWithTime;
                 embed.WithTitle($"Top {count} for all raid completions {timespanText} ({lastResetWithTime.ToShortDateString()} - {nextResetWithTime.ToShortDateString()})");
+                orderdUsersWithRankX = GetListOfUsersWithCompletions(guildId, lastResetWithTime, nextResetWithTime);
             }
             else
             {
                 criteria = x => raid.Hashes.Contains(x.RaidHash) && x.Time > raid.CompletionTime && x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && x.Period > lastResetWithTime && x.Period < nextResetWithTime;
                 embed.WithTitle($"Top {count} for {raid.DisplayName} completions {timespanText} ({lastResetWithTime.ToShortDateString()} - {nextResetWithTime.ToShortDateString()})");
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
+
+                var orderdUsersX = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(criteria).Count())).OrderByDescending(x => x.completions).ToList();
+                orderdUsersWithRankX = orderdUsersX.Select(x => (x.user, x.completions, rank: orderdUsersX.IndexOf(x) + 1));
             }
 
-            var orderdUsersX = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(criteria).Count())).OrderByDescending(x => x.completions).ToList();
-            var orderdUsersWithRankX = orderdUsersX.Select(x => (x.user, x.completions, rank: orderdUsersX.IndexOf(x) + 1));
             embed.AddField($"Completions {timespanText}", CreateLeaderboardString(orderdUsersWithRankX, userId, count, true), true);
 
             var users2 = Users.users[guildId].Where(x => x.Completions.Count > 0);
@@ -853,6 +902,23 @@ namespace ClearsBot.Modules
             embed.AddField("-", "-", true);
             embed.AddField("Completion leaderboard", CreateLeaderboardString(orderedUsersWithRank, userId, count), true);
             return embed;
+        }
+
+        public static IEnumerable<(User, int, int)> GetListOfUsersWithCompletions(ulong guildId, DateTime startDate, DateTime endDate)
+        {
+            List<(User, int)> users = new List<(User, int)>();
+            foreach(User user in Users.users[guildId])
+            {
+                int completions = 0;
+                foreach(Raid raid in Raids.raids[guildId])
+                {
+                    completions += user.Completions.Values.Where(x => x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && x.Time > raid.CompletionTime && raid.Hashes.Contains(x.RaidHash) && x.Period > startDate && x.Period < endDate).Count();
+                }
+
+                users.Add((user, completions));
+            }
+
+            return users.OrderByDescending(x => x.Item2).Select(x => (user: x.Item1, completions: x.Item2, rank: users.OrderByDescending(x => x.Item2).ToList().IndexOf(x) + 1));
         }
 
         public static string CreateLeaderboardString(IEnumerable<(User user, int completions, int rank)> users, ulong userDiscordId = 0, int count = 10, bool registerMessage = false)
