@@ -9,21 +9,22 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static ClearsBot.Modules.Enums;
 
 namespace ClearsBot.Modules
 {
     public class Misc : ModuleBase<SocketCommandContext>
     {
-        Bungie _bungie;
+        readonly Bungie _bungie;
         public Misc(Bungie bungie)
         {
             _bungie = bungie;
         }
 
         [Command("Register", RunMode = RunMode.Async)]
-        public async Task Register(string membershipId = "", string membershipType = "")
+        public async Task Register([Remainder]string membershipId = "")
         {
-            await RegisterUser(Context.Channel, Context.Guild.Id, Context.User.Id, Context.User.Username, membershipId, membershipType);
+            await RegisterUser(Context.Channel, Context.Guild.Id, Context.User.Id, Context.User.Username, membershipId, "");
         }
 
         [Command("Completions")]
@@ -106,7 +107,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: CreateLeaderboardMessage(-358, 365, raidString, Context.Guild.Id, targetUserId, 8760, "this year", countString).Build());
+            await ReplyAsync(embed: CreateLeaderboardMessage(-358, 365, raidString, Context.Guild.Id, targetUserId, (int)TimeFrameHours.Year, "this year", countString).Build());
         }
 
         [Command("Monthly")]
@@ -119,7 +120,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: CreateLeaderboardMessage(-21, 28, raidString, Context.Guild.Id, targetUserId, 672, "this month", countString).Build());
+            await ReplyAsync(embed: CreateLeaderboardMessage(-21, 28, raidString, Context.Guild.Id, targetUserId, (int)TimeFrameHours.Month, "this month", countString).Build());
         }
 
 
@@ -133,7 +134,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: CreateLeaderboardMessage(0, 7, raidString, Context.Guild.Id, targetUserId, 168, "this week", countString).Build()); 
+            await ReplyAsync(embed: CreateLeaderboardMessage(0, 7, raidString, Context.Guild.Id, targetUserId, (int)TimeFrameHours.Week, "this week", countString).Build()); 
         }
 
         [Command("Daily")]
@@ -148,20 +149,25 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: CreateLeaderboardMessage(0, 1, raidString, Context.Guild.Id, targetUserId, 24, "today", countString, startDate).Build());
+            await ReplyAsync(embed: CreateLeaderboardMessage(0, 1, raidString, Context.Guild.Id, targetUserId, (int)TimeFrameHours.Day, "today", countString, startDate).Build());
         }
 
         [Command("Update")]
         public async Task Update()
         {
-            GetCompletionsResponse getCompletionsResponse = await _bungie.GetCompletionsForUserAsync(Context.Guild.Id, Context.User.Id);
-            if (getCompletionsResponse.Code != 1)
+            string description = "";
+            foreach(User user in Users.users[Context.Guild.Id].Where(x => x.DiscordID == Context.User.Id))
             {
-                await Context.Channel.SendMessageAsync(getCompletionsResponse.ErrorMessage);
-                return;
+                GetCompletionsResponse getCompletionsResponse = await _bungie.GetCompletionsForUserAsync(Context.Guild.Id, Context.User.Id, user.MembershipId);
+                if (getCompletionsResponse.Code != 1)
+                {
+                    await Context.Channel.SendMessageAsync(getCompletionsResponse.ErrorMessage);
+                    return;
+                }
+                description += $"{user.Username}: {user.Completions.Count} pgcrs saved. \n";
             }
-
-            await ReplyAsync($"{Users.users[Context.Guild.Id].FirstOrDefault(x => x.DiscordID == Context.User.Id).Completions.Count()} completions");
+            
+            await ReplyAsync(description);
         }
 
         [Command("Raids")]
@@ -711,6 +717,75 @@ namespace ClearsBot.Modules
             return new DateTime(lastReset.Year, lastReset.Month, lastReset.Day, 17, 0, 0);
         }
 
+        public static Func<Completion, bool> RaidCriteria(Raid raid) => completion => completion.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && raid.Hashes.Contains(completion.RaidHash) && completion.Time > raid.CompletionTime;
+        public static Func<Completion, bool> StartDateCriteria(DateTime? startDate) => completion => completion.Period > startDate;
+        public static Func<Completion, bool> EndDateCriteria(DateTime? endDate) => completion => completion.Period < endDate;
+        public static Func<Completion, bool> DefaultCriteria() => completion => completion.StartingPhaseIndex <= 1;
+        public static Func<User, int> Criteria(Raid raid = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            Func<Completion, bool> InnerCriteria() =>
+            (raid, startDate, endDate) switch
+            {
+                ({ }, { }, { }) => RaidCriteria(raid) + StartDateCriteria(startDate) + EndDateCriteria(endDate),
+                ({ }, { }, null) => RaidCriteria(raid) + StartDateCriteria(startDate),
+                ({ }, null, { }) => RaidCriteria(raid) + EndDateCriteria(endDate),
+                ({ }, null, null) => RaidCriteria(raid),
+                (null, { }, { }) => StartDateCriteria(startDate) + EndDateCriteria(endDate),
+                (null, { }, null) => StartDateCriteria(startDate),
+                (null, null, { }) => EndDateCriteria(endDate),
+                (null, null, null) => DefaultCriteria()
+            };
+
+            return x => x.Completions.Values.Where(InnerCriteria()).Count();
+        }
+
+        public static int GetCompletionCountForUser(User user, Raid raid = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            IEnumerable<Completion> completions = user.Completions.Values;
+            if (raid == null && startDate == null && endDate == null) return completions.Where(DefaultCriteria()).Count();
+            if (raid != null)
+            {
+                completions = completions.Where(RaidCriteria(raid));
+            }
+
+            if (startDate != null)
+            {
+                completions = completions.Where(StartDateCriteria(startDate));
+            }
+
+            if (endDate != null)
+            {
+                completions = completions.Where(EndDateCriteria(endDate));
+
+            }
+
+            return completions.Count();
+        }
+
+        //if (raid == null && startDate == null && endDate == null) return x => x.Completions.Values.Where(DefaultCriteria()).Count();
+        //return x => x.Completions.Values.Where(raid == null ? x => true : RaidCriteria(raid)).Where(startDate == null ? x => true : StartDateCriteria(startDate)).Where(endDate == null ? x => true : EndDateCriteria(endDate)).Count();
+
+        //Func<Completion, bool> criter = DefaultCriteria();
+        //if (raid != null)
+        //{
+        //    criter = RaidCriteria(raid);
+        //}
+
+        //if (startDate != null)
+        //{
+        //    criter += StartDateCriteria(startDate);
+        //}
+
+        //if (endDate != null)
+        //{
+        //    criter += EndDateCriteria(endDate);
+        //}
+
+        //return x => x.Completions.Values.Where(criter).Count();
+
+
+        //}
+
         public static List<User> GetListOfUsersSorted(Raid raid, ulong guildId, DateTime? startDate = null, DateTime? endDate = null)
         {
             Func<User, int> Criteria() =>
@@ -730,6 +805,7 @@ namespace ClearsBot.Modules
             if (membershipId == "")
             {
                 await channel.SendMessageAsync("Usage: /register (Steam Id | Membership Id) (Membership Type)");
+                Users.busy = false;
                 return;
             }
 
@@ -778,15 +854,20 @@ namespace ClearsBot.Modules
             {
                 case 1:
                     await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("User created. - Getting Activities.").Build());
+                    Users.busy = false;
+
                     break;
                 //case 2:
                 //    await restUserMessage.ModifyAsync(x => x.Content = "You already have an account linked to your discord.");
                 //    break;
                 case 3:
                     await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("There's already a discord account linked to this profile.").Build());
+                    Users.busy = false;
+
                     return;
                 case 4:
                     await restUserMessage.ModifyAsync(x => x.Embed =  embed.WithDescription("There's already a discord account linked to this profile.").Build());
+                    Users.busy = false;
                     return;
             }
 
@@ -884,7 +965,7 @@ namespace ClearsBot.Modules
                 orderdUsersWithRankX = orderdUsersX.Select(x => (x.user, x.completions, rank: orderdUsersX.IndexOf(x) + 1));
             }
 
-            embed.AddField($"Completions {timespanText}", CreateLeaderboardString(orderdUsersWithRankX, userId, count, true), true);
+            embed.AddField($"Completions {timespanText}", CreateLeaderboardString(orderdUsersWithRankX, userId, count, true).Replace("_", "\\_"), true);
 
             var users2 = Users.users[guildId].Where(x => x.Completions.Count > 0);
             Func<KeyValuePair<long, Completion>, int> getWeekNumberFromDate = y => Convert.ToInt32(Math.Floor((y.Value.Period - Bungie.ReleaseDate).TotalHours / hoursToDivideBy));
@@ -900,7 +981,7 @@ namespace ClearsBot.Modules
             var orderedUsersWithRank = orderedUsers.Select(x => (x.user, x.completions, rank: orderedUsers.IndexOf(x) + 1));
 
             embed.AddField("-", "-", true);
-            embed.AddField("Completion leaderboard", CreateLeaderboardString(orderedUsersWithRank, userId, count), true);
+            embed.AddField("Completion leaderboard", CreateLeaderboardString(orderedUsersWithRank, userId, count).Replace("_", "\\_"), true);
             return embed;
         }
 
@@ -920,6 +1001,9 @@ namespace ClearsBot.Modules
 
             return users.OrderByDescending(x => x.Item2).Select(x => (user: x.Item1, completions: x.Item2, rank: users.OrderByDescending(x => x.Item2).ToList().IndexOf(x) + 1));
         }
+
+
+
 
         public static string CreateLeaderboardString(IEnumerable<(User user, int completions, int rank)> users, ulong userDiscordId = 0, int count = 10, bool registerMessage = false)
         {
@@ -981,6 +1065,7 @@ namespace ClearsBot.Modules
                 4 => "User not found",
                 5 => "Please enter a valid Steam Id.",
                 6 => "Please enter a valid BungieID",
+                9 => "Profile not found.",
                 _ => requestData.DisplayName
             };
         }

@@ -20,6 +20,52 @@ namespace ClearsBot
         CommandService _commandService;
         IServiceProvider _serviceProvider;
 
+        List<ApplicationCommandOptionChoiceProperties> raidOptions = new List<ApplicationCommandOptionChoiceProperties>() { new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Vault of Glass",
+                                    Value = "vog"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Deep Stone Crypt",
+                                    Value = "dsc"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Garden of Salvation",
+                                    Value = "gos"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Crown of Sorrow",
+                                    Value = "cos"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Scourge of the Past",
+                                    Value = "sotp"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Last Wish",
+                                    Value = "lw"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Spire of Stars",
+                                    Value = "sos"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Eater of Worlds",
+                                    Value = "eow"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Leviathan",
+                                    Value = "levi"
+                                }
+                            };
         public CommandHandler(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider)
         {
             _client = client;
@@ -88,13 +134,8 @@ namespace ClearsBot
                         {
                             Name = "raid",
                             Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids."
-                        }, 
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "count",
-                            Type = ApplicationCommandOptionType.Integer,
-                            Description = "Amount of profiles to return on the leaderboard."
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
                         },
                         new ApplicationCommandOptionProperties()
                         {
@@ -116,13 +157,8 @@ namespace ClearsBot
                         {
                             Name = "raid",
                             Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids."
-                        },
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "count",
-                            Type = ApplicationCommandOptionType.Integer,
-                            Description = "Amount of profiles to return on the leaderboard."
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
                         },
                         new ApplicationCommandOptionProperties()
                         {
@@ -144,13 +180,31 @@ namespace ClearsBot
                         {
                             Name = "raid",
                             Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids."
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
                         },
                         new ApplicationCommandOptionProperties()
                         {
-                            Name = "count",
-                            Type = ApplicationCommandOptionType.Integer,
-                            Description = "Amount of profiles to return on the leaderboard."
+                            Name = "user",
+                            Type = ApplicationCommandOptionType.User,
+                            Description = "User to get completions for."
+                        }
+                    }
+
+                }, guild.Id);
+
+                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
+                {
+                    Name = "yearly",
+                    Description = "Gets yearly raid completions for a user.",
+                    Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "raid",
+                            Type = ApplicationCommandOptionType.String,
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
                         },
                         new ApplicationCommandOptionProperties()
                         {

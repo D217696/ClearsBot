@@ -65,6 +65,7 @@ namespace ClearsBot.Modules
             {
                 if (DateTime.Now.Minute % 5 == 0) await AddUsersToUpdateUsersList();
                 if (DateTime.Now.Minute % 30 == 0) _ = UpdateUsersAsync();
+                if (DateTime.Now.Minute % 30 == 0) _ = UpdateRolesForGuildsAsync();
                 Thread.Sleep(1000 * 60);
             }
         }
@@ -120,6 +121,21 @@ namespace ClearsBot.Modules
             }
             usersToUpdate = new List<User>();
             SaveUsers();
+        }
+
+        public static async Task UpdateRolesForGuildsAsync()
+        {
+            foreach(Guild guild in Guilds.guilds.Values)
+            {
+                foreach(Raid raid in Raids.raids[guild.GuildId])
+                {
+                    List<(User, int, int)> users = Misc.GetListOfUsersWithCompletions(guild.GuildId, Bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
+
+                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[0].Item1.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.FirstRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
+                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[1].Item1.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.SecondRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
+                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[2].Item1.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.ThirdRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
+                }
+            }
         }
         
         public static async Task GiveRoleToUser(IGuildUser user, IRole role, IReadOnlyCollection<IGuildUser> users)

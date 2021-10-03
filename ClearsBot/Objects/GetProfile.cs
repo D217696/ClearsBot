@@ -55,22 +55,24 @@ namespace ClearsBot.Objects
     }
     public class UserInfoCard
     {
-        [JsonProperty("supplementalDisplayName")]
-        public string SupplementalDisplayName { get; set; }
         [JsonProperty("iconPath")]
         public string IconPath { get; set; }
         [JsonProperty("crossSaveOverride")]
-        public Int32 CrossSaveOverride { get; set; }
+        public int CrossSaveOverride { get; set; }
         [JsonProperty("applicableMembershipTypes")]
-        public Int32[] ApplicableMembershipTypes { get; set; }
+        public int[] ApplicableMembershipTypes { get; set; }
         [JsonProperty("isPublic")]
         public bool IsPublic { get; set; }
         [JsonProperty("membershipType")]
-        public Int32 MembershipType { get; set; }
+        public int MembershipType { get; set; }
         [JsonProperty("membershipId")]
         public Int64 MembershipId { get; set; }
         [JsonProperty("displayName")]
         public string DisplayName { get; set; }
+        [JsonProperty("bungieGlobalDisplayName")]
+        public string BungieGlobalDisplayName { get; set; }
+        [JsonProperty("bungieGlobalDisplayNameCode")]
+        public string BungieGlobalDisplayNameCode { get; set; }
     }
 
     public class SingleComponentResponseOfDestinyProfileTransitoryComponent

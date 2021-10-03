@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using static ClearsBot.Modules.Enums;
 
 namespace ClearsBot
 {
@@ -80,20 +81,22 @@ namespace ClearsBot
                                 break;
                             case "daily":
                                 string raidStringDaily = command.Data.Options == null ? "" : command.Data.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
-                                string countStringDaily = command.Data.Options == null ? "" : command.Data.Options.Where(x => x.Name == "count").FirstOrDefault() == null ? "" : command.Data.Options.Where(x => x.Name == "count").FirstOrDefault().Value.ToString();
                                 DateTime startDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 17, 0, 0);
                                 startDate = DateTime.UtcNow.TimeOfDay < new TimeSpan(17, 0, 0) ? startDate.AddDays(-1) : startDate;
-                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(0, 1, raidStringDaily, guildId, userId, 24, "today", countStringDaily, startDate).Build());
+                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(0, 1, raidStringDaily, guildId, userId, (int)TimeFrameHours.Day, "today", "10", startDate).Build());
                                 break;
                             case "weekly":
                                 string raidStringWeekly = command.Data.Options == null ? "" : command.Data.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
-                                string countStringWeekly = command.Data.Options == null ? "" : command.Data.Options.Where(x => x.Name == "count").FirstOrDefault().Value.ToString();
-                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(0, 7, raidStringWeekly, guildId, userId, 168, "this week", countStringWeekly).Build());
+                           
+                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(0, 7, raidStringWeekly, guildId, userId, (int)TimeFrameHours.Week, "this week", "10").Build());
                                 break;
                             case "monthly":
                                 string raidStringMonthly = command.Data.Options == null ? "" : command.Data.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
-                                string countStringMonthly = command.Data.Options == null ? "" : command.Data.Options.Where(x => x.Name == "count").FirstOrDefault().Value.ToString();
-                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(-21, 28, raidStringMonthly, guildId, userId, 624, "this month", countStringMonthly).Build());
+                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(-21, 28, raidStringMonthly, guildId, userId, (int)TimeFrameHours.Month, "this month", "10").Build());
+                                break;
+                            case "yearly":
+                                string raidStringYearly = command.Data.Options == null ? "" : command.Data.Options.FirstOrDefault(x => x.Name == "raid").Value.ToString();
+                                await command.FollowupAsync(embed: _misc.CreateLeaderboardMessage(-358, 365, raidStringYearly, guildId, userId, (int)TimeFrameHours.Year, "this year", "10").Build());
                                 break;
                         }
                     }

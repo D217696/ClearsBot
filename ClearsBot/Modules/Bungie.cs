@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace ClearsBot.Modules
 {
@@ -74,6 +75,13 @@ namespace ClearsBot.Modules
                 {
                     requestData.profiles = profiles.Response;
                     requestData.Code = 8;
+                    return requestData;
+                }
+
+                if (profiles.Response.Count() < 1)
+                {
+                    requestData.profiles = null;
+                    requestData.Code = 9;
                     return requestData;
                 }
 
@@ -403,7 +411,7 @@ namespace ClearsBot.Modules
         }
         public async Task<SearchDestinyPlayer> SearchDestinyPlayerAsync(string membershipId, string membershipType = "")
         {
-            membershipId = membershipId.Replace("#", "%23");
+            membershipId = Uri.EscapeDataString(membershipId);
             HttpResponseMessage response = await client.GetAsync($"https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/{membershipType}/{membershipId}/");
             string json = await response.Content.ReadAsStringAsync();
             SearchDestinyPlayer players = JsonConvert.DeserializeObject<SearchDestinyPlayer>(json);
