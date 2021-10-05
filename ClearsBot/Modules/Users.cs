@@ -129,11 +129,11 @@ namespace ClearsBot.Modules
             {
                 foreach(Raid raid in Raids.raids[guild.GuildId])
                 {
-                    List<(User, int, int)> users = Misc.GetListOfUsersWithCompletions(guild.GuildId, Bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
+                    List<(User user, int completions, int rank)> users = Misc.GetListOfUsersWithCompletions(guild.GuildId, Bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
 
-                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[0].Item1.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.FirstRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
-                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[1].Item1.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.SecondRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
-                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[2].Item1.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.ThirdRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
+                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[0].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.FirstRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
+                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[1].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.SecondRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
+                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[2].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.ThirdRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
                 }
             }
         }

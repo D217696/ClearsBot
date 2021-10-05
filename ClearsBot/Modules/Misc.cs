@@ -1002,8 +1002,11 @@ namespace ClearsBot.Modules
             return users.OrderByDescending(x => x.Item2).Select(x => (user: x.Item1, completions: x.Item2, rank: users.OrderByDescending(x => x.Item2).ToList().IndexOf(x) + 1));
         }
 
-
-
+        public static IEnumerable<(User user, int completions, int rank)> GetListOfUsersWithCompletions(ulong guildId, DateTime startDate, DateTime endDate, Raid raid)
+        {
+            List<(User user, int completions)> users = Users.users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(x => x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && x.Time > raid.CompletionTime && raid.Hashes.Contains(x.RaidHash) && x.Period > startDate && x.Period < endDate).Count())).ToList().OrderByDescending(x => x.completions).ToList();
+            return users.Select(x => (x.user, x.completions, rank: users.IndexOf(x) + 1));
+        }
 
         public static string CreateLeaderboardString(IEnumerable<(User user, int completions, int rank)> users, ulong userDiscordId = 0, int count = 10, bool registerMessage = false)
         {
