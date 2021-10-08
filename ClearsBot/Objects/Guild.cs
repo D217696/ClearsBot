@@ -12,7 +12,7 @@ namespace ClearsBot.Objects
         public ulong FirstRole { get; set; } = 0;
         public ulong SecondRole { get; set; } = 0;
         public ulong ThirdRole { get; set; } = 0;
-        public ulong AdminUser { get; set; } = 204722865818304512;
+        public ulong AdminUser { get; set; } = 0;
         public ulong AdminRole { get; set; } = 0;
         public List<ulong> ModRoles { get; set; } = new List<ulong>();
         public List<Milestone> Milestones { get; set; } = new List<Milestone>();

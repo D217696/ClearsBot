@@ -1,6 +1,7 @@
 ﻿using ClearsBot.Objects;
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
@@ -13,23 +14,25 @@ using System.Threading.Tasks;
 
 namespace ClearsBot.Modules
 {
-    public static class Users
+    public class Users
     {
-        public static IDMChannel labsDMs;
         private const string configFolder = "Resources";
         private const string configFile = "users.json";
-        public static Dictionary<ulong, List<User>> users = new Dictionary<ulong, List<User>>();
-        private static List<User> usersToUpdate = new List<User>();
-        public static bool busy = false;
-        public static Bungie bungie = new Bungie();
-
-        public static async Task Initialize()
+        public Dictionary<ulong, List<User>> users = new Dictionary<ulong, List<User>>();
+        private List<User> usersToUpdate = new List<User>();
+        public bool busy = false;
+        readonly IBungieDestiny2RequestHandler _requestHandler;
+        readonly IBungie _bungie;
+        readonly IUtilities _utilities;
+        readonly IGuilds _guilds;
+        readonly IRaids _raids;
+        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IUtilities utilities, IGuilds guilds, IRaids raids)
         {
-            var user = await Program._client.Rest.GetUserAsync(204722865818304512);
-            //await user.SendMessageAsync("init done!");
-            labsDMs = await user.CreateDMChannelAsync();
-            await labsDMs.SendMessageAsync("init done!");
-
+            _requestHandler = requestHandler;
+            _bungie = bungie;
+            _utilities = utilities;
+            _guilds = guilds;
+            _raids = raids;
             if (!Directory.Exists(configFolder)) Directory.CreateDirectory(configFolder);
 
             if (!File.Exists(configFolder + "/" + configFile))
@@ -58,8 +61,7 @@ namespace ClearsBot.Modules
 
             new Thread(new ThreadStart(UpdateUsers)).Start();
         }
-
-        static async void UpdateUsers()
+        async void UpdateUsers()
         {
             while (true)
             {
@@ -69,13 +71,130 @@ namespace ClearsBot.Modules
                 Thread.Sleep(1000 * 60);
             }
         }
+        public async Task RegisterUser(ISocketMessageChannel channel, ulong guildId, ulong userId, string discordUsername, string membershipId = "", string membershipType = "", RestFollowupMessage restFollowupMessage = null)
+        {
+            busy = true;
+            if (membershipId == "")
+            {
+                await channel.SendMessageAsync("Usage: /register (Steam Id | Membership Id) (Membership Type)");
+                busy = false;
+                return;
+            }
 
-        public static async Task AddUsersToUpdateUsersList()
+            var embed = new EmbedBuilder();
+            embed.WithDescription("Getting user...");
+            embed.WithTitle("Registering " + discordUsername);
+            RestUserMessage restUserMessage = null;
+            if (restFollowupMessage == null)
+            {
+                restUserMessage = await channel.SendMessageAsync(embed: embed.Build());
+            }
+            else
+            {
+                restUserMessage = restFollowupMessage;
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.Build());
+            }
+
+            RequestData requestData = await _bungie.GetRequestDataAsync(membershipId, membershipType);
+            if (requestData.Code != 1 && requestData.Code != 8)
+            {
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription(_utilities.GetErrorCodeForUserSearch(requestData)).Build());
+                busy = false;
+                return;
+            }
+            else if (requestData.Code == 8)
+            {
+                int buttonCount = 0;
+                int buttonRow = 0;
+                var componentBuilder = new ComponentBuilder();
+                foreach (UserInfoCard userInfoCard in requestData.profiles)
+                {
+                    ButtonStyle buttonStyle = _utilities.GetButtonStyleForPlatform(userInfoCard.MembershipType);
+
+                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(userInfoCard.DisplayName).WithCustomId($"register_{userInfoCard.MembershipId}_{userInfoCard.MembershipType}").WithStyle(buttonStyle), buttonRow);
+                    buttonCount++;
+                    if (buttonCount % 5 == 0) buttonRow++;
+                }
+                await restUserMessage.ModifyAsync(x => x.Components = componentBuilder.Build());
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("Multiple profiles found, select correct one below").Build());
+                busy = false;
+                return;
+            }
+
+            UserResponse userResponse = await CreateAndAddUser(guildId, userId, requestData);
+            switch (userResponse.Code)
+            {
+                case 1:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("User created. - Getting Activities.").Build());
+                    busy = false;
+
+                    break;
+                //case 2:
+                //    await restUserMessage.ModifyAsync(x => x.Content = "You already have an account linked to your discord.");
+                //    break;
+                case 3:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("There's already a discord account linked to this profile.").Build());
+                    busy = false;
+
+                    return;
+                case 4:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("There's already a discord account linked to this profile.").Build());
+                    busy = false;
+                    return;
+            }
+
+            userResponse.User.DateLastPlayed = new DateTime(2017, 08, 06, 0, 0, 0);
+            GetCompletionsResponse getCompletionsResponse = await _bungie.GetCompletionsForUserAsync(userResponse.User);
+            switch (getCompletionsResponse.Code)
+            {
+                case 1:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription($"Activities found: {users[guildId].Where(x => x.DiscordID == userId && x.MembershipId == requestData.MembershipId).FirstOrDefault().Completions.Count} raid completions").Build());
+                    break;
+                default:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription($"Something went wrong: {getCompletionsResponse.ErrorMessage}").Build());
+                    break;
+            }
+
+            busy = false;
+        }
+        public ulong GetTargetUser(SocketCommandContext context)
+        {
+            if (context.Message.MentionedUsers.Count == 0) return context.User.Id;
+
+            if (users[context.Guild.Id].Where(x => x.DiscordID == context.Message.MentionedUsers.FirstOrDefault().Id) != null) return context.Message.MentionedUsers.FirstOrDefault().Id;
+
+            return 0;
+        }
+        public IEnumerable<(User user, int completions, int rank)> GetListOfUsersWithCompletions(ulong guildId, DateTime startDate, DateTime endDate, Raid raid)
+        {
+            if (raid != null)
+            {
+                List<(User user, int completions)> usersList = users[guildId].Select(x => (user: x, completions: x.Completions.Values.Where(_raids.GetCriteriaByRaid(raid)).Where(x => x.Period > startDate && x.Period < endDate).Count())).ToList().OrderByDescending(x => x.completions).ToList();
+                return usersList.Select(x => (x.user, x.completions, rank: usersList.IndexOf(x) + 1));
+            }
+
+            List<(User user, int completions)> userList = new List<(User, int)>();
+            foreach (User user in users[guildId])
+            {
+                int completions = 0;
+                foreach (Raid localRaid in _raids.GetRaids(guildId))
+                {
+                    completions += user.Completions.Values.Where(_raids.GetCriteriaByRaid(localRaid)).Where( x => x.Period > startDate && x.Period < endDate).Count();
+                }
+                userList.Add((user, completions));
+            }
+
+            return userList.OrderByDescending(x => x.user).Select(x => (x.user, x.completions, rank: userList.OrderByDescending(x => x.completions).ToList().IndexOf(x) + 1));
+        }
+        public IEnumerable<User> GetUsersByPage(ulong guildId, int index = 1)
+        {
+            return users[guildId].Where(x => users[guildId].IndexOf(x) <= (index * 10) - 1 && users[guildId].IndexOf(x) > (index * 10) - 11);
+        }
+        public async Task AddUsersToUpdateUsersList()
         {
             try
             {
                 bool loopNotDone = true;
-
                 while (!busy && loopNotDone)
                 {
                     foreach (var guild in users)
@@ -98,12 +217,11 @@ namespace ClearsBot.Modules
 
             }
         }
-
-        public static async Task UpdateUsersAsync()
+        public async Task UpdateUsersAsync()
         {
             foreach(User user in usersToUpdate)
             {
-                GetCompletionsResponse getCompletionsResponse = await bungie.GetCompletionsForUserAsync(user);
+                GetCompletionsResponse getCompletionsResponse = await _bungie.GetCompletionsForUserAsync(user);
                 if (getCompletionsResponse.Code == 1)
                 {
                     if (users[getCompletionsResponse.User.GuildID].FirstOrDefault(x => x.MembershipId == getCompletionsResponse.User.MembershipId) != null)
@@ -115,21 +233,20 @@ namespace ClearsBot.Modules
                 }
                 else
                 {
-                    await labsDMs.SendMessageAsync("Couldnt update users. " + getCompletionsResponse.ErrorMessage);
+                    //await labsDMs.SendMessageAsync("Couldnt update users. " + getCompletionsResponse.ErrorMessage);
                     return;
                 }
             }
             usersToUpdate = new List<User>();
             SaveUsers();
         }
-
-        public static async Task UpdateRolesForGuildsAsync()
+        public async Task UpdateRolesForGuildsAsync()
         {
-            foreach(Guild guild in Guilds.guilds.Values)
+            foreach(Guild guild in _guilds.GuildsList.Values)
             {
-                foreach(Raid raid in Raids.raids[guild.GuildId])
+                foreach(Raid raid in _raids.GetRaids(guild.GuildId))
                 {
-                    List<(User user, int completions, int rank)> users = Misc.GetListOfUsersWithCompletions(guild.GuildId, Bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
+                    List<(User user, int completions, int rank)> users = GetListOfUsersWithCompletions(guild.GuildId, _bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
 
                     await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[0].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.FirstRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
                     await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[1].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.SecondRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
@@ -137,8 +254,7 @@ namespace ClearsBot.Modules
                 }
             }
         }
-        
-        public static async Task GiveRoleToUser(IGuildUser user, IRole role, IReadOnlyCollection<IGuildUser> users)
+        public async Task GiveRoleToUser(IGuildUser user, IRole role, IReadOnlyCollection<IGuildUser> users)
         {
             if (role == null) return;
             bool userHasRole = false;
@@ -159,31 +275,32 @@ namespace ClearsBot.Modules
                 Console.WriteLine($"Added {role.Name} to {user.Username}");
             } 
         }
-
-        public static void SaveUsers()
+        public void SaveUsers()
         {
             File.WriteAllText(configFolder + "/" + configFile, JsonConvert.SerializeObject(users, Formatting.Indented));
         }
 
-        public static List<User> GetUsers(SocketCommandContext context)
+        public List<User> GetGuildUsers(ulong guildId)
+        {
+            return users[guildId];
+        }
+        public List<User> GetUsers(SocketCommandContext context)
         {
             ulong userId = context.Message.MentionedUsers.Count == 0 ? context.User.Id : context.Message.MentionedUsers.FirstOrDefault().Id;
             return users[context.Guild.Id].Where(x => x.DiscordID == userId).ToList();
         }
-
-        public static List<User> GetUsers(ulong guildId, ulong userId)
+        public List<User> GetUsers(ulong guildId, ulong userId)
         {
             return users[guildId].Where(x => x.DiscordID == userId).ToList();
         }
-
-        public async static Task<UserResponse> CreateAndAddUser(ulong guildID, ulong discordID, RequestData requestData)
+        public async Task<UserResponse> CreateAndAddUser(ulong guildID, ulong discordID, RequestData requestData)
         {
             //if (users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault() != null) return new UserResponse() { User = users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault(), Code = 2 };
             if (users[guildID].Where(x => x.SteamID == requestData.SteamID).FirstOrDefault() != null && requestData.SteamID != 0) return new UserResponse() { User = users[guildID].Where(x => x.SteamID == requestData.SteamID).FirstOrDefault(), Code = 3 };
             if (users[guildID].Where(x => x.MembershipId == requestData.MembershipId).FirstOrDefault() != null) return new UserResponse() { User = users[guildID].Where(x => x.MembershipId == requestData.MembershipId).FirstOrDefault(), Code = 4 };
 
-            Bungie bungie = new Bungie();
-            GetHistoricalStatsForAccount getHistoricalStatsForAccount = JsonConvert.DeserializeObject<GetHistoricalStatsForAccount>(await bungie.MakeRequest($"Platform/Destiny2/{requestData.MembershipType}/Account/{requestData.MembershipId}/Stats/"));
+            Bungie bungie = new Bungie(new BungieDestiny2RequestHandler(new Logger()));
+            GetHistoricalStatsForAccount getHistoricalStatsForAccount = await _requestHandler.GetHistoricalStatsForAccount(requestData.MembershipType, requestData.MembershipId);
             if (getHistoricalStatsForAccount.ErrorCode != 1) return new UserResponse() { User = null, Code = 5 };
 
             List<Character> characters = new List<Character>();
@@ -214,7 +331,6 @@ namespace ClearsBot.Modules
             return new UserResponse() { User = user, Code = 1 };
         }
     }
-
     public class UserResponse
     {
         public User User { get; set; }

@@ -16,6 +16,7 @@ namespace ClearsBot
 {
     class CommandHandler
     {
+        readonly IGuilds _guilds;
         DiscordSocketClient _client;
         CommandService _commandService;
         IServiceProvider _serviceProvider;
@@ -66,11 +67,12 @@ namespace ClearsBot
                                     Value = "levi"
                                 }
                             };
-        public CommandHandler(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider)
+        public CommandHandler(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider, IGuilds guilds)
         {
             _client = client;
             _commandService = commandService;
             _serviceProvider = serviceProvider;
+            _guilds = guilds;
         }
 
         public async Task InitializeAsync()
@@ -80,142 +82,143 @@ namespace ClearsBot
             _client.Ready += _client_Ready;
         }
 
-        public async Task _client_Ready()
+        public async Task<Task> _client_Ready()
         {
-            await Raids.Initialize();
-            await Guilds.Initialize();
-            await Users.Initialize();
+            //await Guilds.Initialize();
+            //await Users.Initialize();
             await Languages.Initialize();
 
-            foreach (SocketGuild guild in _client.Guilds)
-            {
-                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
-                {
-                    Name = "register",
-                    Description = "Register to the bot.",
-                    Options = new List<ApplicationCommandOptionProperties>()
-                    {
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "membershipid",
-                            Type = ApplicationCommandOptionType.String,
-                            Description = "Enter your SteamID (joincode) or username",
-                            Required = true
-                        },
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "membershiptype",
-                            Type = ApplicationCommandOptionType.Integer,
-                            Description = "Number that represents your platform, Xbox = 1, Playstation = 2, Steam = 3, Stadia = 5"
-                        }
-                    }
-                }, guild.Id);
+            //foreach (SocketGuild guild in _client.Guilds)
+            //{
+            //    await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
+            //    {
+            //        Name = "register",
+            //        Description = "Register to the bot.",
+            //        Options = new List<ApplicationCommandOptionProperties>()
+            //        {
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "membershipid",
+            //                Type = ApplicationCommandOptionType.String,
+            //                Description = "Enter your SteamID (joincode) or username",
+            //                Required = true
+            //            },
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "membershiptype",
+            //                Type = ApplicationCommandOptionType.Integer,
+            //                Description = "Number that represents your platform, Xbox = 1, Playstation = 2, Steam = 3, Stadia = 5"
+            //            }
+            //        }
+            //    }, guild.Id);
 
-                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties() {
-                    Name = "completions",
-                    Description = "Gets raid completions for user.",
-                    Options = new List<ApplicationCommandOptionProperties>()
-                    {
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "user",
-                            Type = ApplicationCommandOptionType.User,
-                            Description = "User to get completions for."
-                        }
-                    }
-                }, guild.Id);
+            //    await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties() {
+            //        Name = "completions",
+            //        Description = "Gets raid completions for user.",
+            //        Options = new List<ApplicationCommandOptionProperties>()
+            //        {
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "user",
+            //                Type = ApplicationCommandOptionType.User,
+            //                Description = "User to get completions for."
+            //            }
+            //        }
+            //    }, guild.Id);
 
-                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties() { 
-                    Name = "daily", 
-                    Description = "Gets daily raid completions for a user.",
-                    Options = new List<ApplicationCommandOptionProperties>()
-                    {
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "raid",
-                            Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids.",
-                            Choices = raidOptions
-                        },
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "user",
-                            Type = ApplicationCommandOptionType.User,
-                            Description = "User to get completions for."
-                        }
-                    }
+            //    await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties() { 
+            //        Name = "daily", 
+            //        Description = "Gets daily raid completions for a user.",
+            //        Options = new List<ApplicationCommandOptionProperties>()
+            //        {
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "raid",
+            //                Type = ApplicationCommandOptionType.String,
+            //                Description = "Specify a raid, leave empty for all raids.",
+            //                Choices = raidOptions
+            //            },
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "user",
+            //                Type = ApplicationCommandOptionType.User,
+            //                Description = "User to get completions for."
+            //            }
+            //        }
                 
-                }, guild.Id);
+            //    }, guild.Id);
 
-                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
-                {
-                    Name = "weekly",
-                    Description = "Gets weekly raid completions for a user.",
-                    Options = new List<ApplicationCommandOptionProperties>()
-                    {
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "raid",
-                            Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids.",
-                            Choices = raidOptions
-                        },
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "user",
-                            Type = ApplicationCommandOptionType.User,
-                            Description = "User to get completions for."
-                        }
-                    }
+            //    await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
+            //    {
+            //        Name = "weekly",
+            //        Description = "Gets weekly raid completions for a user.",
+            //        Options = new List<ApplicationCommandOptionProperties>()
+            //        {
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "raid",
+            //                Type = ApplicationCommandOptionType.String,
+            //                Description = "Specify a raid, leave empty for all raids.",
+            //                Choices = raidOptions
+            //            },
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "user",
+            //                Type = ApplicationCommandOptionType.User,
+            //                Description = "User to get completions for."
+            //            }
+            //        }
 
-                }, guild.Id); 
+            //    }, guild.Id); 
                 
-                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
-                {
-                    Name = "monthly",
-                    Description = "Gets monthly raid completions for a user.",
-                    Options = new List<ApplicationCommandOptionProperties>()
-                    {
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "raid",
-                            Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids.",
-                            Choices = raidOptions
-                        },
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "user",
-                            Type = ApplicationCommandOptionType.User,
-                            Description = "User to get completions for."
-                        }
-                    }
+            //    await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
+            //    {
+            //        Name = "monthly",
+            //        Description = "Gets monthly raid completions for a user.",
+            //        Options = new List<ApplicationCommandOptionProperties>()
+            //        {
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "raid",
+            //                Type = ApplicationCommandOptionType.String,
+            //                Description = "Specify a raid, leave empty for all raids.",
+            //                Choices = raidOptions
+            //            },
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "user",
+            //                Type = ApplicationCommandOptionType.User,
+            //                Description = "User to get completions for."
+            //            }
+            //        }
 
-                }, guild.Id);
+            //    }, guild.Id);
 
-                await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
-                {
-                    Name = "yearly",
-                    Description = "Gets yearly raid completions for a user.",
-                    Options = new List<ApplicationCommandOptionProperties>()
-                    {
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "raid",
-                            Type = ApplicationCommandOptionType.String,
-                            Description = "Specify a raid, leave empty for all raids.",
-                            Choices = raidOptions
-                        },
-                        new ApplicationCommandOptionProperties()
-                        {
-                            Name = "user",
-                            Type = ApplicationCommandOptionType.User,
-                            Description = "User to get completions for."
-                        }
-                    }
+            //    await _client.Rest.CreateGuildCommand(new SlashCommandCreationProperties()
+            //    {
+            //        Name = "yearly",
+            //        Description = "Gets yearly raid completions for a user.",
+            //        Options = new List<ApplicationCommandOptionProperties>()
+            //        {
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "raid",
+            //                Type = ApplicationCommandOptionType.String,
+            //                Description = "Specify a raid, leave empty for all raids.",
+            //                Choices = raidOptions
+            //            },
+            //            new ApplicationCommandOptionProperties()
+            //            {
+            //                Name = "user",
+            //                Type = ApplicationCommandOptionType.User,
+            //                Description = "User to get completions for."
+            //            }
+            //        }
 
-                }, guild.Id);
-            }
+            //    }, guild.Id);
+            //}
+
+            return Task.CompletedTask;
         }
 
         public async Task HandleCommandAsync(SocketMessage s)
@@ -227,7 +230,7 @@ namespace ClearsBot
             if (context.Guild == null) return;
 
             int argPos = 0;
-            if (msg.HasStringPrefix(Guilds.guilds[context.Guild.Id].Prefix, ref argPos) || msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            if (msg.HasStringPrefix(_guilds.GuildsList[context.Guild.Id].Prefix, ref argPos) || msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
                 var result = await _commandService.ExecuteAsync(context, argPos, _serviceProvider, MultiMatchHandling.Best);
                 if (!result.IsSuccess && result.Error == CommandError.UnknownCommand)

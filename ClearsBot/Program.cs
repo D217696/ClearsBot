@@ -46,7 +46,6 @@ namespace ClearsBot
             _handler = _services.GetRequiredService<CommandHandler>();
             await _handler.InitializeAsync();
             _componentHandler = _services.GetRequiredService<ComponentHandler>();
-            await _componentHandler.InitializeAsync();
 
             await Task.Delay(-1);
         }
@@ -62,8 +61,18 @@ namespace ClearsBot
                            .AddSingleton(_commandService)
                            .AddSingleton<CommandHandler>()
                            .AddSingleton<ComponentHandler>()
-                           .AddSingleton<Bungie>()
+                           .AddSingleton<IBungie, Bungie>()
+                           .AddSingleton<IUtilities, Utilities>()
                            .AddSingleton<Misc>()
+                           .AddSingleton<Users>()
+                           .AddSingleton<IBungieDestiny2RequestHandler, BungieDestiny2RequestHandler>()
+                           .AddSingleton<ILogger, Logger>()
+                           .AddSingleton<IGuilds, Guilds>()
+                           .AddSingleton<IPermissions, Permissions>()
+                           .AddSingleton<Buttons>()
+                           .AddSingleton<ILeaderboards, Leaderboards>()
+                           .AddSingleton<Commands>()
+                           .AddSingleton<IRaids, Raids>()
                            .BuildServiceProvider();
         }
     }
