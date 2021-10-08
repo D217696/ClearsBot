@@ -37,23 +37,42 @@ namespace ClearsBot.Modules
 
             SaveRaids();
         }
+        public Func<Completion, bool> GetCriteriaByRaid(Raid raid)
+        {
+            if (raid == null) return completion => completion.StartingPhaseIndex <= 1;
+            return completion => completion.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && completion.Time <= raid.CompletionTime && raid.Hashes.Contains(completion.RaidHash);
+        }
         public Raid GetRaid(ulong guildId, string raidString)
         {
             if (raidString == "") return null;
             if (raids[guildId].Where(raid => raid.DisplayName.ToLower().Contains(raidString.ToLower().Trim()) || raid.Shortcuts.Contains(raidString.ToLower().Trim())) == null) return null;
             return raids[guildId].FirstOrDefault(raid => raid.DisplayName.ToLower().Contains(raidString.ToLower().Trim()) || raid.Shortcuts.Contains(raidString.ToLower().Trim()));
         }
-        public Func<Completion, bool> GetCriteriaByRaid(Raid raid)
-        {
-            if (raid == null) return completion => completion.StartingPhaseIndex <= 1;
-            return completion => completion.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && completion.Time <= raid.CompletionTime && raid.Hashes.Contains(completion.RaidHash);
-        }
-
         public List<Raid> GetRaids(ulong guildId)
         {
             return raids[guildId];
         }
-        public void SaveRaids()
+        public Raid SetRaidTime(ulong guildId, string raidString, TimeSpan time)
+        {
+            Raid raid = GetRaid(guildId, raidString);
+            if (raid == null) return null;
+
+            raid.CompletionTime = time;
+            SaveRaids();
+            return raid;
+        }
+        public Raid AddShortcut(ulong guildId, string raidString, string shortcut)
+        {
+            Raid raid = GetRaid(guildId, raidString);
+            if (raid == null) return null;
+
+            if (raid.Shortcuts.Contains(shortcut)) return raid;
+
+            raid.Shortcuts.Add(shortcut);
+            SaveRaids();
+            return raid;
+        }
+        private void SaveRaids()
         {
             File.WriteAllText(configFolder + "/" + configFile, JsonConvert.SerializeObject(raids, Formatting.Indented));
         }

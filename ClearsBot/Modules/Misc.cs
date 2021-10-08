@@ -1,13 +1,10 @@
 ﻿using ClearsBot.Objects;
 using Discord;
 using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ClearsBot.Modules
@@ -32,6 +29,7 @@ namespace ClearsBot.Modules
             _raids = raids;
         }
 
+        //leaderboard commands
         [Command("Rank")]
         public async Task Rank([Remainder] string raidString = "")
         {
@@ -97,9 +95,22 @@ namespace ClearsBot.Modules
             await ReplyAsync(embed: _commands.TimeFrameCommand(targetUserId, Context.Guild.Id, raidString, TimeFrameHours.Day, "Daily").Build());
         }
 
+        //raid commands
+        [Command("SetTime")]
+        public async Task SetTime(string raidString = "", string timeString = "")
+        {
+            await ReplyAsync(_commands.EditRaidTimeCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, timeString));
+        }
+
+        [Command("AddShortcut")]
+        public async Task AddShortcut(string raidString = "", string shortcut = "")
+        {
+            await ReplyAsync(_commands.AddRaidShortcutCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, shortcut));
+        }
+
         //Commands below need revision to be compliant with SOLID
         [Command("Register", RunMode = RunMode.Async)]
-        public async Task Register([Remainder]string membershipId = "")
+        public async Task Register([Remainder] string membershipId = "")
         {
             await _users.RegisterUser(Context.Channel, Context.Guild.Id, Context.User.Id, Context.User.Username, membershipId, "");
         }
@@ -153,71 +164,6 @@ namespace ClearsBot.Modules
             await ReplyAsync(embed: embed.Build());
         }
 
-        [Command("AddShortcut")]
-        public async Task AddShortcut(string raidString = "", string shortcut = "")
-        {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.ModRole)
-            {
-                await Context.Channel.SendMessageAsync("No permission");
-                return;
-            }
-
-            if (Context.User.Id != Config.bot.owner)
-            {
-                await Context.Channel.SendMessageAsync("No permissions");
-                return;
-            }
-
-            Raid raid = _raids.GetRaids(Context.Guild.Id).FirstOrDefault(x => x.Shortcuts.Contains(raidString) || x.DisplayName.ToLower().Contains(raidString));
-            if (raid != null)
-            {
-                if (!raid.Shortcuts.Contains(shortcut))
-                {
-                    raid.Shortcuts.Add(shortcut);
-                    _raids.SaveRaids();
-                    await Context.Channel.SendMessageAsync($"Added shortcut: {shortcut} to {raid.DisplayName}");
-                    return;
-                }
-
-                await Context.Channel.SendMessageAsync($"{raid.DisplayName} already has that shortcut!");
-                return;
-            }
-
-            await ReplyAsync("Raid not found!");
-        }
-
-        [Command("SetTime")]
-        public async Task SetTime(string shortcut = "", string time = "")
-        {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
-            {
-                await Context.Channel.SendMessageAsync("No permission");
-                return;
-            }
-
-            Raid raid = _raids.GetRaid(Context.Guild.Id, shortcut);
-            if (raid == null)
-            {
-                await Context.Channel.SendMessageAsync("Raid not found.");
-                return;
-            }
-
-            if (time.Length == 5 && time.Contains(":"))
-            {
-                time = "00:" + time;
-            }
-
-            bool parseSucceeded = TimeSpan.TryParse(time, out TimeSpan completionTime);
-            if (parseSucceeded)
-            {
-                raid.CompletionTime = completionTime;
-                _raids.SaveRaids();
-                await Context.Channel.SendMessageAsync($"{raid.DisplayName} completion time set to: {raid.CompletionTime}");
-                return;
-            }
-
-            await ReplyAsync("Could not convert time to TimeSpan format: hh:mm:ss");
-        }
 
         [Command("Profiles")]
         public async Task Profiles([Remainder] string remainder = "")
@@ -225,13 +171,13 @@ namespace ClearsBot.Modules
             var embed = new EmbedBuilder();
             embed.WithTitle("Profiles linked to your account");
             List<User> users = _users.GetUsers(Context);
-            foreach(User user in users)
+            foreach (User user in users)
             {
                 string platform = Bungie.GetPlatformString(user.MembershipType);
                 embed.AddField(user.Username, $"{platform} \n Characters: {user.Characters.Count()} \n Saved pgcrs: {user.Completions.Count()} \n Date last played: {user.DateLastPlayed} \n SteamID: {user.SteamID}", true);
             }
 
-            await  ReplyAsync(embed: embed.Build());
+            await ReplyAsync(embed: embed.Build());
         }
 
         [Command("GenerateRoles")]
@@ -270,7 +216,7 @@ namespace ClearsBot.Modules
             embed.AddField("Total", $"{firstRoleTotal.Mention} \n {secondRoleTotal.Mention} \n {thirdRoleTotal.Mention}");
 
             _guilds.SaveGuilds();
-            _raids.SaveRaids();
+            //_raids.SaveRaids();
 
             await ReplyAsync(embed: embed.Build());
         }
@@ -358,7 +304,7 @@ namespace ClearsBot.Modules
         [Command("CreateMilestone")]
         public async Task CreateMilestone(string completions, string role)
         {
-            if(_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
+            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
             {
                 await ReplyAsync("No permission");
                 return;
@@ -398,7 +344,7 @@ namespace ClearsBot.Modules
             }
 
             SocketRole socketRole = Context.Guild.Roles.Where(x => x.Mention == role).FirstOrDefault();
-            if(socketRole == null)
+            if (socketRole == null)
             {
                 await ReplyAsync("Role not found.");
                 return;
@@ -437,11 +383,11 @@ namespace ClearsBot.Modules
             var message = await ReplyAsync("Verifying your activities..");
             int completions = 0;
             int newCompletions = 0;
-            foreach(User user in users)
+            foreach (User user in users)
             {
                 completions += user.Completions.Count;
                 user.DateLastPlayed = new DateTime(2017, 01, 01, 0, 0, 0);
-                foreach(Character character in user.Characters)
+                foreach (Character character in user.Characters)
                 {
                     character.Deleted = false;
                     character.Handled = false;

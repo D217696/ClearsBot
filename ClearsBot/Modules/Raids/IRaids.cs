@@ -9,6 +9,7 @@ namespace ClearsBot.Modules
         Func<Completion, bool> GetCriteriaByRaid(Raid raid);
         Raid GetRaid(ulong guildId, string raidString);
         List<Raid> GetRaids(ulong guildId);
-        void SaveRaids();
+        Raid SetRaidTime(ulong guildId, string raidString, TimeSpan time);
+        Raid AddShortcut(ulong guildId, string raidString, string shortcut);
     }
 }
