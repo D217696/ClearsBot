@@ -230,7 +230,7 @@ namespace ClearsBot
             if (context.Guild == null) return;
 
             int argPos = 0;
-            if (msg.HasStringPrefix(_guilds.GuildsList[context.Guild.Id].Prefix, ref argPos) || msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            if (msg.HasStringPrefix(_guilds.GetGuild(context.Guild.Id).Prefix, ref argPos) || msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
                 var result = await _commandService.ExecuteAsync(context, argPos, _serviceProvider, MultiMatchHandling.Best);
                 if (!result.IsSuccess && result.Error == CommandError.UnknownCommand)

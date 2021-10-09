@@ -91,7 +91,6 @@ namespace ClearsBot.Modules
 
             return $"{raid.DisplayName} completion time set to: {raid.CompletionTime}";
         }
-
         public string AddRaidShortcutCommand(IGuildUser guildUser, ulong guildId, string raidString, string shortcut)
         {
             if (_permissions.GetPermissionForUser(guildUser) < PermissionLevels.AdminRole) return "No permission";
@@ -100,6 +99,20 @@ namespace ClearsBot.Modules
             if (raid == null) return "No raid found";
 
             return $"Added shortcut: {shortcut} to {raid.DisplayName}";
+        }
+        public EmbedBuilder DisplayRaidsCommand(ulong guildId)
+        {
+            var embed = new EmbedBuilder();
+            foreach (Raid raid in _raids.GetRaids(guildId))
+            {
+                string value = "**Shortcuts**\n";
+                foreach (string shortcut in raid.Shortcuts)
+                {
+                    value += shortcut + "\n";
+                }
+                embed.AddField(raid.DisplayName, value, true);
+            }
+            return embed;
         }
     }
 }

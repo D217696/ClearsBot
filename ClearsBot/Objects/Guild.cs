@@ -21,5 +21,6 @@ namespace ClearsBot.Objects
     {
         public int Completions { get; set; } = 0;
         public ulong Role { get; set; } = 0;
+        public Raid Raid { get; set; } = null;
     }
 }

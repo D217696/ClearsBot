@@ -18,7 +18,7 @@ namespace ClearsBot.Modules
         public PermissionLevels GetPermissionForUser(IGuildUser user)
         {
             List<ulong> roles = JsonConvert.DeserializeObject<List<ulong>>(JsonConvert.SerializeObject(user.RoleIds));
-            Guild guild = _guilds.GuildsList[user.Guild.Id];
+            Guild guild = _guilds.GetGuild(user.Guild.Id);
             if (user.Id == Config.bot.owner) return PermissionLevels.BotOwner;
             if (user.Id == guild.AdminUser) return PermissionLevels.AdminUser;
             if (roles.Contains(guild.AdminRole)) return PermissionLevels.AdminRole;

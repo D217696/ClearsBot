@@ -26,13 +26,15 @@ namespace ClearsBot.Modules
         readonly IUtilities _utilities;
         readonly IGuilds _guilds;
         readonly IRaids _raids;
-        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IUtilities utilities, IGuilds guilds, IRaids raids)
+        readonly Roles _roles;
+        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IUtilities utilities, IGuilds guilds, IRaids raids, Roles roles)
         {
             _requestHandler = requestHandler;
             _bungie = bungie;
             _utilities = utilities;
             _guilds = guilds;
             _raids = raids;
+            _roles = roles;
             if (!Directory.Exists(configFolder)) Directory.CreateDirectory(configFolder);
 
             if (!File.Exists(configFolder + "/" + configFile))
@@ -67,7 +69,7 @@ namespace ClearsBot.Modules
             {
                 if (DateTime.Now.Minute % 5 == 0) await AddUsersToUpdateUsersList();
                 if (DateTime.Now.Minute % 30 == 0) _ = UpdateUsersAsync();
-                if (DateTime.Now.Minute % 30 == 0) _ = UpdateRolesForGuildsAsync();
+                if (DateTime.Now.Minute % 30 == 0) _ = _roles.UpdateRolesForGuildsAsync();
                 Thread.Sleep(1000 * 60);
             }
         }
@@ -212,7 +214,7 @@ namespace ClearsBot.Modules
                     loopNotDone = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception)
             {
 
             }
@@ -239,20 +241,6 @@ namespace ClearsBot.Modules
             }
             usersToUpdate = new List<User>();
             SaveUsers();
-        }
-        public async Task UpdateRolesForGuildsAsync()
-        {
-            foreach(Guild guild in _guilds.GuildsList.Values)
-            {
-                foreach(Raid raid in _raids.GetRaids(guild.GuildId))
-                {
-                    List<(User user, int completions, int rank)> users = GetListOfUsersWithCompletions(guild.GuildId, _bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
-
-                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[0].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.FirstRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
-                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[1].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.SecondRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
-                    await GiveRoleToUser(Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetUser(users[2].user.DiscordID), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).GetRole(raid.ThirdRole), Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId).Users);
-                }
-            }
         }
         public async Task GiveRoleToUser(IGuildUser user, IRole role, IReadOnlyCollection<IGuildUser> users)
         {

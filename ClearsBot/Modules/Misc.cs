@@ -108,6 +108,13 @@ namespace ClearsBot.Modules
             await ReplyAsync(_commands.AddRaidShortcutCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, shortcut));
         }
 
+        [Command("Raids")]
+        public async Task ShowRaids()
+        {
+            await ReplyAsync(embed: _commands.DisplayRaidsCommand(Context.Guild.Id).Build());
+        }
+
+
         //Commands below need revision to be compliant with SOLID
         [Command("Register", RunMode = RunMode.Async)]
         public async Task Register([Remainder] string membershipId = "")
@@ -145,23 +152,6 @@ namespace ClearsBot.Modules
 
             _users.SaveUsers();
             await ReplyAsync(description);
-        }
-
-        [Command("Raids")]
-        public async Task ShowRaids()
-        {
-            var embed = new EmbedBuilder();
-            foreach (Raid raid in _raids.GetRaids(Context.Guild.Id))
-            {
-                string value = "**Shortcuts**\n";
-                foreach (string shortcut in raid.Shortcuts)
-                {
-                    value += shortcut + "\n";
-                }
-                embed.AddField(raid.DisplayName, value, true);
-            }
-
-            await ReplyAsync(embed: embed.Build());
         }
 
 
@@ -209,9 +199,9 @@ namespace ClearsBot.Modules
             var secondRoleTotal = Context.Guild.Roles.Where(x => x.Name == "#2 total").FirstOrDefault() ?? (IRole)await Context.Guild.CreateRoleAsync("#2 total", null, new Color(255, 255, 255), false, false, null);
             var thirdRoleTotal = Context.Guild.Roles.Where(x => x.Name == "#3 total").FirstOrDefault() ?? (IRole)await Context.Guild.CreateRoleAsync("#3 total", null, new Color(255, 255, 255), false, false, null);
 
-            _guilds.GuildsList[Context.Guild.Id].FirstRole = firstRoleTotal.Id;
-            _guilds.GuildsList[Context.Guild.Id].SecondRole = secondRoleTotal.Id;
-            _guilds.GuildsList[Context.Guild.Id].ThirdRole = thirdRoleTotal.Id;
+            _guilds.GetGuild(Context.Guild.Id).FirstRole = firstRoleTotal.Id;
+            _guilds.GetGuild(Context.Guild.Id).SecondRole = secondRoleTotal.Id;
+            _guilds.GetGuild(Context.Guild.Id).ThirdRole = thirdRoleTotal.Id;
 
             embed.AddField("Total", $"{firstRoleTotal.Mention} \n {secondRoleTotal.Mention} \n {thirdRoleTotal.Mention}");
 
@@ -230,7 +220,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            _guilds.GuildsList[Context.Guild.Id].Prefix = prefix;
+            _guilds.GetGuild(Context.Guild.Id).Prefix = prefix;
             _guilds.SaveGuilds();
             await ReplyAsync($"Prefix has been set to: {prefix}");
         }
@@ -324,7 +314,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            _guilds.GuildsList[Context.Guild.Id].Milestones.Add(new Milestone()
+            _guilds.GetGuild(Context.Guild.Id).Milestones.Add(new Milestone()
             {
                 Completions = completionCount,
                 Role = socketRole.Id
@@ -350,7 +340,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            _guilds.GuildsList[Context.Guild.Id].AdminRole = socketRole.Id;
+            _guilds.GetGuild(Context.Guild.Id).AdminRole = socketRole.Id;
             _guilds.SaveGuilds();
             await ReplyAsync($"{socketRole.Mention} set as Admin role");
         }
@@ -371,7 +361,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            _guilds.GuildsList[Context.Guild.Id].ModRoles.Add(socketRole.Id);
+            _guilds.GetGuild(Context.Guild.Id).ModRoles.Add(socketRole.Id);
             _guilds.SaveGuilds();
             await ReplyAsync($"{socketRole.Mention} set as mod role");
         }
