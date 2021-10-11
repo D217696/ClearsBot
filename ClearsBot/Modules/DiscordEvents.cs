@@ -27,8 +27,55 @@ namespace ClearsBot.Modules
         IServiceProvider _serviceProvider;
         readonly Users _users;
         readonly IRaids _raids;
+        readonly ILogger _logger;
+        List<ApplicationCommandOptionChoiceProperties> raidOptions = new List<ApplicationCommandOptionChoiceProperties>() { new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Vault of Glass",
+                                    Value = "vog"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Deep Stone Crypt",
+                                    Value = "dsc"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Garden of Salvation",
+                                    Value = "gos"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Crown of Sorrow",
+                                    Value = "cos"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Scourge of the Past",
+                                    Value = "sotp"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Last Wish",
+                                    Value = "lw"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Spire of Stars",
+                                    Value = "sos"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Eater of Worlds",
+                                    Value = "eow"
+                                },
+                                new ApplicationCommandOptionChoiceProperties()
+                                {
+                                    Name = "Leviathan",
+                                    Value = "levi"
+                                }
+                            };
 
-        public DiscordEvents(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider, IGuilds guilds, Buttons buttons, SlashCommands slashCommands, Users users, IRaids raids)
+        public DiscordEvents(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider, IGuilds guilds, Buttons buttons, SlashCommands slashCommands, Users users, IRaids raids, ILogger logger)
         {
             _client = client;
             _commandService = commandService;
@@ -38,9 +85,11 @@ namespace ClearsBot.Modules
             _slashCommands = slashCommands;
             _users = users;
             _raids = raids;
+            _logger = logger;
             _client.MessageReceived += HandleCommandAsync;
             _client.InteractionCreated += InteractionCreatedAsync;
             _client.JoinedGuild += _client_JoinedGuild;
+            _client.Ready += _client_Ready;
 
             var buttonMethods = typeof(Buttons).GetMethods().Where(x => x.GetCustomAttribute<ButtonAttribute>() != null);
             var slashMethods = typeof(SlashCommands).GetMethods().Where(x => x.GetCustomAttribute<SlashCommandAttribute>() != null);
@@ -49,12 +98,154 @@ namespace ClearsBot.Modules
             {
                 Buttons.Add(methodInfo.CustomAttributes.Where(x => x.AttributeType == typeof(ButtonAttribute)).FirstOrDefault().ConstructorArguments.FirstOrDefault().Value.ToString().ToLower(), methodInfo);
             }
+
             foreach (MethodInfo methodInfo in slashMethods)
             {
                 SlashCommands.Add(methodInfo.CustomAttributes.Where(x => x.AttributeType == typeof(SlashCommandAttribute)).FirstOrDefault().ConstructorArguments.FirstOrDefault().Value.ToString().ToLower(), methodInfo);
             }
 
             Init();
+        }
+
+        private async Task<Task> _client_Ready()
+        {
+
+            //register command
+            await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
+            {
+                Name = "register",
+                Description = "Register to the bot.",
+                Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "membershipid",
+                            Type = ApplicationCommandOptionType.String,
+                            Description = "Enter your SteamID (joincode) or username",
+                            Required = true
+                        },
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "membershiptype",
+                            Type = ApplicationCommandOptionType.Integer,
+                            Description = "Number that represents your platform, Xbox = 1, Playstation = 2, Steam = 3, Stadia = 5"
+                        }
+                    }
+            });
+
+            //completions command
+            await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
+            {
+                Name = "completions",
+                Description = "Gets raid completions for user.",
+                Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "user",
+                            Type = ApplicationCommandOptionType.User,
+                            Description = "User to get completions for."
+                        }
+                    }
+            });
+
+            //daily command
+            await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
+            {
+                Name = "daily",
+                Description = "Gets daily raid completions for a user.",
+                Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "raid",
+                            Type = ApplicationCommandOptionType.String,
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
+                        },
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "user",
+                            Type = ApplicationCommandOptionType.User,
+                            Description = "User to get completions for."
+                        }
+                    }
+
+            });
+
+            //weekly command
+            await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
+            {
+                Name = "weekly",
+                Description = "Gets weekly raid completions for a user.",
+                Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "raid",
+                            Type = ApplicationCommandOptionType.String,
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
+                        },
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "user",
+                            Type = ApplicationCommandOptionType.User,
+                            Description = "User to get completions for."
+                        }
+                    }
+
+            });
+
+            //monthly command
+            await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
+            {
+                Name = "monthly",
+                Description = "Gets monthly raid completions for a user.",
+                Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "raid",
+                            Type = ApplicationCommandOptionType.String,
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
+                        },
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "user",
+                            Type = ApplicationCommandOptionType.User,
+                            Description = "User to get completions for."
+                        }
+                    }
+
+            });
+
+            //yearly command
+            await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
+            {
+                Name = "yearly",
+                Description = "Gets yearly raid completions for a user.",
+                Options = new List<ApplicationCommandOptionProperties>()
+                    {
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "raid",
+                            Type = ApplicationCommandOptionType.String,
+                            Description = "Specify a raid, leave empty for all raids.",
+                            Choices = raidOptions
+                        },
+                        new ApplicationCommandOptionProperties()
+                        {
+                            Name = "user",
+                            Type = ApplicationCommandOptionType.User,
+                            Description = "User to get completions for."
+                        }
+                    }
+
+            });
+
+            return Task.CompletedTask;
         }
 
         private async Task _client_JoinedGuild(SocketGuild arg)
@@ -67,29 +258,6 @@ namespace ClearsBot.Modules
         private async void Init()
         {
             await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
-            //await _client.Rest.CreateGlobalCommand(new SlashCommandCreationProperties()
-            //{
-            //    Name = "test",
-            //    Description = "test command",
-            //    Options = new List<ApplicationCommandOptionProperties>()
-            //    {
-            //        new ApplicationCommandOptionProperties()
-            //        {
-            //            Choices = new List<ApplicationCommandOptionChoiceProperties>()
-            //            {
-            //                new ApplicationCommandOptionChoiceProperties()
-            //                {
-            //                    Name = "testoptionchoice",
-            //                    Value = "testoptionchoice"
-            //                }
-            //            },
-            //            Name = "raid", 
-            //            Description = "raid description",
-            //            Type = ApplicationCommandOptionType.String,
-            //            Required = false
-            //        }
-            //    }
-            //});
         }
 
         public async Task InteractionCreatedAsync(SocketInteraction arg)
@@ -110,7 +278,14 @@ namespace ClearsBot.Modules
                 case InteractionType.ApplicationCommand:
                     if (arg is SocketSlashCommand command)
                     {
-                        SlashCommands[command.Data.Name.ToLower()].Invoke(_slashCommands, new object[] { command.Data });
+                        if (SlashCommands.ContainsKey(command.Data.Name.ToLower()))
+                        {
+                            SlashCommands[command.Data.Name.ToLower()].Invoke(_slashCommands, new object[] { command });
+                        }
+                        else
+                        {
+                            _logger.LogError($"No slash command logic found for {command.Data.Name}");
+                        }
                     }
                     break;
             }
