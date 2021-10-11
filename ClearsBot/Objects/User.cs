@@ -24,6 +24,7 @@ namespace ClearsBot.Objects
         public List<Character> Characters { get; set; } = new List<Character>();
         public Dictionary<long, Completion> Completions { get; set; } = new Dictionary<long, Completion>();
         public DateTime DateRegistered { get; set; } = DateTime.UtcNow;
+        public List<ulong> GuildIDs { get; set; } = new List<ulong>();
     }
 
     public class Completion

@@ -20,7 +20,7 @@ namespace ClearsBot.Modules
         public IEnumerable<(User user, int completions, int rank)> GetUserCompetionsMaxByTimeframe(IEnumerable<User> users, Raid raid, TimeFrameHours timeFrameHours)
         {
             List<(User user, int completions)> usersWithMaxCompletionCount = users.Select(x => (user: x, completions: x.Completions.Values.GroupBy(completion => Convert.ToInt32(Math.Floor((completion.Period - _bungie.ReleaseDate).TotalHours / (int)timeFrameHours))).Max(completions => completions.Where(_raids.GetCriteriaByRaid(raid)).Count()))).OrderByDescending(x => x.completions).ToList();
-            if(timeFrameHours == TimeFrameHours.Month) usersWithMaxCompletionCount = users.Select(x => (user: x, completions: x.Completions.Values.GroupBy(completion => completion.Period.ToString("yyyyMM")).Max(completions => completions.Where(_raids.GetCriteriaByRaid(raid)).Count()))).OrderByDescending(x => x.completions).ToList();
+            if (timeFrameHours == TimeFrameHours.Month) usersWithMaxCompletionCount = users.Select(x => (user: x, completions: x.Completions.Values.GroupBy(completion => completion.Period.ToString("yyyyMM")).Max(completions => completions.Where(_raids.GetCriteriaByRaid(raid)).Count()))).OrderByDescending(x => x.completions).ToList();
             return usersWithMaxCompletionCount.Select(x => (x.user, x.completions, rank: usersWithMaxCompletionCount.IndexOf(x) + 1));
         }
 

@@ -1,8 +1,12 @@
 ﻿using ClearsBot.Objects;
 using Discord;
+using Discord.Rest;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ClearsBot.Modules
 {
@@ -13,13 +17,15 @@ namespace ClearsBot.Modules
         readonly Users _users;
         readonly IRaids _raids;
         readonly IPermissions _permissions;
-        public Commands(IBungie bungie, ILeaderboards leaderboards, Users users, IRaids raids, IPermissions permissions)
+        readonly IUtilities _utilities;
+        public Commands(IBungie bungie, ILeaderboards leaderboards, Users users, IRaids raids, IPermissions permissions, IUtilities utilities)
         {
             _bungie = bungie;
             _leaderboards = leaderboards;
             _users = users;
             _raids = raids;
             _permissions = permissions;
+            _utilities = utilities;
         }
 
         //leaderboard commands
@@ -48,8 +54,8 @@ namespace ClearsBot.Modules
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
             }
 
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _leaderboards.GetUserCompetionsByTimeframe(_users.GetGuildUsers(guildId), raid, timeFrame, currentTimeFrame);
-            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _leaderboards.GetUserCompetionsMaxByTimeframe(_users.GetGuildUsers(guildId), raid, timeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _leaderboards.GetUserCompetionsByTimeframe(_users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _leaderboards.GetUserCompetionsMaxByTimeframe(_users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0), raid, timeFrame);
             embed.AddField($"{commandSyntax} raid completions", _leaderboards.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
             embed.AddField($"{commandSyntax} raid completion leaderboard", _leaderboards.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
             return embed;
@@ -113,6 +119,83 @@ namespace ClearsBot.Modules
                 embed.AddField(raid.DisplayName, value, true);
             }
             return embed;
+        }
+        //user commands
+        public async Task RegisterUserCommand(ISocketMessageChannel channel, ulong guildId, ulong userId, string discordUsername, string membershipId = "", string membershipType = "", RestFollowupMessage restFollowupMessage = null)
+        {
+            if (membershipId == "")
+            {
+                await channel.SendMessageAsync("Usage: /register (Steam Id | Membership Id) (Membership Type)");
+                return;
+            }
+
+            var embed = new EmbedBuilder();
+            embed.WithDescription("Getting user...");
+            embed.WithTitle("Registering " + discordUsername);
+            RestUserMessage restUserMessage = null;
+            if (restFollowupMessage == null)
+            {
+                restUserMessage = await channel.SendMessageAsync(embed: embed.Build());
+            }
+            else
+            {
+                restUserMessage = restFollowupMessage;
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.Build());
+            }
+
+            RequestData requestData = await _bungie.GetRequestDataAsync(membershipId, membershipType);
+            if (requestData.Code != 1 && requestData.Code != 8)
+            {
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription(_utilities.GetErrorCodeForUserSearch(requestData)).Build());
+                return;
+            }
+            else if (requestData.Code == 8)
+            {
+                int buttonCount = 0;
+                int buttonRow = 0;
+                var componentBuilder = new ComponentBuilder();
+                foreach (UserInfoCard userInfoCard in requestData.profiles)
+                {
+                    ButtonStyle buttonStyle = _utilities.GetButtonStyleForPlatform(userInfoCard.MembershipType);
+
+                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(userInfoCard.DisplayName).WithCustomId($"register_{userInfoCard.MembershipId}_{userInfoCard.MembershipType}").WithStyle(buttonStyle), buttonRow);
+                    buttonCount++;
+                    if (buttonCount % 5 == 0) buttonRow++;
+                }
+                await restUserMessage.ModifyAsync(x => x.Components = componentBuilder.Build());
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("Multiple profiles found, select correct one below").Build());
+                return;
+            }
+
+            UserResponse userResponse = await _users.CreateAndAddUser(guildId, userId, requestData);
+            switch (userResponse.Code)
+            {
+                case 1:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("User created. - Getting Activities.").Build());
+                    break;
+                //case 2:
+                //    await restUserMessage.ModifyAsync(x => x.Content = "You already have an account linked to your discord.");
+                //    break;
+                case 3:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("There's already a discord account linked to this profile.").Build());
+
+                    return;
+                case 4:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("There's already a discord account linked to this profile.").Build());
+                    return;
+            }
+
+            userResponse.User.DateLastPlayed = new DateTime(2017, 08, 06, 0, 0, 0);
+            GetCompletionsResponse getCompletionsResponse = await _bungie.GetCompletionsForUserAsync(userResponse.User);
+            switch (getCompletionsResponse.Code)
+            {
+                case 1:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription($"Activities found: {_users.GetGuildUsers(guildId).Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.DiscordID == userId && x.MembershipId == requestData.MembershipId).FirstOrDefault().Completions.Count} raid completions").Build());
+                    break;
+                default:
+                    await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription($"Something went wrong: {getCompletionsResponse.ErrorMessage}").Build());
+                    break;
+            }
         }
     }
 }

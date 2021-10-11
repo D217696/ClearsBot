@@ -15,4 +15,16 @@ namespace ClearsBot.Objects
 
         }
     }
+
+    public sealed class SlashCommandAttribute : Attribute
+    {
+        public SlashCommandAttribute()
+        {
+
+        }
+        public SlashCommandAttribute(string commandName)
+        {
+
+        }
+    }
 }

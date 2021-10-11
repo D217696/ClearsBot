@@ -13,10 +13,8 @@ namespace ClearsBot
     {
         public static DiscordSocketClient _client;
         CommandService _commandService;
-        CommandHandler _handler;
         ServiceProvider _services;
-        ComponentHandler _componentHandler;
-
+        DiscordEvents _handler;
         static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
         public async Task StartAsync()
@@ -37,15 +35,12 @@ namespace ClearsBot
 
             _services = ConfigureServices();
             _client.Log += Log;
-            //_client.Ready += OnClientReady;
 
+            _handler = _services.GetRequiredService<DiscordEvents>();
+            _ = _services.GetRequiredService<UpdateLoop>();
             await _client.LoginAsync(TokenType.Bot, Config.bot.token);
             await _client.StartAsync();
             await _client.SetGameAsync("Spire of Stars is the best raid");
-
-            _handler = _services.GetRequiredService<CommandHandler>();
-            await _handler.InitializeAsync();
-            _componentHandler = _services.GetRequiredService<ComponentHandler>();
 
             await Task.Delay(-1);
         }
@@ -59,11 +54,9 @@ namespace ClearsBot
             return new ServiceCollection()
                            .AddSingleton(_client)
                            .AddSingleton(_commandService)
-                           .AddSingleton<CommandHandler>()
-                           .AddSingleton<ComponentHandler>()
                            .AddSingleton<IBungie, Bungie>()
                            .AddSingleton<IUtilities, Utilities>()
-                           .AddSingleton<Misc>()
+                           .AddSingleton<TextCommands>()
                            .AddSingleton<Users>()
                            .AddSingleton<IBungieDestiny2RequestHandler, BungieDestiny2RequestHandler>()
                            .AddSingleton<ILogger, Logger>()
@@ -73,6 +66,11 @@ namespace ClearsBot
                            .AddSingleton<ILeaderboards, Leaderboards>()
                            .AddSingleton<Commands>()
                            .AddSingleton<IRaids, Raids>()
+                           .AddSingleton<IStorage, Storage>()
+                           .AddSingleton<Roles>()
+                           .AddSingleton<SlashCommands>()
+                           .AddSingleton<DiscordEvents>()
+                           .AddSingleton<UpdateLoop>()
                            .BuildServiceProvider();
         }
     }
