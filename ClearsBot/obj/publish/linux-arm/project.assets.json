@@ -2,13 +2,13 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Discord.Net.Labs/2.4.9": {
+      "Discord.Net.Labs/2.4.8": {
         "type": "package",
         "dependencies": {
           "Discord.Net.Labs.Commands": "2.3.5",
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6",
-          "Discord.Net.Labs.WebSocket": "2.4.8",
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5",
+          "Discord.Net.Labs.WebSocket": "2.4.7",
           "Discord.Net.Labs.Webhook": "2.3.4"
         }
       },
@@ -24,7 +24,7 @@
           "lib/netstandard2.1/Discord.Net.Commands.dll": {}
         }
       },
-      "Discord.Net.Labs.Core/2.4.6": {
+      "Discord.Net.Labs.Core/2.4.5": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
@@ -38,10 +38,10 @@
           "lib/netstandard2.1/Discord.Net.Core.dll": {}
         }
       },
-      "Discord.Net.Labs.Rest/2.4.6": {
+      "Discord.Net.Labs.Rest/2.4.5": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.4"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.Rest.dll": {}
@@ -63,11 +63,11 @@
           "lib/netstandard2.1/Discord.Net.Webhook.dll": {}
         }
       },
-      "Discord.Net.Labs.WebSocket/2.4.8": {
+      "Discord.Net.Labs.WebSocket/2.4.7": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.WebSocket.dll": {}
@@ -321,13 +321,13 @@
       }
     },
     ".NETCoreApp,Version=v3.1/linux-arm": {
-      "Discord.Net.Labs/2.4.9": {
+      "Discord.Net.Labs/2.4.8": {
         "type": "package",
         "dependencies": {
           "Discord.Net.Labs.Commands": "2.3.5",
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6",
-          "Discord.Net.Labs.WebSocket": "2.4.8",
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5",
+          "Discord.Net.Labs.WebSocket": "2.4.7",
           "Discord.Net.Labs.Webhook": "2.3.4"
         }
       },
@@ -343,7 +343,7 @@
           "lib/netstandard2.1/Discord.Net.Commands.dll": {}
         }
       },
-      "Discord.Net.Labs.Core/2.4.6": {
+      "Discord.Net.Labs.Core/2.4.5": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
@@ -357,10 +357,10 @@
           "lib/netstandard2.1/Discord.Net.Core.dll": {}
         }
       },
-      "Discord.Net.Labs.Rest/2.4.6": {
+      "Discord.Net.Labs.Rest/2.4.5": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.4"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.Rest.dll": {}
@@ -382,11 +382,11 @@
           "lib/netstandard2.1/Discord.Net.Webhook.dll": {}
         }
       },
-      "Discord.Net.Labs.WebSocket/2.4.8": {
+      "Discord.Net.Labs.WebSocket/2.4.7": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.WebSocket.dll": {}
@@ -852,14 +852,14 @@
     }
   },
   "libraries": {
-    "Discord.Net.Labs/2.4.9": {
-      "sha512": "8Xk07q3on0YQbJIklg3GZI+ymXeNTYC7H1uInItti1oVlh5XWi2a4MhvjiSLKS1/lODyTsHDA9NdWtvylQ0Fow==",
+    "Discord.Net.Labs/2.4.8": {
+      "sha512": "gfzZLexVz6vFOkM56ILenGZmNrc665kRuH6hVOHGFctf0tp5/j/wEd8hNL+L77+uN5HXsP0cnkwU1810lvwJIA==",
       "type": "package",
-      "path": "discord.net.labs/2.4.9",
+      "path": "discord.net.labs/2.4.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "discord.net.labs.2.4.9.nupkg.sha512",
+        "discord.net.labs.2.4.8.nupkg.sha512",
         "discord.net.labs.nuspec"
       ]
     },
@@ -881,15 +881,15 @@
         "lib/netstandard2.1/Discord.Net.Commands.xml"
       ]
     },
-    "Discord.Net.Labs.Core/2.4.6": {
-      "sha512": "nvh3Lhil/XZ2bfKa8EGDKrPFIAksB47qA6b2FxGJ3tRkwtkhKRoeRNRKLLgKfQPfWyRtxI3GAGmWnzaUcRbVyA==",
+    "Discord.Net.Labs.Core/2.4.5": {
+      "sha512": "8V6aJ2EjZmSYT2lV+gpCXnkTnCvWBkDYFHq8bbKWzi8CtY1EFwqTuKR5w413Obp7y8K9j4ye3wl/rmo0FxCaeA==",
       "type": "package",
-      "path": "discord.net.labs.core/2.4.6",
+      "path": "discord.net.labs.core/2.4.5",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Temporary.png",
-        "discord.net.labs.core.2.4.6.nupkg.sha512",
+        "discord.net.labs.core.2.4.5.nupkg.sha512",
         "discord.net.labs.core.nuspec",
         "lib/net461/Discord.Net.Core.dll",
         "lib/net461/Discord.Net.Core.xml",
@@ -899,15 +899,15 @@
         "lib/netstandard2.1/Discord.Net.Core.xml"
       ]
     },
-    "Discord.Net.Labs.Rest/2.4.6": {
-      "sha512": "WgAr8DzK1t/Dp/u0WmzDXIDb22V/FVT04/O4v0CtcqfHgIcYKMkuDmS1WauNhPdfByRzAcL7kGSNNSoe0/eZxQ==",
+    "Discord.Net.Labs.Rest/2.4.5": {
+      "sha512": "Pb+jcPn+JgbI6SoClp7+Pd1xL8+3zged/+EopD8fDjkXQJcIk89bkVZXJtwZjr/F531ARQqlHn9+dOYDNMLi0A==",
       "type": "package",
-      "path": "discord.net.labs.rest/2.4.6",
+      "path": "discord.net.labs.rest/2.4.5",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Temporary.png",
-        "discord.net.labs.rest.2.4.6.nupkg.sha512",
+        "discord.net.labs.rest.2.4.5.nupkg.sha512",
         "discord.net.labs.rest.nuspec",
         "lib/net461/Discord.Net.Rest.dll",
         "lib/net461/Discord.Net.Rest.xml",
@@ -933,15 +933,15 @@
         "lib/netstandard2.1/Discord.Net.Webhook.xml"
       ]
     },
-    "Discord.Net.Labs.WebSocket/2.4.8": {
-      "sha512": "kojAcpfA/OCDviV46D5Fku5wGBvrvLyh6e2ecS/KBcmw875H0Zfz7SAOrXxVuE1yLBLTvj0ktUsDk1IHSk406Q==",
+    "Discord.Net.Labs.WebSocket/2.4.7": {
+      "sha512": "E+FzVWQzoADOX2CKevCaw5OjG6mNdyCcAmjHaWhkBM4tHkqOku89ZaziGQP6yzFq1xVuQYXO6U/3uBuUiAPiAA==",
       "type": "package",
-      "path": "discord.net.labs.websocket/2.4.8",
+      "path": "discord.net.labs.websocket/2.4.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Temporary.png",
-        "discord.net.labs.websocket.2.4.8.nupkg.sha512",
+        "discord.net.labs.websocket.2.4.7.nupkg.sha512",
         "discord.net.labs.websocket.nuspec",
         "lib/net461/Discord.Net.WebSocket.dll",
         "lib/net461/Discord.Net.WebSocket.xml",
@@ -2519,7 +2519,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "Discord.Net.Labs >= 2.4.9",
+      "Discord.Net.Labs >= 2.4.8",
       "Microsoft.Extensions.DependencyInjection >= 5.0.2",
       "Newtonsoft.Json >= 13.0.1"
     ]
@@ -2531,11 +2531,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
+      "projectUniqueName": "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
       "projectName": "ClearsBot",
-      "projectPath": "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
+      "projectPath": "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
       "packagesPath": "C:\\Users\\Labra\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\obj\\publish\\linux-arm\\",
+      "outputPath": "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\obj\\publish\\linux-arm\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2570,7 +2570,7 @@
         "dependencies": {
           "Discord.Net.Labs": {
             "target": "Package",
-            "version": "[2.4.9, )"
+            "version": "[2.4.8, )"
           },
           "Microsoft.Extensions.DependencyInjection": {
             "target": "Package",

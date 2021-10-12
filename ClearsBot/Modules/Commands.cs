@@ -54,8 +54,8 @@ namespace ClearsBot.Modules
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
             }
 
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _leaderboards.GetUserCompetionsByTimeframe(_users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
-            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _leaderboards.GetUserCompetionsMaxByTimeframe(_users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0), raid, timeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _leaderboards.GetUserCompetionsByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _leaderboards.GetUserCompetionsMaxByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame);
             embed.AddField($"{commandSyntax} raid completions", _leaderboards.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
             embed.AddField($"{commandSyntax} raid completion leaderboard", _leaderboards.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
             return embed;
@@ -196,6 +196,8 @@ namespace ClearsBot.Modules
                     await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription($"Something went wrong: {getCompletionsResponse.ErrorMessage}").Build());
                     break;
             }
+
+            _users.SaveUsers();
         }
     }
 }

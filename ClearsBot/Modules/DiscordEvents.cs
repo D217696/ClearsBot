@@ -245,6 +245,26 @@ namespace ClearsBot.Modules
 
             });
 
+            //List<SlashCommandOptionBuilder> optionBuilders = new List<SlashCommandOptionBuilder>() { } ; 
+            //var createCommand = new SlashCommandBuilder()
+            //      .WithName("create")
+            //      .WithDescription("Create companies, groups or songs!")
+            //      .AddOptions()
+            //      .AddOption(new SlashCommandOptionBuilder()
+            //          .WithName("company")
+            //          .WithDescription("Creates a new company")
+            //          .WithType(ApplicationCommandOptionType.SubCommand)
+            //          .AddOption("name", ApplicationCommandOptionType.String, "The name of your company", required: true))
+            //      .AddOption(new SlashCommandOptionBuilder()
+            //          .WithName("group")
+            //          .WithDescription("Creates a new group")
+            //          .WithType(ApplicationCommandOptionType.SubCommand))
+            //      .AddOption(new SlashCommandOptionBuilder()
+            //          .WithName("song")
+            //          .WithDescription("Creates a new song")
+            //          .WithType(ApplicationCommandOptionType.SubCommand));
+
+            //await _client.Rest.CreateGlobalCommand(createCommand.Build());
             return Task.CompletedTask;
         }
 

@@ -9,7 +9,7 @@
     ".NETCoreApp,Version=v3.1/linux-arm": {
       "ClearsBot/1.0.0": {
         "dependencies": {
-          "Discord.Net.Labs": "2.4.9",
+          "Discord.Net.Labs": "2.4.8",
           "Microsoft.Extensions.DependencyInjection": "5.0.2",
           "Newtonsoft.Json": "13.0.1"
         },
@@ -17,18 +17,18 @@
           "ClearsBot.dll": {}
         }
       },
-      "Discord.Net.Labs/2.4.9": {
+      "Discord.Net.Labs/2.4.8": {
         "dependencies": {
           "Discord.Net.Labs.Commands": "2.3.5",
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6",
-          "Discord.Net.Labs.WebSocket": "2.4.8",
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5",
+          "Discord.Net.Labs.WebSocket": "2.4.7",
           "Discord.Net.Labs.Webhook": "2.3.4"
         }
       },
       "Discord.Net.Labs.Commands/2.3.5": {
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.5"
         },
         "runtime": {
           "lib/netstandard2.1/Discord.Net.Commands.dll": {
@@ -37,7 +37,7 @@
           }
         }
       },
-      "Discord.Net.Labs.Core/2.4.6": {
+      "Discord.Net.Labs.Core/2.4.5": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.1",
           "System.Collections.Immutable": "1.3.1",
@@ -50,9 +50,9 @@
           }
         }
       },
-      "Discord.Net.Labs.Rest/2.4.6": {
+      "Discord.Net.Labs.Rest/2.4.5": {
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.5"
         },
         "runtime": {
           "lib/netstandard2.1/Discord.Net.Rest.dll": {
@@ -63,8 +63,8 @@
       },
       "Discord.Net.Labs.Webhook/2.3.4": {
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5"
         },
         "runtime": {
           "lib/netstandard2.1/Discord.Net.Webhook.dll": {
@@ -73,15 +73,15 @@
           }
         }
       },
-      "Discord.Net.Labs.WebSocket/2.4.8": {
+      "Discord.Net.Labs.WebSocket/2.4.7": {
         "dependencies": {
-          "Discord.Net.Labs.Core": "2.4.6",
-          "Discord.Net.Labs.Rest": "2.4.6"
+          "Discord.Net.Labs.Core": "2.4.5",
+          "Discord.Net.Labs.Rest": "2.4.5"
         },
         "runtime": {
           "lib/netstandard2.1/Discord.Net.WebSocket.dll": {
-            "assemblyVersion": "2.4.8.0",
-            "fileVersion": "2.4.8.0"
+            "assemblyVersion": "2.4.7.0",
+            "fileVersion": "2.4.7.0"
           }
         }
       },
@@ -332,12 +332,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Discord.Net.Labs/2.4.9": {
+    "Discord.Net.Labs/2.4.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8Xk07q3on0YQbJIklg3GZI+ymXeNTYC7H1uInItti1oVlh5XWi2a4MhvjiSLKS1/lODyTsHDA9NdWtvylQ0Fow==",
-      "path": "discord.net.labs/2.4.9",
-      "hashPath": "discord.net.labs.2.4.9.nupkg.sha512"
+      "sha512": "sha512-gfzZLexVz6vFOkM56ILenGZmNrc665kRuH6hVOHGFctf0tp5/j/wEd8hNL+L77+uN5HXsP0cnkwU1810lvwJIA==",
+      "path": "discord.net.labs/2.4.8",
+      "hashPath": "discord.net.labs.2.4.8.nupkg.sha512"
     },
     "Discord.Net.Labs.Commands/2.3.5": {
       "type": "package",
@@ -346,19 +346,19 @@
       "path": "discord.net.labs.commands/2.3.5",
       "hashPath": "discord.net.labs.commands.2.3.5.nupkg.sha512"
     },
-    "Discord.Net.Labs.Core/2.4.6": {
+    "Discord.Net.Labs.Core/2.4.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nvh3Lhil/XZ2bfKa8EGDKrPFIAksB47qA6b2FxGJ3tRkwtkhKRoeRNRKLLgKfQPfWyRtxI3GAGmWnzaUcRbVyA==",
-      "path": "discord.net.labs.core/2.4.6",
-      "hashPath": "discord.net.labs.core.2.4.6.nupkg.sha512"
+      "sha512": "sha512-8V6aJ2EjZmSYT2lV+gpCXnkTnCvWBkDYFHq8bbKWzi8CtY1EFwqTuKR5w413Obp7y8K9j4ye3wl/rmo0FxCaeA==",
+      "path": "discord.net.labs.core/2.4.5",
+      "hashPath": "discord.net.labs.core.2.4.5.nupkg.sha512"
     },
-    "Discord.Net.Labs.Rest/2.4.6": {
+    "Discord.Net.Labs.Rest/2.4.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-WgAr8DzK1t/Dp/u0WmzDXIDb22V/FVT04/O4v0CtcqfHgIcYKMkuDmS1WauNhPdfByRzAcL7kGSNNSoe0/eZxQ==",
-      "path": "discord.net.labs.rest/2.4.6",
-      "hashPath": "discord.net.labs.rest.2.4.6.nupkg.sha512"
+      "sha512": "sha512-Pb+jcPn+JgbI6SoClp7+Pd1xL8+3zged/+EopD8fDjkXQJcIk89bkVZXJtwZjr/F531ARQqlHn9+dOYDNMLi0A==",
+      "path": "discord.net.labs.rest/2.4.5",
+      "hashPath": "discord.net.labs.rest.2.4.5.nupkg.sha512"
     },
     "Discord.Net.Labs.Webhook/2.3.4": {
       "type": "package",
@@ -367,12 +367,12 @@
       "path": "discord.net.labs.webhook/2.3.4",
       "hashPath": "discord.net.labs.webhook.2.3.4.nupkg.sha512"
     },
-    "Discord.Net.Labs.WebSocket/2.4.8": {
+    "Discord.Net.Labs.WebSocket/2.4.7": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kojAcpfA/OCDviV46D5Fku5wGBvrvLyh6e2ecS/KBcmw875H0Zfz7SAOrXxVuE1yLBLTvj0ktUsDk1IHSk406Q==",
-      "path": "discord.net.labs.websocket/2.4.8",
-      "hashPath": "discord.net.labs.websocket.2.4.8.nupkg.sha512"
+      "sha512": "sha512-E+FzVWQzoADOX2CKevCaw5OjG6mNdyCcAmjHaWhkBM4tHkqOku89ZaziGQP6yzFq1xVuQYXO6U/3uBuUiAPiAA==",
+      "path": "discord.net.labs.websocket/2.4.7",
+      "hashPath": "discord.net.labs.websocket.2.4.7.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyInjection/5.0.2": {
       "type": "package",

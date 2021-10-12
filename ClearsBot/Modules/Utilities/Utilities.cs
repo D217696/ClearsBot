@@ -134,11 +134,11 @@ namespace ClearsBot.Modules
                 if (user == firstUser) continue;
                 if (extra == "")
                 {
-                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), 0);
+                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), buttonRow);
                 }
                 else
                 {
-                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}_{extra}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), 0);
+                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}_{extra}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), buttonRow);
                 }
                 buttons++;
                 if (buttons % 5 == 0) buttonRow++;

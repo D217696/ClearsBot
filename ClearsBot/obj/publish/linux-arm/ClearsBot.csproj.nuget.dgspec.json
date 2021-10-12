@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj": {}
+    "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj": {
+    "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
+        "projectUniqueName": "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
         "projectName": "ClearsBot",
-        "projectPath": "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
+        "projectPath": "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
         "packagesPath": "C:\\Users\\Labra\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Labra\\source\\repos\\ClearsBot\\ClearsBot\\obj\\publish\\linux-arm\\",
+        "outputPath": "C:\\Users\\Labra\\OneDrive\\Repos\\ClearsBot\\ClearsBot\\obj\\publish\\linux-arm\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -46,7 +46,7 @@
           "dependencies": {
             "Discord.Net.Labs": {
               "target": "Package",
-              "version": "[2.4.9, )"
+              "version": "[2.4.8, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",

@@ -116,10 +116,13 @@ namespace ClearsBot.Modules
         {
             _storage.SaveUsers(users);
         }
+        public List<User> GetAllUsers()
+        {
+            return users;
+        }
         public List<User> GetGuildUsers(ulong guildId)
         {
-            var x = users.Where(x => x.GuildIDs.Contains(guildId)).ToList();
-            return x;
+            return users.Where(x => x.GuildIDs.Contains(guildId)).ToList();
         }
         public List<User> GetUsers(SocketCommandContext context)
         {
