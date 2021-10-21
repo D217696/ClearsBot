@@ -46,7 +46,7 @@
           "dependencies": {
             "Discord.Net.Labs": {
               "target": "Package",
-              "version": "[2.4.8, )"
+              "version": "[3.1.4, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",

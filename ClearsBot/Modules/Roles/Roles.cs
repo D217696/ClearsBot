@@ -15,12 +15,14 @@ namespace ClearsBot.Modules
         readonly IGuilds _guilds;
         readonly IRaids _raids;
         readonly IBungie _bungie;
-        public Roles(Users users, IGuilds guilds, IRaids raids, IBungie bungie)
+        readonly Completions _completions;
+        public Roles(Users users, IGuilds guilds, IRaids raids, IBungie bungie, Completions completions)
         {
             _users = users;
             _guilds = guilds;
             _raids = raids;
             _bungie = bungie;
+            _completions = completions;
         }
 
         public async Task GiveRoleToUser(IGuildUser user, IRole role, IReadOnlyCollection<IGuildUser> users)
@@ -53,21 +55,21 @@ namespace ClearsBot.Modules
                 await currentGuild.DownloadUsersAsync();
                 foreach (Raid raid in _raids.GetRaids(guild.GuildId))
                 {
-                    List<(User user, int completions, int rank)> users = _users.GetListOfUsersWithCompletions(guild.GuildId, _bungie.ReleaseDate, DateTime.UtcNow, raid).ToList();
+                    List<(User user, int completions, int rank)> users = _completions.GetCompletionsForUsers(_users.GetGuildUsers(guild.GuildId), _bungie.ReleaseDate, DateTime.UtcNow, new[] { raid }).ToList();
 
                     await GiveRoleToUser(currentGuild.GetUser(users[0].user.DiscordID), currentGuild.GetRole(raid.FirstRole), currentGuild.Users);
                     await GiveRoleToUser(currentGuild.GetUser(users[1].user.DiscordID), currentGuild.GetRole(raid.SecondRole), currentGuild.Users);
                     await GiveRoleToUser(currentGuild.GetUser(users[2].user.DiscordID), currentGuild.GetRole(raid.ThirdRole), currentGuild.Users);
                 }
 
-                List<(User user, int completions, int rank)> usersTotal = _users.GetListOfUsersWithCompletions(guild.GuildId, _bungie.ReleaseDate, DateTime.UtcNow, null).ToList();
+                List<(User user, int completions, int rank)> usersTotal = _completions.GetCompletionsForUsers(_users.GetGuildUsers(guild.GuildId), _bungie.ReleaseDate, DateTime.UtcNow, _raids.GetRaids(guild.GuildId)).ToList();
                 await GiveRoleToUser(currentGuild.GetUser(usersTotal[0].user.DiscordID), currentGuild.GetRole(guild.FirstRole), currentGuild.Users);
                 await GiveRoleToUser(currentGuild.GetUser(usersTotal[1].user.DiscordID), currentGuild.GetRole(guild.SecondRole), currentGuild.Users);
                 await GiveRoleToUser(currentGuild.GetUser(usersTotal[2].user.DiscordID), currentGuild.GetRole(guild.ThirdRole), currentGuild.Users);
 
                 foreach(Milestone milestone in guild.Milestones)
                 {
-                    IEnumerable<(User user, int completions, int rank)> milestoneUsers = _users.GetListOfUsersWithCompletions(guild.GuildId, _bungie.ReleaseDate, DateTime.UtcNow, milestone.Raid);
+                    IEnumerable<(User user, int completions, int rank)> milestoneUsers = _completions.GetCompletionsForUsers(_users.GetGuildUsers(guild.GuildId), _bungie.ReleaseDate, DateTime.UtcNow, new[] { milestone.Raid });
                     foreach((User user, int completions, int rank) user in milestoneUsers.Where(x => x.completions >= milestone.Completions))
                     {
                         await GiveRoleToUser(currentGuild.GetUser(user.user.DiscordID), currentGuild.GetRole(milestone.Role), currentGuild.Users);

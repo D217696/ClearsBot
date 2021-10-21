@@ -6,7 +6,7 @@
     "FirstRole": 871764632048640042,
     "SecondRole": 871764632929443910,
     "ThirdRole": 871764633608941658,
-    "AdminUser": 204722865818304512,
+    "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
     "Milestones": [
@@ -29,7 +29,7 @@
     "FirstRole": 0,
     "SecondRole": 0,
     "ThirdRole": 0,
-    "AdminUser": 204722865818304512,
+    "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
     "Milestones": []
@@ -41,7 +41,7 @@
     "FirstRole": 0,
     "SecondRole": 0,
     "ThirdRole": 0,
-    "AdminUser": 204722865818304512,
+    "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
     "Milestones": []
@@ -53,7 +53,7 @@
     "FirstRole": 0,
     "SecondRole": 0,
     "ThirdRole": 0,
-    "AdminUser": 204722865818304512,
+    "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
     "Milestones": []
@@ -65,7 +65,7 @@
     "FirstRole": 0,
     "SecondRole": 0,
     "ThirdRole": 0,
-    "AdminUser": 204722865818304512,
+    "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
     "Milestones": []

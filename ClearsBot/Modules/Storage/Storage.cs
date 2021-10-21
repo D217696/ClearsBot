@@ -65,22 +65,22 @@ namespace ClearsBot.Modules
         }
         public void SaveUsers(List<User> users)
         {
-            File.WriteAllText(Path.Combine(configFolder, usersFile), JsonConvert.SerializeObject(users, Formatting.Indented));
+            File.WriteAllText(Path.Combine(configFolder, usersFile), JsonConvert.SerializeObject(users, Newtonsoft.Json.Formatting.Indented));
         }
 
         public void SaveRaids(Dictionary<ulong, List<Raid>> raids)
         {
-            File.WriteAllText(Path.Combine(configFolder, raidsFile), JsonConvert.SerializeObject(raids, Formatting.Indented));
+            File.WriteAllText(Path.Combine(configFolder, raidsFile), JsonConvert.SerializeObject(raids, Newtonsoft.Json.Formatting.Indented));
         }
 
         public void SaveGuilds(Dictionary<ulong, Guild> guilds)
         {
-            File.WriteAllText(Path.Combine(configFolder, guildsFile), JsonConvert.SerializeObject(guilds, Formatting.Indented));
+            File.WriteAllText(Path.Combine(configFolder, guildsFile), JsonConvert.SerializeObject(guilds, Newtonsoft.Json.Formatting.Indented));
         }
 
         public void SaveLanguages(Dictionary<string, Dictionary<string, string>> languages)
         {
-            File.WriteAllText(Path.Combine(configFolder, languagesFile), JsonConvert.SerializeObject(languages, Formatting.Indented));
+            File.WriteAllText(Path.Combine(configFolder, languagesFile), JsonConvert.SerializeObject(languages, Newtonsoft.Json.Formatting.Indented));
         }
 
         private string ReadFromFile(string file)

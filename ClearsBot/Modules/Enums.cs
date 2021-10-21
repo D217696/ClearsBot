@@ -6,8 +6,9 @@ namespace ClearsBot.Modules
 {
         public enum PermissionLevels : int
         {
-            BotOwner = 5,
-            AdminUser = 4,
+            BotOwner = 6,
+            AdminUser = 5,
+            GuildOwner = 4,
             AdminRole = 3,
             ModRole = 2,
             User = 1

@@ -30,13 +30,19 @@ namespace ClearsBot.Modules
             _storage = storage;
 
             users = _storage.GetUsersFromStorage();
+            Console.WriteLine($"{users.Count()}");
         }
+        
         public async Task GuildJoined(ulong guildId)
+        {
+            _ = SyncUsers(guildId);
+        }
+        public async Task SyncUsers(ulong guildId)
         {
             SocketGuild guild = Program._client.Guilds.FirstOrDefault(x => x.Id == guildId);
             foreach (IGuildUser guildUser in await guild.GetUsersAsync().FlattenAsync())
             {
-                foreach(User user in users.Where(x => x.DiscordID == guildUser.Id))
+                foreach (User user in users.Where(x => x.DiscordID == guildUser.Id))
                 {
                     user.GuildIDs.Add(guildId);
                 }
@@ -49,27 +55,6 @@ namespace ClearsBot.Modules
             if (users.Where(x => x.GuildIDs.Contains(context.Guild.Id)).Where(x => x.DiscordID == context.Message.MentionedUsers.FirstOrDefault().Id) != null) return context.Message.MentionedUsers.FirstOrDefault().Id;
 
             return 0;
-        }
-        public IEnumerable<(User user, int completions, int rank)> GetListOfUsersWithCompletions(ulong guildId, DateTime startDate, DateTime endDate, Raid raid)
-        {
-            if (raid != null)
-            {
-                List<(User user, int completions)> usersList = users.Where(x => x.GuildIDs.Contains(guildId)).Select(x => (user: x, completions: x.Completions.Values.Where(_raids.GetCriteriaByRaid(raid)).Where(x => x.Period > startDate && x.Period < endDate).Count())).ToList().OrderByDescending(x => x.completions).ToList();
-                return usersList.Select(x => (x.user, x.completions, rank: usersList.IndexOf(x) + 1));
-            }
-
-            List<(User user, int completions)> userList = new List<(User, int)>();
-            foreach (User user in users.Where(x => x.GuildIDs.Contains(guildId)))
-            {
-                int completions = 0;
-                foreach (Raid localRaid in _raids.GetRaids(guildId))
-                {
-                    completions += user.Completions.Values.Where(_raids.GetCriteriaByRaid(localRaid)).Where( x => x.Period > startDate && x.Period < endDate).Count();
-                }
-                userList.Add((user, completions));
-            }
-
-            return userList.OrderByDescending(x => x.user).Select(x => (x.user, x.completions, rank: userList.OrderByDescending(x => x.completions).ToList().IndexOf(x) + 1));
         }
         public IEnumerable<User> GetUsersByPage(ulong guildId, int index = 1)
         {

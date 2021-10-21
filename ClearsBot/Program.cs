@@ -63,7 +63,7 @@ namespace ClearsBot
                            .AddSingleton<IGuilds, Guilds>()
                            .AddSingleton<IPermissions, Permissions>()
                            .AddSingleton<Buttons>()
-                           .AddSingleton<ILeaderboards, Leaderboards>()
+                           .AddSingleton<IFormatting, Formatting>()
                            .AddSingleton<Commands>()
                            .AddSingleton<IRaids, Raids>()
                            .AddSingleton<IStorage, Storage>()
@@ -71,6 +71,8 @@ namespace ClearsBot
                            .AddSingleton<SlashCommands>()
                            .AddSingleton<DiscordEvents>()
                            .AddSingleton<UpdateLoop>()
+                           .AddSingleton<Completions>()
+                           .AddSingleton<MessageTracking>()
                            .BuildServiceProvider();
         }
     }

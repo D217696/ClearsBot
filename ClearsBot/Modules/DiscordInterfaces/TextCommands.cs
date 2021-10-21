@@ -164,7 +164,7 @@ namespace ClearsBot.Modules
             foreach (User user in users)
             {
                 string platform = Bungie.GetPlatformString(user.MembershipType);
-                embed.AddField(user.Username, $"{platform} \n Characters: {user.Characters.Count()} \n Saved pgcrs: {user.Completions.Count()} \n Date last played: {user.DateLastPlayed} \n SteamID: {user.SteamID}", true);
+                embed.AddField(user.Username, $"{platform} \n Characters: {user.Characters.Count()} \n Saved pgcrs: {user.Completions.Count()} \n Date last played: {user.DateLastPlayed} \n SteamID: {user.SteamID} \n membership: {user.MembershipId}");
             }
 
             await ReplyAsync(embed: embed.Build());
@@ -246,7 +246,7 @@ namespace ClearsBot.Modules
         [Command("Unregister")]
         public async Task Unregister()
         {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
+            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.BotOwner)
             {
                 await Context.Channel.SendMessageAsync("No permission");
                 return;
@@ -389,19 +389,19 @@ namespace ClearsBot.Modules
             await message.ModifyAsync(x => x.Content = $"Found {newCompletions - completions} new activities");
         }
 
-        //[Command("Fastest")]
-        //public async Task Fastest(string raidString = "")
-        //{
-        //    Raid raid = null;
-        //    if(raidString != "")
-        //    {
-        //        raid = Raids.raids[Context.Guild.Id].FirstOrDefault(x => x.Shortcuts.Contains(raidString) || x.DisplayName.ToLower().Contains(raidString));
-        //    }
+        [Command("Fastest")]
+        public async Task Fastest(string raidString = "")
+        {
+            Raid raid = null;
+            if (raidString != "")
+            {
+                raid = _raids.GetRaid(Context.Guild.Id, raidString);
+            }
 
-        //    ulong targetUserId = _users.GetTargetUser(Context);
+            ulong targetUserId = _users.GetTargetUser(Context);
 
-        //    await ReplyAsync(embed: _utilities.GetFastestListForUser(_users.users[Context.Guild.Id].FirstOrDefault(x => x.DiscordID == targetUserId), raid, Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(_users.users[Context.Guild.Id].Where(x => x.DiscordID == targetUserId).ToList(), Context.Guild.Id, "fastest", _users.users[Context.Guild.Id].FirstOrDefault(x => x.DiscordID == targetUserId), raidString).Build());
-        //}
+            await ReplyAsync(embed: _utilities.GetFastestListForUser(_users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raid, Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(_users.GetUsers(Context.Guild.Id, targetUserId), Context.Guild.Id, "fastest", _users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raidString).Build());
+        }
 
 
         [Command("lev")]

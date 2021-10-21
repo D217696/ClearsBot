@@ -35,7 +35,7 @@ namespace ClearsBot.Modules
             if (GuildsList.ContainsKey(guildId)) return;
             GuildsList.Add(guildId, new Guild()
             {
-                AdminUser = guildOwnerId,
+                GuildOwner = guildOwnerId,
                 GuildId = guildId
             });
             SaveGuilds();

@@ -22,7 +22,7 @@ namespace ClearsBot.Modules
         public Func<Completion, bool> GetCriteriaByRaid(Raid raid)
         {
             if (raid == null) return completion => completion.StartingPhaseIndex <= 1;
-            return completion => completion.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && completion.Time <= raid.CompletionTime && raid.Hashes.Contains(completion.RaidHash);
+            return completion => completion.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh && completion.Time >= raid.CompletionTime && raid.Hashes.Contains(completion.RaidHash);
         }
         public Raid GetRaid(ulong guildId, string raidString)
         {
@@ -30,7 +30,7 @@ namespace ClearsBot.Modules
             if (raids[guildId].Where(raid => raid.DisplayName.ToLower().Contains(raidString.ToLower().Trim()) || raid.Shortcuts.Contains(raidString.ToLower().Trim())) == null) return null;
             return raids[guildId].FirstOrDefault(raid => raid.DisplayName.ToLower().Contains(raidString.ToLower().Trim()) || raid.Shortcuts.Contains(raidString.ToLower().Trim()));
         }
-        public List<Raid> GetRaids(ulong guildId)
+        public IEnumerable<Raid> GetRaids(ulong guildId)
         {
             return raids[guildId];
         }

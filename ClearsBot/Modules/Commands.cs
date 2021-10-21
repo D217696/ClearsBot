@@ -13,19 +13,23 @@ namespace ClearsBot.Modules
     public class Commands
     {
         readonly IBungie _bungie;
-        readonly ILeaderboards _leaderboards;
+        readonly Completions _completions;
         readonly Users _users;
         readonly IRaids _raids;
         readonly IPermissions _permissions;
         readonly IUtilities _utilities;
-        public Commands(IBungie bungie, ILeaderboards leaderboards, Users users, IRaids raids, IPermissions permissions, IUtilities utilities)
+        readonly IFormatting _formatting;
+        readonly MessageTracking _messageTracking;
+        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IUtilities utilities, IFormatting formatting, MessageTracking messageTracking)
         {
             _bungie = bungie;
-            _leaderboards = leaderboards;
+            _completions = completions;
             _users = users;
             _raids = raids;
             _permissions = permissions;
             _utilities = utilities;
+            _formatting = formatting;
+            _messageTracking = messageTracking;
         }
 
         //leaderboard commands
@@ -54,16 +58,16 @@ namespace ClearsBot.Modules
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
             }
 
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _leaderboards.GetUserCompetionsByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
-            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _leaderboards.GetUserCompetionsMaxByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame);
-            embed.AddField($"{commandSyntax} raid completions", _leaderboards.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
-            embed.AddField($"{commandSyntax} raid completion leaderboard", _leaderboards.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _completions.GetUserCompetionsByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _completions.GetUserCompetionsMaxByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame);
+            embed.AddField($"{commandSyntax} raid completions", _formatting.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
+            embed.AddField($"{commandSyntax} raid completion leaderboard", _formatting.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
             return embed;
         }
         public EmbedBuilder RankCommand(ulong userId, ulong guildId, string raidString)
         {
             Raid raid = _raids.GetRaid(guildId, raidString);
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletions = _users.GetListOfUsersWithCompletions(guildId, _bungie.ReleaseDate, DateTime.Now, raid);
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletions = _completions.GetCompletionsForUsers(_users.GetAllUsers(), _bungie.ReleaseDate, DateTime.Now, new[] { raid });
 
             var embed = new EmbedBuilder();
 
@@ -76,8 +80,8 @@ namespace ClearsBot.Modules
             {
                 embed.WithTitle("Top 10 raid completions");
             }
-            embed.WithDescription(_leaderboards.CreateLeaderboardString(usersWithCompletions, userId, 10, true));
-            return null;
+            embed.WithDescription(_formatting.CreateLeaderboardString(usersWithCompletions, userId, 10, true));
+            return embed;
         }
         //raid commands
         public string EditRaidTimeCommand(IGuildUser guildUser, ulong guildId, string raidString, string timeString)
@@ -142,6 +146,8 @@ namespace ClearsBot.Modules
                 restUserMessage = restFollowupMessage;
                 await restUserMessage.ModifyAsync(x => x.Embed = embed.Build());
             }
+
+            _messageTracking.AddMessageToTrack(restUserMessage, new TimeSpan(0, 5, 0));
 
             RequestData requestData = await _bungie.GetRequestDataAsync(membershipId, membershipType);
             if (requestData.Code != 1 && requestData.Code != 8)
