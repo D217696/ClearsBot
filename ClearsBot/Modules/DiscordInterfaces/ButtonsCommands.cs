@@ -17,8 +17,10 @@ namespace ClearsBot.Modules
         readonly IRaids _raids;
         readonly Commands _commands;
         readonly Buttons _buttons;
+        readonly Completions _completions;
+        readonly IFormatting _formatting;
 
-        public ButtonsCommands(IUtilities utilities, Users users, IPermissions permissions, IRaids raids, Commands commands, Buttons buttons)
+        public ButtonsCommands(IUtilities utilities, Users users, IPermissions permissions, IRaids raids, Commands commands, Buttons buttons, Completions completions, IFormatting formatting)
         {
             _utilities = utilities;
             _users = users;
@@ -26,6 +28,8 @@ namespace ClearsBot.Modules
             _raids = raids;
             _commands = commands;
             _buttons = buttons;
+            _completions = completions;
+            _formatting = formatting;
         }
 
         [Button("Completions")]
@@ -33,9 +37,11 @@ namespace ClearsBot.Modules
         {
             ButtonData buttonData = _buttons.GetButtonData(Context.Data.CustomId);
             await Context.Message.DeleteAsync();
-            // get completions by raid for user (completions class) send to format class 
+            User user = _users.GetUserByMembershipId(buttonData.MembershipId);
+            IEnumerable<User> users = _users.GetUsersByDiscordId(buttonData.DiscordUserId);
+            var completions = _completions.GetRaidCompletionsForUser(user, buttonData.DiscordServerId);
 
-           // await Context.Channel.SendMessageAsync(embed: _commands.completion)
+            await Context.Channel.SendMessageAsync(embed: _formatting.GetCompletionsEmbed(user, completions).Build(), component: _buttons.GetButtonsForUser(users.ToList(), "completions", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, null).Build());
         }
         //[Button("Completions")]
         //public async Task CompletionsButton(SocketMessageComponent Context)

@@ -114,10 +114,19 @@ namespace ClearsBot.Modules
             ulong userId = context.Message.MentionedUsers.Count == 0 ? context.User.Id : context.Message.MentionedUsers.FirstOrDefault().Id;
             return users.Where(x => x.GuildIDs.Contains(context.Guild.Id)).Where(x => x.Completions.Count > 0).Where(x => x.DiscordID == userId).ToList();
         }
+        public User GetUserByMembershipId(long membershipId)
+        {
+            return users.FirstOrDefault(x => x.MembershipId == membershipId);
+        }
         public List<User> GetUsers(ulong guildId, ulong userId)
         {
             return users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.DiscordID == userId).ToList();
         }
+        public IEnumerable<User> GetUsersByDiscordId(ulong userId)
+        {
+            return users.Where(x => x.DiscordID == userId);
+        }
+
         public async Task<UserResponse> CreateAndAddUser(ulong guildId, ulong discordID, RequestData requestData)
         {
             //if (users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault() != null) return new UserResponse() { User = users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault(), Code = 2 };
