@@ -54,5 +54,10 @@ namespace ClearsBot.Modules
             if (timeFrameHours == TimeFrameHours.Month) usersWithMaxCompletionCount = users.Select(x => (user: x, completions: x.Completions.Values.Where(completion => Convert.ToInt32(completion.Period.ToString("yyyyMM")) == currentTimeFrame).Where(_raids.GetCriteriaByRaid(raid)).Count())).OrderByDescending(x => x.completions).ToList();
             return usersWithMaxCompletionCount.Select(x => (x.user, x.completions, rank: usersWithMaxCompletionCount.IndexOf(x) + 1));
         }
+
+        public IEnumerable<(Raid raid, int completions)> GetRaidCompletionsForUser(User user, ulong guildId)
+        {
+            return _raids.GetRaids(guildId).Select(x => (raid: x, completions: user.Completions.Values.Where(_raids.GetCriteriaByRaid(x)).Count()));
+        }
     }
 }

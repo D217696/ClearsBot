@@ -62,7 +62,7 @@ namespace ClearsBot
                            .AddSingleton<ILogger, Logger>()
                            .AddSingleton<IGuilds, Guilds>()
                            .AddSingleton<IPermissions, Permissions>()
-                           .AddSingleton<Buttons>()
+                           .AddSingleton<ButtonsCommands>()
                            .AddSingleton<IFormatting, Formatting>()
                            .AddSingleton<Commands>()
                            .AddSingleton<IRaids, Raids>()

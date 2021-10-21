@@ -20,7 +20,8 @@ namespace ClearsBot.Modules
         readonly IUtilities _utilities;
         readonly IFormatting _formatting;
         readonly MessageTracking _messageTracking;
-        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IUtilities utilities, IFormatting formatting, MessageTracking messageTracking)
+        readonly Buttons _buttons;
+        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IUtilities utilities, IFormatting formatting, MessageTracking messageTracking, Buttons buttons)
         {
             _bungie = bungie;
             _completions = completions;
@@ -30,6 +31,7 @@ namespace ClearsBot.Modules
             _utilities = utilities;
             _formatting = formatting;
             _messageTracking = messageTracking;
+            _buttons = buttons;
         }
 
         //leaderboard commands
@@ -129,7 +131,7 @@ namespace ClearsBot.Modules
         {
             if (membershipId == "")
             {
-                await channel.SendMessageAsync("Usage: /register (Steam Id | Membership Id) (Membership Type)");
+                await channel.SendMessageAsync("Usage: /register (Joincode or bungie name)");
                 return;
             }
 
@@ -162,7 +164,7 @@ namespace ClearsBot.Modules
                 var componentBuilder = new ComponentBuilder();
                 foreach (UserInfoCard userInfoCard in requestData.profiles)
                 {
-                    ButtonStyle buttonStyle = _utilities.GetButtonStyleForPlatform(userInfoCard.MembershipType);
+                    ButtonStyle buttonStyle = _buttons.GetButtonStyleForPlatform(userInfoCard.MembershipType);
 
                     componentBuilder.WithButton(new ButtonBuilder().WithLabel(userInfoCard.DisplayName).WithCustomId($"register_{userInfoCard.MembershipId}_{userInfoCard.MembershipType}").WithStyle(buttonStyle), buttonRow);
                     buttonCount++;

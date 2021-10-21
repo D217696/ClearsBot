@@ -82,7 +82,6 @@ namespace ClearsBot.Modules
         [SlashCommand("register")]
         public async Task RegisterSlashCommand(SocketSlashCommand command)
         {
-            //await command.DeferAsync();
             if (command.Data is SocketSlashCommandData commandData)
             {
                 var embed = new EmbedBuilder();

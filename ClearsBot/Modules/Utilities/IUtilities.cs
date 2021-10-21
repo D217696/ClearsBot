@@ -14,11 +14,8 @@ namespace ClearsBot.Modules
         Func<User, int> Criteria(Raid raid = null, DateTime? startDate = null, DateTime? endDate = null);
         Func<Completion, bool> DefaultCriteria();
         Func<Completion, bool> EndDateCriteria(DateTime? endDate);
-        ComponentBuilder GetButtonsForUser(List<User> users, ulong guildId, string command, User firstUser = null, string extra = "");
-        ButtonStyle GetButtonStyleForPlatform(int membershipType);
         int GetCompletionCountForUser(User user, Raid raid = null, DateTime? startDate = null, DateTime? endDate = null);
         int GetCompletionCountForUser(User user, ulong guildId);
-        EmbedBuilder GetCompletionsForUser(User user, ulong guildId);
         Func<Completion, bool> GetCriteriaForRaid(Raid raid);
         string GetErrorCodeForUserSearch(RequestData requestData);
         EmbedBuilder GetFastestListForUser(User user, Raid raid, ulong guildID);

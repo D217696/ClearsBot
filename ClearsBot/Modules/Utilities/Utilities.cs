@@ -96,16 +96,6 @@ namespace ClearsBot.Modules
         //    //await ReplyAsync("Set every datelastplayed to 2017/01/01");
         //}
 
-        public EmbedBuilder GetCompletionsForUser(User user, ulong guildId)
-        {
-            var embed = new EmbedBuilder() { Title = $"Raid completions for {user.Username}" };
-            foreach (Raid raid in _raids.GetRaids(guildId))
-            {
-                embed.AddField(raid.DisplayName, user.Completions.Values.Where(GetCriteriaForRaid(raid)).Count() + " completions", true);
-            }
-
-            return embed;
-        }
 
         public int GetCompletionCountForUser(User user, ulong guildId)
         {
@@ -123,29 +113,7 @@ namespace ClearsBot.Modules
             return x => raid.Hashes.Contains(x.RaidHash) && x.Time > raid.CompletionTime && x.StartingPhaseIndex <= raid.StartingPhaseIndexToBeFresh;
         }
 
-        public ComponentBuilder GetButtonsForUser(List<User> users, ulong guildId, string command, User firstUser = null, string extra = "")
-        {
-            var componentBuilder = new ComponentBuilder();
 
-            int buttons = 0;
-            int buttonRow = 0;
-            foreach (User user in users)
-            {
-                if (user == firstUser) continue;
-                if (extra == "")
-                {
-                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), buttonRow);
-                }
-                else
-                {
-                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(user.Username).WithCustomId($"{command}_{guildId}_{user.MembershipId}_{extra}").WithStyle(GetButtonStyleForPlatform(user.MembershipType)), buttonRow);
-                }
-                buttons++;
-                if (buttons % 5 == 0) buttonRow++;
-            }
-
-            return componentBuilder;
-        }
 
         public DateTime GetWeeklyResetTime(DateTime startDate)
         {
@@ -204,16 +172,6 @@ namespace ClearsBot.Modules
             return completions.Count();
         }
 
-        public ButtonStyle GetButtonStyleForPlatform(int membershipType)
-        {
-            return membershipType switch
-            {
-                1 => ButtonStyle.Success,
-                2 => ButtonStyle.Primary,
-                3 => ButtonStyle.Danger,
-                _ => ButtonStyle.Secondary
-            };
-        }
 
         public string GetErrorCodeForUserSearch(RequestData requestData)
         {

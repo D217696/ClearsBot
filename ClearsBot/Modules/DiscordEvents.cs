@@ -20,6 +20,7 @@ namespace ClearsBot.Modules
         DiscordSocketClient _client;
         Dictionary<string, MethodInfo> Buttons = new Dictionary<string, MethodInfo>();
         Dictionary<string, MethodInfo> SlashCommands = new Dictionary<string, MethodInfo>();
+        ButtonsCommands _buttonCommands;
         Buttons _buttons;
         SlashCommands _slashCommands;
         readonly IGuilds _guilds;
@@ -75,23 +76,24 @@ namespace ClearsBot.Modules
                                 }
                             };
 
-        public DiscordEvents(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider, IGuilds guilds, Buttons buttons, SlashCommands slashCommands, Users users, IRaids raids, ILogger logger)
+        public DiscordEvents(DiscordSocketClient client, CommandService commandService, IServiceProvider serviceProvider, IGuilds guilds, ButtonsCommands buttonCommands, SlashCommands slashCommands, Users users, IRaids raids, ILogger logger, Buttons buttons)
         {
             _client = client;
             _commandService = commandService;
             _serviceProvider = serviceProvider;
             _guilds = guilds;
-            _buttons = buttons;
+            _buttonCommands = buttonCommands;
             _slashCommands = slashCommands;
             _users = users;
             _raids = raids;
             _logger = logger;
+            _buttons = buttons;
             _client.MessageReceived += HandleCommandAsync;
             _client.InteractionCreated += InteractionCreatedAsync;
             _client.JoinedGuild += _client_JoinedGuild;
             _client.Ready += _client_Ready;
 
-            var buttonMethods = typeof(Buttons).GetMethods().Where(x => x.GetCustomAttribute<ButtonAttribute>() != null);
+            var buttonMethods = typeof(ButtonsCommands).GetMethods().Where(x => x.GetCustomAttribute<ButtonAttribute>() != null);
             var slashMethods = typeof(SlashCommands).GetMethods().Where(x => x.GetCustomAttribute<SlashCommandAttribute>() != null);
 
             foreach (MethodInfo methodInfo in buttonMethods)
@@ -320,9 +322,18 @@ namespace ClearsBot.Modules
                     switch (parsedArg.Data.Type)
                     {
                         case ComponentType.Button:
-                            string[] parameters = parsedArg.Data.CustomId.Split("_");
+                            ButtonData buttonData = _buttons.GetButtonData(parsedArg.Data.CustomId);
+                            if (buttonData == null) break;
+                            if (!buttonData.PrivateButton) // if its NOT a private button execute the command
+                            {
+                                Buttons[buttonData.CommandName].Invoke(_buttonCommands, new object[] { parsedArg });
+                                break;
+                            }
 
-                            Buttons[parameters[0]].Invoke(_buttons, new object[] { parsedArg });
+                            if (buttonData.DiscordUserId == parsedArg.User.Id) // if it is a private button and the user that triggered it is the same as the user that made it execute the command
+                            {
+                                Buttons[buttonData.CommandName].Invoke(_buttonCommands, new object[] { parsedArg });
+                            }
                             break;
                     }
                     break;
