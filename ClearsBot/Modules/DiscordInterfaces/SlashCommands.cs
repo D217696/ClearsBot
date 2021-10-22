@@ -75,7 +75,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await command.FollowupAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), guildId).Build(), component: _utilities.GetButtonsForUser(users, guildId, "completions", users.FirstOrDefault()).Build());
+           // await command.FollowupAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), guildId).Build(), component: _utilities.GetButtonsForUser(users, guildId, "completions", users.FirstOrDefault()).Build());
 
         }
 

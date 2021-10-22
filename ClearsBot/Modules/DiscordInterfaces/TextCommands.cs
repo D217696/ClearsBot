@@ -132,7 +132,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(users, Context.Guild.Id, "completions", users.FirstOrDefault()).Build());
+            //await ReplyAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(users, Context.Guild.Id, "completions", users.FirstOrDefault()).Build());
         }
 
         [Command("Update", RunMode = RunMode.Async)]
@@ -261,7 +261,7 @@ namespace ClearsBot.Modules
                 embed.AddField(user.Username, $"{platform} \n Characters: {user.Characters.Count()} \n Saved pgcrs: {user.Completions.Count()} \n Date last played: {user.DateLastPlayed} \n SteamID: {user.SteamID}", true);
             }
 
-            await ReplyAsync(embed: embed.Build(), component: _utilities.GetButtonsForUser(users, Context.Guild.Id, "unregister").Build());
+            //await ReplyAsync(embed: embed.Build(), component: _utilities.GetButtonsForUser(users, Context.Guild.Id, "unregister").Build());
         }
 
         //[Command("reglist")]
@@ -400,7 +400,7 @@ namespace ClearsBot.Modules
 
             ulong targetUserId = _users.GetTargetUser(Context);
 
-            await ReplyAsync(embed: _utilities.GetFastestListForUser(_users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raid, Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(_users.GetUsers(Context.Guild.Id, targetUserId), Context.Guild.Id, "fastest", _users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raidString).Build());
+            //await ReplyAsync(embed: _utilities.GetFastestListForUser(_users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raid, Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(_users.GetUsers(Context.Guild.Id, targetUserId), Context.Guild.Id, "fastest", _users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raidString).Build());
         }
 
 

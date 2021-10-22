@@ -73,6 +73,9 @@ namespace ClearsBot
                            .AddSingleton<UpdateLoop>()
                            .AddSingleton<Completions>()
                            .AddSingleton<MessageTracking>()
+                           .AddSingleton<IFormatting, Formatting>()
+                           .AddSingleton<ILanguages, Languages>()
+                           .AddSingleton<Buttons>()
                            .BuildServiceProvider();
         }
     }

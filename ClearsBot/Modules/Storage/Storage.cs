@@ -15,6 +15,7 @@ namespace ClearsBot.Modules
         private const string raidTemplateFile = "raidsTemplate.json";
         private const string guildsFile = "guilds.json";
         private const string languagesFile = "languages.json";
+        private const string alertsFile = "alerts.json";
         public List<User> GetUsersFromStorage()
         {
             string stringFromFile = ReadFromFile(usersFile);
@@ -34,7 +35,6 @@ namespace ClearsBot.Modules
             }
             return new Dictionary<ulong, List<Raid>>();
         }
-
         public Dictionary<ulong, Guild> GetGuildsFromStorage()
         {
             string stringFromFile = ReadFromFile(guildsFile);
@@ -44,7 +44,6 @@ namespace ClearsBot.Modules
             }
             return new Dictionary<ulong, Guild>();
         }
-
         public Dictionary<string, Dictionary<string, string>> GetLanguagesFromStorage()
         {
             string stringFromFile = ReadFromFile(languagesFile);
@@ -63,6 +62,7 @@ namespace ClearsBot.Modules
             }
             return new List<Raid>();
         }
+
         public void SaveUsers(List<User> users)
         {
             File.WriteAllText(Path.Combine(configFolder, usersFile), JsonConvert.SerializeObject(users, Newtonsoft.Json.Formatting.Indented));

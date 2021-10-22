@@ -9,6 +9,11 @@ namespace ClearsBot.Modules
 {
     public class Formatting : IFormatting
     {
+        readonly ILanguages _languages;
+        public Formatting(ILanguages languages)
+        {
+            _languages = languages;
+        }
         public string CreateLeaderboardString(IEnumerable<(User user, int completions, int rank)> users, ulong userDiscordId = 0, int count = 10, bool registerMessage = false)
         {
             string leaderboard = "";
@@ -16,24 +21,26 @@ namespace ClearsBot.Modules
             {
                 if (user.user.DiscordID == userDiscordId)
                 {
-                    leaderboard += $"**{user.rank}) {FormatUsername(user.user.Username)}: {user.completions} completions** \n";
+                    leaderboard += string.Format(_languages.GetLanguageText("en", "rank-entry-active"), user.rank, FormatUsername(user.user.Username), user.completions);
+                    //leaderboard += $"**{user.rank}) {FormatUsername(user.user.Username)}: {user.completions} completions** \n";
                     continue;
                 }
 
-                leaderboard += $"{user.rank}) {FormatUsername(user.user.Username)}: {user.completions} completions \n";
+                //leaderboard += $"{user.rank}) {FormatUsername(user.user.Username)}: {user.completions} completions \n";
+                leaderboard += string.Format(_languages.GetLanguageText("en", "rank-entry"), user.rank, FormatUsername(user.user.Username), user.completions);
             }
 
             foreach ((User user, int completions, int rank) user in users.Where(x => x.user.DiscordID == userDiscordId))
             {
                 if (users.Take(count).Contains(user)) continue;
-                leaderboard += $"\n {user.rank}) {FormatUsername(user.user.Username)}: {user.completions} completions";
+                leaderboard += string.Format(_languages.GetLanguageText("en", "rank-entry"), user.rank, FormatUsername(user.user.Username), user.completions);
             }
 
             if (registerMessage)
             {
                 if (users.Where(x => x.user.DiscordID == userDiscordId).Count() <= 0)
                 {
-                    leaderboard += "\n You haven't registered.";
+                    leaderboard += _languages.GetLanguageText("en", "unregistered-message");
                 }
             }
 
