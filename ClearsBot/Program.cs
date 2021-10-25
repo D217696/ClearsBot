@@ -54,8 +54,9 @@ namespace ClearsBot
             return new ServiceCollection()
                            .AddSingleton(_client)
                            .AddSingleton(_commandService)
+                           .AddSingleton<DiscordEvents>()
+                           .AddSingleton<UpdateLoop>()
                            .AddSingleton<IBungie, Bungie>()
-                           .AddSingleton<IUtilities, Utilities>()
                            .AddSingleton<TextCommands>()
                            .AddSingleton<Users>()
                            .AddSingleton<IBungieDestiny2RequestHandler, BungieDestiny2RequestHandler>()
@@ -69,13 +70,12 @@ namespace ClearsBot
                            .AddSingleton<IStorage, Storage>()
                            .AddSingleton<Roles>()
                            .AddSingleton<SlashCommands>()
-                           .AddSingleton<DiscordEvents>()
-                           .AddSingleton<UpdateLoop>()
                            .AddSingleton<Completions>()
                            .AddSingleton<MessageTracking>()
                            .AddSingleton<IFormatting, Formatting>()
                            .AddSingleton<ILanguages, Languages>()
                            .AddSingleton<Buttons>()
+                           .AddSingleton<ISlashes, Slashes>()
                            .BuildServiceProvider();
         }
     }

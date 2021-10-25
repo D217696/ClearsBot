@@ -31,7 +31,7 @@ namespace ClearsBot.Modules
 
         public void AddButton(ButtonData buttonData)
         {
-            if (ActiveButtons.ContainsKey(buttonData.InteractionID)) ActiveButtons.Add(buttonData.InteractionID, buttonData);
+            if (!ActiveButtons.ContainsKey(buttonData.InteractionID)) ActiveButtons.Add(buttonData.InteractionID, buttonData);
         }
 
         public ButtonData CreateButtonData(string commandName, ulong discordUserId, ulong discordServerId, ulong discordChannelId, long membershipId, int membershipType, Raid raid)

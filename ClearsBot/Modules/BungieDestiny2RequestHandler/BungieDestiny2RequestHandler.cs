@@ -1,11 +1,13 @@
-﻿using ClearsBot.Modules;
+﻿using ClearsBot.Modules.Logger;
 using ClearsBot.Objects;
+using ComposableAsync;
 using Newtonsoft.Json;
+using RateLimiter;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace ClearsBot
+namespace ClearsBot.Modules
 {
     public class BungieDestiny2RequestHandler : IBungieDestiny2RequestHandler
     {
@@ -13,6 +15,7 @@ namespace ClearsBot
         private string BaseUrl { get; set; } = "https://www.bungie.net/Platform";
         private readonly HttpClient client = new HttpClient();
         readonly ILogger _logger;
+        TimeLimiter timeConstraint = TimeLimiter.GetFromMaxCountByInterval(20, TimeSpan.FromSeconds(1));
 
         public BungieDestiny2RequestHandler(ILogger logger)
         {
@@ -22,7 +25,7 @@ namespace ClearsBot
 
         public async Task<GetActivityHistory> GetActivityHistoryAsync(int membershipType, long membershipId, long characterId, int page)
         {
-            string json = await (await client.GetAsync($"{BaseUrl}/Destiny2/{membershipType}/Account/{membershipId}/Character/{characterId}/Stats/Activities/?mode=4&count=250&page={page}")).Content.ReadAsStringAsync();
+            string json = await MakeRequest($"{BaseUrl}/Destiny2/{membershipType}/Account/{membershipId}/Character/{characterId}/Stats/Activities/?mode=4&count=250&page={page}");
             GetActivityHistory getActivityHistory = JsonConvert.DeserializeObject<GetActivityHistory>(json);
             if (getActivityHistory.ErrorCode != 1)
             {
@@ -48,7 +51,7 @@ namespace ClearsBot
                 componentString = componentString.Remove(componentString.Length - 1);
             }
 
-            string json = await (await client.GetAsync($"{BaseUrl}/Destiny2/{membershipType}/Profile/{membershipId}/{componentString}")).Content.ReadAsStringAsync();
+            string json = await MakeRequest($"{BaseUrl}/Destiny2/{membershipType}/Profile/{membershipId}/{componentString}");
             GetProfile getProfile = JsonConvert.DeserializeObject<GetProfile>(json);
             if (getProfile.ErrorCode != 1)
             {
@@ -64,7 +67,7 @@ namespace ClearsBot
         public async Task<SearchDestinyPlayer> SearchDestinyPlayerAsync(string membershipId, string membershipType = "")
         {
             membershipId = Uri.EscapeDataString(membershipId);
-            string json = await (await client.GetAsync($"{BaseUrl}/Destiny2/SearchDestinyPlayer/{membershipType}/{membershipId}/")).Content.ReadAsStringAsync();
+            string json = await MakeRequest($"{BaseUrl}/Destiny2/SearchDestinyPlayer/{membershipType}/{membershipId}/");
             SearchDestinyPlayer searchDestinyPlayer = JsonConvert.DeserializeObject<SearchDestinyPlayer>(json);
             if (searchDestinyPlayer.ErrorCode != 1)
             {
@@ -79,7 +82,7 @@ namespace ClearsBot
         }
         public async Task<GetMembershipFromHardLinkedCredential> GetMembershipFromHardLinkedCredentialAsync(long membershipId)
         {
-            string json = await (await client.GetAsync($"{BaseUrl}/User/GetMembershipFromHardLinkedCredential/SteamId/{membershipId}")).Content.ReadAsStringAsync();
+            string json = await MakeRequest($"{BaseUrl}/User/GetMembershipFromHardLinkedCredential/SteamId/{membershipId}");
             GetMembershipFromHardLinkedCredential getMembershipFromHardLinkedCredential = JsonConvert.DeserializeObject<GetMembershipFromHardLinkedCredential>(json);
             if (getMembershipFromHardLinkedCredential.ErrorCode != 1)
             {
@@ -93,7 +96,7 @@ namespace ClearsBot
         }
         public async Task<GetHistoricalStatsForAccount> GetHistoricalStatsForAccount(int membershipType, long membershipId)
         {
-            string json = await (await client.GetAsync($"{BaseUrl}/Destiny2/{membershipType}/Account/{membershipId}/Stats/")).Content.ReadAsStringAsync();
+            string json = await MakeRequest($"{BaseUrl}/Destiny2/{membershipType}/Account/{membershipId}/Stats/");
             GetHistoricalStatsForAccount getHistoricalStatsForAccount = JsonConvert.DeserializeObject<GetHistoricalStatsForAccount>(json);
             if (getHistoricalStatsForAccount.ErrorCode != 1)
             {
@@ -107,7 +110,7 @@ namespace ClearsBot
         }
         public async Task<GetPostGameCarnageReport> GetPostGameCarnageReportAsync(long postGameCarnageReportId)
         {
-            string json = await (await client.GetAsync($"http://stats.bungie.net/Platform/Destiny2/Stats/PostGameCarnageReport/{postGameCarnageReportId}/")).Content.ReadAsStringAsync();
+            string json = await MakeRequest($"http://stats.bungie.net/Platform/Destiny2/Stats/PostGameCarnageReport/{postGameCarnageReportId}/");
             GetPostGameCarnageReport getPostGameCarnageReport = JsonConvert.DeserializeObject<GetPostGameCarnageReport>(json);
             if (getPostGameCarnageReport.ErrorCode != 1)
             {
@@ -118,6 +121,28 @@ namespace ClearsBot
                 _logger.LogBungieSuccess("GetPostGameCarnageReport", 0, 0, 0, $"PostCarnageReportId: {postGameCarnageReportId}");
             }
             return getPostGameCarnageReport;
+        }
+
+        public async Task<GetLinkedProfiles> GetLinkedProfilesAsync(int membershipType, long membershipId)
+        {
+            string json = await MakeRequest($"{BaseUrl}/Destiny2/{membershipType}/Profile/{membershipId}/LinkedProfiles/");
+            GetLinkedProfiles getLinkedProfiles = JsonConvert.DeserializeObject<GetLinkedProfiles>(json);
+            if (getLinkedProfiles.ErrorCode != 1)
+            {
+                _logger.LogBungieError("GetLinkedProfiles", getLinkedProfiles.ErrorCode, getLinkedProfiles.Message, membershipType, membershipId, 0);
+            }
+            else
+            {
+                _logger.LogBungieSuccess("GetLinkedProfiles", membershipType, membershipId, 0);
+            }
+            return getLinkedProfiles;
+        }
+
+        public async Task<string> MakeRequest(string url)
+        {
+            await timeConstraint;
+
+            return await (await client.GetAsync(url)).Content.ReadAsStringAsync();
         }
     }
 }

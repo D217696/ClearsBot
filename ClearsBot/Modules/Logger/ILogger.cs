@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClearsBot
+namespace ClearsBot.Modules
 {
     public interface ILogger
     {

@@ -5,12 +5,12 @@ namespace ClearsBot.Modules
 {
     public interface IStorage
     {
-        Dictionary<ulong, Guild> GetGuildsFromStorage();
+        Dictionary<ulong, InternalGuild> GetGuildsFromStorage();
         Dictionary<string, Dictionary<string, string>> GetLanguagesFromStorage();
         Dictionary<ulong, List<Raid>> GetRaidsFromStorage();
         List<User> GetUsersFromStorage();
         List<Raid> GetRaidTemplateFromStorage();
-        void SaveGuilds(Dictionary<ulong, Guild> guilds);
+        void SaveGuilds(Dictionary<ulong, InternalGuild> guilds);
         void SaveLanguages(Dictionary<string, Dictionary<string, string>> languages);
         void SaveRaids(Dictionary<ulong, List<Raid>> raids);
         void SaveUsers(List<User> users);

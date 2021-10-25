@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+﻿using ClearsBot.Modules;
+using ClearsBot.Objects;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -13,20 +14,22 @@ namespace ClearsBot.Modules
     {
         readonly IBungie _bungie;
         readonly Users _users;
-        readonly IUtilities _utilities;
         readonly IPermissions _permissions;
         readonly IGuilds _guilds;
         readonly Commands _commands;
         readonly IRaids _raids;
-        public TextCommands(IBungie bungie, Users users, IUtilities utilities, IPermissions permissions, IGuilds guilds, Commands commands, IRaids raids)
+        readonly Buttons _buttons;
+        readonly ILanguages _languages;
+        public TextCommands(IBungie bungie, Users users, IPermissions permissions, IGuilds guilds, Commands commands, IRaids raids, Buttons buttons, ILanguages languages)
         {
             _bungie = bungie;
             _users = users;
-            _utilities = utilities;
             _permissions = permissions;
             _guilds = guilds;
             _commands = commands;
             _raids = raids;
+            _buttons = buttons;
+            _languages = languages;
         }
 
         //leaderboard commands
@@ -34,9 +37,9 @@ namespace ClearsBot.Modules
         public async Task Rank([Remainder] string raidString = "")
         {
             ulong targetUserId = _users.GetTargetUser(Context);
-            if (targetUserId == 0)
+            if (targetUserId <= 0)
             {
-                await ReplyAsync("Targeted user has not registered");
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
                 return;
             }
 
@@ -47,9 +50,9 @@ namespace ClearsBot.Modules
         public async Task Yearly([Remainder] string raidString = "")
         {
             ulong targetUserId = _users.GetTargetUser(Context);
-            if (targetUserId == 0)
+            if (targetUserId <= 0)
             {
-                await ReplyAsync("Targeted user has not registered");
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
                 return;
             }
 
@@ -60,9 +63,9 @@ namespace ClearsBot.Modules
         public async Task Monthly([Remainder] string raidString = "")
         {
             ulong targetUserId = _users.GetTargetUser(Context);
-            if (targetUserId == 0)
+            if (targetUserId <= 0)
             {
-                await ReplyAsync("Targeted user has not registered");
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
                 return;
             }
 
@@ -73,9 +76,9 @@ namespace ClearsBot.Modules
         public async Task Weekly([Remainder] string raidString = "")
         {
             ulong targetUserId = _users.GetTargetUser(Context);
-            if (targetUserId == 0)
+            if (targetUserId <= 0)
             {
-                await ReplyAsync("Targeted user has not registered");
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
                 return;
             }
 
@@ -86,13 +89,62 @@ namespace ClearsBot.Modules
         public async Task Daily([Remainder] string raidString = "")
         {
             ulong targetUserId = _users.GetTargetUser(Context);
-            if (targetUserId == 0)
+            if (targetUserId <= 0)
             {
-                await ReplyAsync("Targeted user has not registered");
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
                 return;
             }
 
             await ReplyAsync(embed: _commands.TimeFrameCommand(targetUserId, Context.Guild.Id, raidString, TimeFrameHours.Day, "Daily").Build());
+        }
+
+        //user commands
+        [Command("Fastest")]
+        public async Task Fastest(string raidString = "")
+        {
+            ulong targetUserId = _users.GetTargetUser(Context);
+            IEnumerable<User> users = _users.GetUsersByDiscordId(targetUserId);
+            if (users.Count() <= 0)
+            {
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
+                return;
+            }
+
+            Raid raid = null;
+            if (raidString != "")
+            {
+                raid = _raids.GetRaid(Context.Guild.Id, raidString);
+            }
+
+            await ReplyAsync(embed: _commands.FastestCommand(users.FirstOrDefault(), Context.Guild.Id, raidString).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "fastest", targetUserId, Context.Guild.Id, Context.Channel.Id, raid).Build());
+        }
+
+        [Command("Completions")]
+        public async Task Completions()
+        {
+            ulong targetUserId = _users.GetTargetUser(Context);
+            List<User> users = _users.GetUsersByDiscordId(targetUserId).ToList();
+            if (users.Count <= 0)
+            {
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
+                return;
+            }
+
+            await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
+        }
+
+        [Command("Raids")]
+        public async Task Raids()
+        {
+            ulong targetUserId = _users.GetTargetUser(Context);
+            List<User> users = _users.GetUsersByDiscordId(targetUserId).ToList();
+            if (users.Count <= 0)
+            {
+                await ReplyAsync(_languages.GetLanguageText(_guilds.GetGuildLanguage(Context.Guild.Id), "user-unregistered"));
+                return;
+            }
+
+            await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
         }
 
         //raid commands
@@ -108,7 +160,7 @@ namespace ClearsBot.Modules
             await ReplyAsync(_commands.AddRaidShortcutCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, shortcut));
         }
 
-        [Command("Raids")]
+        [Command("ShowRaids")]
         public async Task ShowRaids()
         {
             await ReplyAsync(embed: _commands.DisplayRaidsCommand(Context.Guild.Id).Build());
@@ -122,18 +174,7 @@ namespace ClearsBot.Modules
             await _commands.RegisterUserCommand(Context.Channel, Context.Guild.Id, Context.User.Id, Context.User.Username, membershipId, "");
         }
 
-        [Command("Completions")]
-        public async Task Completions()
-        {
-            List<User> users = _users.GetUsers(Context);
-            if (users.Count == 0)
-            {
-                await Context.Channel.SendMessageAsync("You have not registered.");
-                return;
-            }
 
-            //await ReplyAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(users, Context.Guild.Id, "completions", users.FirstOrDefault()).Build());
-        }
 
         [Command("Update", RunMode = RunMode.Async)]
         public async Task Update()
@@ -369,7 +410,8 @@ namespace ClearsBot.Modules
         [Command("Verify", RunMode = RunMode.Async)]
         public async Task Verify()
         {
-            List<User> users = _users.GetUsers(Context);
+            ulong targetUserId = _users.GetTargetUser(Context);
+            IEnumerable<User> users = _users.GetUsersByDiscordId(targetUserId);
             var message = await ReplyAsync("Verifying your activities..");
             int completions = 0;
             int newCompletions = 0;
@@ -389,20 +431,23 @@ namespace ClearsBot.Modules
             await message.ModifyAsync(x => x.Content = $"Found {newCompletions - completions} new activities");
         }
 
-        [Command("Fastest")]
-        public async Task Fastest(string raidString = "")
+        [Command("Zero dawn")]
+        public async Task ZeroDawn()
         {
-            Raid raid = null;
-            if (raidString != "")
+            if (Context.User.Id != 204722865818304512)
             {
-                raid = _raids.GetRaid(Context.Guild.Id, raidString);
+                await ReplyAsync("no.");
+                return;
             }
 
             ulong targetUserId = _users.GetTargetUser(Context);
-
-            //await ReplyAsync(embed: _utilities.GetFastestListForUser(_users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raid, Context.Guild.Id).Build(), component: _utilities.GetButtonsForUser(_users.GetUsers(Context.Guild.Id, targetUserId), Context.Guild.Id, "fastest", _users.GetUsers(Context.Guild.Id, targetUserId).FirstOrDefault(), raidString).Build());
+            IEnumerable<User> users = _users.GetUsersByDiscordId(targetUserId);
+            foreach (User user in users)
+            {
+                _users.ResetUserCompletions(user);
+                await ReplyAsync($"User {user.Username}'s completions have been reset");
+            }
         }
-
 
         [Command("lev")]
         [Alias("levi")]

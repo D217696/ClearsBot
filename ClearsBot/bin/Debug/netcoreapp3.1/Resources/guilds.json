@@ -20,7 +20,9 @@
         "Role": 871812308261818389,
         "Raid": null
       }
-    ]
+    ],
+    "IsActive": true,
+    "UsesSlashCommands": true
   },
   "534813987091513381": {
     "GuildId": 534813987091513381,
@@ -32,7 +34,9 @@
     "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
-    "Milestones": []
+    "Milestones": [],
+    "IsActive": true,
+    "UsesSlashCommands": true
   },
   "867207403481333790": {
     "GuildId": 867207403481333790,
@@ -44,7 +48,9 @@
     "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
-    "Milestones": []
+    "Milestones": [],
+    "IsActive": false,
+    "UsesSlashCommands": true
   },
   "896801617192570930": {
     "GuildId": 896801617192570930,
@@ -56,7 +62,9 @@
     "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
-    "Milestones": []
+    "Milestones": [],
+    "IsActive": false,
+    "UsesSlashCommands": true
   },
   "896923363098910732": {
     "GuildId": 896923363098910732,
@@ -68,6 +76,8 @@
     "GuildOwner": 0,
     "AdminRole": 0,
     "ModRoles": [],
-    "Milestones": []
+    "Milestones": [],
+    "IsActive": false,
+    "UsesSlashCommands": true
   }
 }

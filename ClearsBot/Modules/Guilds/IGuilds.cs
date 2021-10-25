@@ -6,10 +6,13 @@ namespace ClearsBot.Modules
 {
     public interface IGuilds
     {
-        void GuildJoined(ulong guildId, ulong guildOwnerId);
+        void JoinedGuild(ulong guildId, ulong guildOwnerId);
         void SaveGuilds();
-        public Dictionary<ulong, Guild> GetGuilds();
-        public Guild GetGuild(ulong guildId);
+        void SyncGuilds();
+        public Dictionary<ulong, InternalGuild> GetGuilds();
         public SocketGuild GetGuildFromClient(ulong guildId);
+        public InternalGuild GetGuild(ulong guildId);
+        public void LeftGuild(ulong guildId);
+        public string GetGuildLanguage(ulong guildId);
     }
 }

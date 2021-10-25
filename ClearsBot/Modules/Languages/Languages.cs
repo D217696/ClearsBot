@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using ClearsBot.Modules;
+using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,21 @@ namespace ClearsBot.Modules
             languages[language][key] = value;
             SaveLanguages();
             return $"{language} {key} was set to {value}";
+        }
+
+        //technically part of errors, needs to be made
+        public string GetErrorCodeForUserSearch(RequestData requestData)
+        {
+            return requestData.Code switch
+            {
+                2 => "Please enter an ID or register.",
+                3 => "Please enter a valid membership type.",
+                4 => "User not found",
+                5 => "Please enter a valid Steam Id.",
+                6 => "Please enter a valid BungieID",
+                9 => "Profile not found.",
+                _ => requestData.DisplayName
+            };
         }
     }
 }

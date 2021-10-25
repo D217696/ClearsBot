@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ClearsBot.Objects
 {
-    public class Guild
+    public class InternalGuild
     {
         public ulong GuildId { get; set; } = 0;
         public string Prefix { get; set; } = "$";
@@ -16,6 +16,8 @@ namespace ClearsBot.Objects
         public ulong AdminRole { get; set; } = 0;
         public List<ulong> ModRoles { get; set; } = new List<ulong>();
         public List<Milestone> Milestones { get; set; } = new List<Milestone>();
+        public bool IsActive { get; set; } = true;
+        public bool UsesSlashCommands { get; set; } = true;
     }
     public class Milestone
     {

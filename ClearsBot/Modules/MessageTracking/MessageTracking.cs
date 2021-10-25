@@ -16,17 +16,18 @@ namespace ClearsBot.Modules
 
         public async void CheckTrackedMessages()
         {
-            
-            foreach((RestUserMessage message, DateTime timeAdded, TimeSpan timeToTrack)  message in new List<(RestUserMessage message, DateTime timeAdded, TimeSpan timeToTrack)>(TrackedMessages))
+
+            foreach ((RestUserMessage message, DateTime timeAdded, TimeSpan timeToTrack) message in new List<(RestUserMessage message, DateTime timeAdded, TimeSpan timeToTrack)>(TrackedMessages))
             {
-                if (message.timeAdded + message.timeToTrack <= DateTime.UtcNow) 
+                if (message.timeAdded + message.timeToTrack <= DateTime.UtcNow)
                 {
                     try
                     {
                         await message.message.DeleteAsync();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
+                        await message.message.ModifyAsync(x => x.Components = null);
                         Console.WriteLine("could not remove message");
                     }
                     TrackedMessages.Remove(message);

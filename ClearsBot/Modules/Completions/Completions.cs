@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+﻿using ClearsBot.Modules;
+using ClearsBot.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,16 @@ namespace ClearsBot.Modules
         public IEnumerable<(Raid raid, int completions)> GetRaidCompletionsForUser(User user, ulong guildId)
         {
             return _raids.GetRaids(guildId).Select(x => (raid: x, completions: user.Completions.Values.Where(_raids.GetCriteriaByRaid(x)).Count()));
+        }
+
+        public IEnumerable<Completion> GetRaidCompletionsListForUser(User user, ulong guildId)
+        {
+            List<Completion> completions = new List<Completion>();
+            foreach (Raid raid in _raids.GetRaids(guildId))
+            {
+                completions.AddRange(user.Completions.Values.Where(_raids.GetCriteriaByRaid(raid)));
+            }
+            return completions;
         }
     }
 }

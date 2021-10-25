@@ -3,6 +3,7 @@ C:\Users\Labra\OneDrive\Bureaublad\discord bot\ClearsBot.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\ClearsBot.deps.json
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\ClearsBot.runtimeconfig.json
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\ClearsBot.pdb
+C:\Users\Labra\OneDrive\Bureaublad\discord bot\ComposableAsync.Core.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.Commands.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.Core.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.Rest.dll
@@ -11,5 +12,6 @@ C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.WebSocket.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Newtonsoft.Json.dll
+C:\Users\Labra\OneDrive\Bureaublad\discord bot\RateLimiter.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\System.Interactive.Async.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\System.Linq.Async.dll

@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+﻿using ClearsBot.Modules;
+using ClearsBot.Objects;
 using Discord;
 using Discord.WebSocket;
 using System;
@@ -49,7 +50,7 @@ namespace ClearsBot.Modules
         }
         public async Task UpdateRolesForGuildsAsync()
         {
-            foreach (Guild guild in _guilds.GetGuilds().Values)
+            foreach (InternalGuild guild in _guilds.GetGuilds().Values)
             {
                 SocketGuild currentGuild = _guilds.GetGuildFromClient(guild.GuildId);
                 await currentGuild.DownloadUsersAsync();
@@ -67,10 +68,10 @@ namespace ClearsBot.Modules
                 await GiveRoleToUser(currentGuild.GetUser(usersTotal[1].user.DiscordID), currentGuild.GetRole(guild.SecondRole), currentGuild.Users);
                 await GiveRoleToUser(currentGuild.GetUser(usersTotal[2].user.DiscordID), currentGuild.GetRole(guild.ThirdRole), currentGuild.Users);
 
-                foreach(Milestone milestone in guild.Milestones)
+                foreach (Milestone milestone in guild.Milestones)
                 {
                     IEnumerable<(User user, int completions, int rank)> milestoneUsers = _completions.GetCompletionsForUsers(_users.GetGuildUsers(guild.GuildId), _bungie.ReleaseDate, DateTime.UtcNow, new[] { milestone.Raid });
-                    foreach((User user, int completions, int rank) user in milestoneUsers.Where(x => x.completions >= milestone.Completions))
+                    foreach ((User user, int completions, int rank) user in milestoneUsers.Where(x => x.completions >= milestone.Completions))
                     {
                         await GiveRoleToUser(currentGuild.GetUser(user.user.DiscordID), currentGuild.GetRole(milestone.Role), currentGuild.Users);
                     }

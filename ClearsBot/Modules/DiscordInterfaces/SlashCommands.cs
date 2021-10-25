@@ -13,19 +13,17 @@ namespace ClearsBot.Modules
     {
         readonly Users _users;
         readonly Commands _commands;
-        readonly IUtilities _utilities;
-        public SlashCommands(Users users, Commands commands, IUtilities utilities)
+        public SlashCommands(Users users, Commands commands)
         {
             _users = users;
             _commands = commands;
-            _utilities = utilities;
         }
 
         [SlashCommand("daily")]
         public async Task DailySlashCommand(SocketSlashCommand command)
         {
-            SocketSlashCommandData commandData = (SocketSlashCommandData)command.Data;
-            ulong userId = commandData == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser) commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
+            SocketSlashCommandData commandData = command.Data;
+            ulong userId = commandData == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser)commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
             ulong guildId = ((SocketGuildChannel)command.Channel).Guild.Id;
             string raidStringDaily = commandData.Options == null ? "" : commandData.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
             await command.FollowupAsync(embed: _commands.TimeFrameCommand(userId, guildId, raidStringDaily, TimeFrameHours.Day, "Daily").Build());
@@ -34,8 +32,8 @@ namespace ClearsBot.Modules
         [SlashCommand("weekly")]
         public async Task WeeklySlashCommand(SocketSlashCommand command)
         {
-            SocketSlashCommandData commandData = (SocketSlashCommandData)command.Data;
-            ulong userId = commandData.Options == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser) commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
+            SocketSlashCommandData commandData = command.Data;
+            ulong userId = commandData.Options == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser)commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
             ulong guildId = ((SocketGuildChannel)command.Channel).Guild.Id;
             string raidStringDaily = commandData.Options == null ? "" : commandData.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
             await command.FollowupAsync(embed: _commands.TimeFrameCommand(userId, guildId, raidStringDaily, TimeFrameHours.Week, "Weekly").Build());
@@ -44,7 +42,7 @@ namespace ClearsBot.Modules
         [SlashCommand("monthly")]
         public async Task MonthlySlashCommand(SocketSlashCommand command)
         {
-            SocketSlashCommandData commandData = (SocketSlashCommandData)command.Data;
+            SocketSlashCommandData commandData = command.Data;
             ulong userId = commandData.Options == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser)commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
             ulong guildId = ((SocketGuildChannel)command.Channel).Guild.Id;
             string raidStringDaily = commandData.Options == null ? "" : commandData.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
@@ -54,7 +52,7 @@ namespace ClearsBot.Modules
         [SlashCommand("yearly")]
         public async Task YearlySlashCommand(SocketSlashCommand command)
         {
-            SocketSlashCommandData commandData = (SocketSlashCommandData)command.Data;
+            SocketSlashCommandData commandData = command.Data;
             ulong userId = commandData.Options == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser)commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
             ulong guildId = ((SocketGuildChannel)command.Channel).Guild.Id;
             string raidStringDaily = commandData.Options == null ? "" : commandData.Options.Where(x => x.Name == "raid").FirstOrDefault().Value.ToString();
@@ -64,7 +62,7 @@ namespace ClearsBot.Modules
         [SlashCommand("completions")]
         public async Task CompletionsSlashCommand(SocketSlashCommand command)
         {
-            SocketSlashCommandData commandData = (SocketSlashCommandData)command.Data;
+            SocketSlashCommandData commandData = command.Data;
             ulong userId = commandData.Options == null ? command.User.Id : commandData.Options.Where(x => x.Name == "user").FirstOrDefault() == null ? command.User.Id : ((IGuildUser)commandData.Options.Where(x => x.Name == "user").FirstOrDefault().Value).Id;
             ulong guildId = ((SocketGuildChannel)command.Channel).Guild.Id;
 
@@ -75,7 +73,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-           // await command.FollowupAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), guildId).Build(), component: _utilities.GetButtonsForUser(users, guildId, "completions", users.FirstOrDefault()).Build());
+            // await command.FollowupAsync(embed: _utilities.GetCompletionsForUser(users.FirstOrDefault(), guildId).Build(), component: _utilities.GetButtonsForUser(users, guildId, "completions", users.FirstOrDefault()).Build());
 
         }
 

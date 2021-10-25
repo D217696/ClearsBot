@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+﻿using ClearsBot.Modules;
+using ClearsBot.Objects;
 using Discord;
 using Discord.WebSocket;
 using System;
@@ -11,7 +12,6 @@ namespace ClearsBot.Modules
 {
     public class ButtonsCommands
     {
-        readonly IUtilities _utilities;
         readonly Users _users;
         readonly IPermissions _permissions;
         readonly IRaids _raids;
@@ -20,9 +20,8 @@ namespace ClearsBot.Modules
         readonly Completions _completions;
         readonly IFormatting _formatting;
 
-        public ButtonsCommands(IUtilities utilities, Users users, IPermissions permissions, IRaids raids, Commands commands, Buttons buttons, Completions completions, IFormatting formatting)
+        public ButtonsCommands(Users users, IPermissions permissions, IRaids raids, Commands commands, Buttons buttons, Completions completions, IFormatting formatting)
         {
-            _utilities = utilities;
             _users = users;
             _permissions = permissions;
             _raids = raids;
@@ -41,39 +40,33 @@ namespace ClearsBot.Modules
             IEnumerable<User> users = _users.GetUsersByDiscordId(buttonData.DiscordUserId);
             var completions = _completions.GetRaidCompletionsForUser(user, buttonData.DiscordServerId);
 
-            await Context.Channel.SendMessageAsync(embed: _formatting.GetCompletionsEmbed(user, completions).Build(), component: _buttons.GetButtonsForUser(users.ToList(), "completions", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, null).Build());
+            await Context.Channel.SendMessageAsync(embed: _formatting.GetCompletionsEmbed(user, completions).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != user.MembershipId).ToList(), "completions", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, null).Build());
         }
-        //[Button("Completions")]
-        //public async Task CompletionsButton(SocketMessageComponent Context)
-        //{
-        //    string[] parameters = Context.Data.CustomId.Split("_");
-        //    ulong guildId = ((SocketGuildChannel)Context.Channel).Guild.Id;
-        //    await Context.Message.DeleteAsync(); 
-        //    User firstUser = _users.GetGuildUsers(ulong.Parse(parameters[1])).FirstOrDefault(x => x.MembershipId == long.Parse(parameters[2])); 
-        //    List<User> users = _users.GetGuildUsers(ulong.Parse(parameters[1])).Where(x => x.DiscordID == firstUser.DiscordID).ToList();
-        //    await Context.Channel.SendMessageAsync(embed: _utilities.GetCompletionsForUser(firstUser, guildId).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != long.Parse(parameters[2])).ToList(), "completions", users.FirstOrDefault().DiscordID, ((SocketGuildChannel)Context.Channel).Guild.Id, Context.Channel.Id, null).Build());
-        //}
 
-        //[Button("Fastest")]
-        //public async Task FastestButton(SocketMessageComponent Context)
-        //{
-        //    string[] parameters = Context.Data.CustomId.Split("_");
-        //    ulong guildId = ((SocketGuildChannel)Context.Channel).Guild.Id;
-        //    await Context.Message.DeleteAsync();
-        //    User firstUser = _users.GetGuildUsers(ulong.Parse(parameters[1])).FirstOrDefault(x => x.MembershipId == long.Parse(parameters[2]));
-        //    List<User> users = _users.GetGuildUsers(ulong.Parse(parameters[1])).Where(x => x.DiscordID == firstUser.DiscordID).ToList();
-        //    Raid raid = null;
-        //    string raidString = "";
-        //    if (parameters.Length >= 4)
-        //    {
-        //        raidString = parameters[3];
-        //    }
-        //    if(raidString != "")
-        //    {
-        //        raid = _raids.GetRaids(guildId).FirstOrDefault(x => x.Shortcuts.Contains(raidString) || x.DisplayName.ToLower().Contains(raidString));
-        //    }
-        //    await Context.Channel.SendMessageAsync(embed: _utilities.GetCompletionsForUser(firstUser, guildId).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != long.Parse(parameters[2])).ToList(), "fastest", users.FirstOrDefault().DiscordID, ((SocketGuildChannel)Context.Channel).Guild.Id, Context.Channel.Id, raid).Build());
-        //}
+        [Button("Fastest")]
+        public async Task FastestButton(SocketMessageComponent Context)
+        {
+            ButtonData buttonData = _buttons.GetButtonData(Context.Data.CustomId);
+            await Context.Message.DeleteAsync();
+            User user = _users.GetUserByMembershipId(buttonData.MembershipId);
+            IEnumerable<User> users = _users.GetUsersByDiscordId(buttonData.DiscordUserId);
+            Raid raid = null;
+            string raidName = "raid";
+            if (buttonData.Raid != null)
+            {
+                raid = buttonData.Raid;
+                raidName = buttonData.Raid.DisplayName;
+            }
+            await Context.Channel.SendMessageAsync(embed: _commands.FastestCommand(user, buttonData.DiscordServerId, raidName).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != user.MembershipId).ToList(), "fastest", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, raid).Build());
+        }
+
+        [Button("Register")]
+        public async Task RegisterButton(SocketMessageComponent Context)
+        {
+            ButtonData buttonData = _buttons.GetButtonData(Context.Data.CustomId);
+            await Context.Message.DeleteAsync();
+            await _commands.RegisterUserCommand(Context.Channel, buttonData.DiscordServerId, buttonData.DiscordUserId, "", buttonData.MembershipId.ToString(), buttonData.MembershipType.ToString());
+        }
 
         //[Button("Register")]
         //public async Task RegisterButton(SocketMessageComponent Context)

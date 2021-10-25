@@ -30,9 +30,10 @@ namespace ClearsBot.Modules
                 if (DateTime.Now.Minute % 5 == 0) _users.AddUsersToUpdateUsersList();
                 if (DateTime.Now.Minute % 30 == 0) _ = _users.UpdateUsersAsync();
                 if (DateTime.Now.Minute % 30 == 0) _ = _roles.UpdateRolesForGuildsAsync();
+                if (DateTime.Now.Minute % 58 == 0) _guilds.SyncGuilds();
                 if (DateTime.Now.Minute % 59 == 0)
                 {
-                    foreach (Guild guild in _guilds.GetGuilds().Values)
+                    foreach (InternalGuild guild in _guilds.GetGuilds().Values)
                     {
                         _ = _users.SyncUsers(guild.GuildId);
                     }

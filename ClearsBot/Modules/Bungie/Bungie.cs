@@ -1,9 +1,8 @@
-﻿using ClearsBot.Objects;
+﻿using ClearsBot.Modules.BungieDestiny2RequestHandler;
+using ClearsBot.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ClearsBot.Modules
@@ -19,127 +18,122 @@ namespace ClearsBot.Modules
 
         public async Task<RequestData> GetRequestDataAsync(string membershipId = "", string membershipType = "")
         {
-            const long steamIdLower = 76561190000000000;
-            const long steamIdUpper = 76561200000000000;
-            int searchMembershipType = -1;
-
-            RequestData requestData = new RequestData();
-
-            if (membershipId == "")
+            if (!int.TryParse(membershipType, out int membershipTypeInt))
             {
-                requestData.DisplayName = "Please enter an ID or register.";
-                requestData.Code = 2;
-
-                return requestData;
+                membershipTypeInt = -1;
             }
 
-            if (membershipType != "")
+            if (!long.TryParse(membershipId, out long membershipIdLong))
             {
-                bool succeed = int.TryParse(membershipType, out searchMembershipType);
-                if (!succeed)
-                {
-                    requestData.DisplayName = "Please enter a valid membership type.";
-                    requestData.Code = 3;
-
-                    return requestData;
-                }
+                membershipIdLong = 0;
             }
 
-            bool parsedSucceedId = long.TryParse(membershipId, out long parsedMembershipId);
-
-            if (!parsedSucceedId)
+            if (membershipType == "")
             {
-                SearchDestinyPlayer profiles = await _requestHandler.SearchDestinyPlayerAsync(membershipId, searchMembershipType.ToString());
-                if (profiles.ErrorCode != 1)
-                {
-                    requestData.Code = 7;
-                    requestData.DisplayName = profiles.Message;
-                    return requestData;
-                }
-
-                if (profiles.Response == null)
-                {
-                    requestData.DisplayName = "User not found.";
-                    requestData.Code = 4;
-
-                    return requestData;
-                }
-
-                if (profiles.Response.Count() > 1)
-                {
-                    requestData.profiles = profiles.Response;
-                    requestData.Code = 8;
-                    return requestData;
-                }
-
-                if (profiles.Response.Count() < 1)
-                {
-                    requestData.profiles = null;
-                    requestData.Code = 9;
-                    return requestData;
-                }
-
-                requestData.MembershipId = profiles.Response[0].MembershipId;
-                requestData.MembershipType = profiles.Response[0].MembershipType;
+                membershipType = "-1";
             }
-            else
+
+            var getProfileTaskXb = Task.Run(() => _requestHandler.GetProfileAsync(1, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
+            var getProfileTaskPs = Task.Run(() => _requestHandler.GetProfileAsync(2, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
+            var getProfileTaskPc = Task.Run(() => _requestHandler.GetProfileAsync(3, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
+            var getProfileTaskSt = Task.Run(() => _requestHandler.GetProfileAsync(5, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
+
+            var searchDestinyPlayerTask = Task.Run(() => _requestHandler.SearchDestinyPlayerAsync(membershipId, membershipType));
+            var getMembershipFromHardlinkedCredentialTask = Task.Run(() => _requestHandler.GetMembershipFromHardLinkedCredentialAsync(membershipIdLong));
+
+            await Task.WhenAll(getProfileTaskXb);
+            await Task.WhenAll(getProfileTaskPs);
+            await Task.WhenAll(getProfileTaskPc);
+            await Task.WhenAll(getProfileTaskSt);
+            await Task.WhenAll(searchDestinyPlayerTask);
+            await Task.WhenAll(getMembershipFromHardlinkedCredentialTask);
+
+            List<UserInfoCard> infoCards = new List<UserInfoCard>();
+            if (getProfileTaskXb.Result.Response != null)
             {
-                if (membershipType == "")
+                infoCards.Add(getProfileTaskXb.Result.Response.Profile.Data.UserInfo);
+            }
+            if (getProfileTaskPs.Result.Response != null)
+            {
+                infoCards.Add(getProfileTaskPs.Result.Response.Profile.Data.UserInfo);
+            }
+            if (getProfileTaskPc.Result.Response != null)
+            {
+                infoCards.Add(getProfileTaskPc.Result.Response.Profile.Data.UserInfo);
+            }
+            if (getProfileTaskSt.Result.Response != null)
+            {
+                infoCards.Add(getProfileTaskSt.Result.Response.Profile.Data.UserInfo);
+            }
+
+            if (searchDestinyPlayerTask.Result.Response.Count() > 0)
+            {
+                infoCards.AddRange(searchDestinyPlayerTask.Result.Response);
+            }
+
+            if (getMembershipFromHardlinkedCredentialTask.Result.Response != null)
+            {
+                infoCards.Add(new UserInfoCard()
                 {
-                    if (parsedMembershipId < steamIdLower || parsedMembershipId > steamIdUpper)
+                    MembershipId = getMembershipFromHardlinkedCredentialTask.Result.Response.MembershipId,
+                    MembershipType = getMembershipFromHardlinkedCredentialTask.Result.Response.MembershipType
+                });
+            }
+
+            if (infoCards.Count >= 1)
+            {
+                List<Task<GetLinkedProfiles>> tasks = new List<Task<GetLinkedProfiles>>();
+                foreach (UserInfoCard userInfoCard in infoCards)
+                {
+                    tasks.Add(Task.Run(() => _requestHandler.GetLinkedProfilesAsync(userInfoCard.MembershipType, userInfoCard.MembershipId)));
+                }
+
+                List<UserInfoCard> userInfoCards = new List<UserInfoCard>();
+
+                foreach (var res in await Task.WhenAll(tasks))
+                {
+                    if (res.ErrorCode == 1)
                     {
-                        requestData.DisplayName = "Please enter a valid Steam Id.";
-                        requestData.MembershipId = 0;
-                        requestData.MembershipType = 0;
-                        requestData.Code = 5;
-
-                        return requestData;
-                    }
-                    else
-                    {
-                        GetMembershipFromHardLinkedCredential steamProfile = await _requestHandler.GetMembershipFromHardLinkedCredentialAsync(parsedMembershipId);
-                        if (steamProfile.ErrorCode != 1)
+                        foreach (var profile in res.Response.Profiles)
                         {
-                            requestData.Code = 7;
-                            requestData.DisplayName = steamProfile.Message;
-                            return requestData;
+                            if (userInfoCards.FirstOrDefault(x => x.MembershipId == profile.MembershipId) != null) continue;
+                            userInfoCards.Add(new UserInfoCard()
+                            {
+                                MembershipId = profile.MembershipId,
+                                MembershipType = profile.MembershipType,
+                                DisplayName = profile.BungieGlobalDisplayName
+                            });
                         }
-                        requestData.MembershipId = steamProfile.Response.MembershipId;
-                        requestData.MembershipType = steamProfile.Response.MembershipType;
-                        requestData.SteamID = parsedMembershipId;
                     }
                 }
-                else
+
+                if (userInfoCards.Count > 1)
                 {
-                    bool parsedSucceedType = int.TryParse(membershipType, out int parsedMembershipType);
-                    if (!parsedSucceedType || parsedMembershipType > 5 || parsedMembershipType <= 0)
+                    return new RequestData()
                     {
-                        requestData.DisplayName = "Please enter a valid Bungie Id.";
-                        requestData.MembershipId = 0;
-                        requestData.MembershipType = 0;
-                        requestData.Code = 6;
-
-                        return requestData;
-                    }
-                    requestData.MembershipId = parsedMembershipId;
-                    requestData.MembershipType = parsedMembershipType;
+                        Code = 8,
+                        profiles = userInfoCards.ToArray()
+                    };
                 }
+
+                if (userInfoCards.Count > 0)
+                {
+                    return new RequestData()
+                    {
+                        Code = 1,
+                        MembershipId = userInfoCards.FirstOrDefault().MembershipId,
+                        MembershipType = userInfoCards.FirstOrDefault().MembershipType,
+                        DisplayName = userInfoCards.FirstOrDefault().DisplayName,
+                        profiles = userInfoCards.ToArray()
+                    };
+                }
+
             }
 
-            GetProfile profile = await _requestHandler.GetProfileAsync(requestData.MembershipType, requestData.MembershipId, new[] { DestinyComponentType.Profiles });
-            if (profile.ErrorCode != 1)
+            return new RequestData()
             {
-                requestData.Code = 7;
-                requestData.DisplayName = profile.Message;
-                return requestData;
-            }
-            else
-            {
-                requestData.DisplayName = profile.Response.Profile.Data.UserInfo.DisplayName;
-                requestData.DateLastPlayed = profile.Response.Profile.Data.DateLastPlayed;
-            }
-
-            return requestData;
+                Code = 4
+            };
         }
 
         public async Task<GetCompletionsResponse> GetCompletionsForUserAsync(User user)
@@ -186,7 +180,7 @@ namespace ClearsBot.Modules
                     {
                         if (!(activity.Values["completionReason"].Basic.DisplayValue == "Objective Completed" && activity.Values["completed"].Basic.Value == 1.0)) continue;
                         if (user.Completions.ContainsKey(activity.ActivityDetails.InstanceId)) continue;
-                        if (activity.Period > new DateTime(2020, 10, 10, 0, 0, 0))
+                        if (activity.Period > new DateTime(2020, 11, 10, 17, 0, 0))
                         {
                             user.Completions.Add(activity.ActivityDetails.InstanceId, new Completion()
                             {

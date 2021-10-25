@@ -5,3 +5,6 @@ ClearsBot/obj/ClearsBot.csproj.nuget.g.props
 ClearsBot/obj/ClearsBot.csproj.nuget.dgspec.json
 ClearsBot/obj/ClearsBot.csproj.nuget.g.props
 ClearsBot/bin/Debug/netcoreapp3.1/ClearsBot.runtimeconfig.dev.json
+ClearsBot/obj/project.nuget.cache
+ClearsBot/obj/project.assets.json
+ClearsBot/obj/Debug/netcoreapp3.1/ClearsBot.GeneratedMSBuildEditorConfig.editorconfig

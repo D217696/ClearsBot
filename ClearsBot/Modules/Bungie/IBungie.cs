@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 
 namespace ClearsBot.Modules
-{
     public interface IBungie
     {
         DateTime ReleaseDate { get; set; }

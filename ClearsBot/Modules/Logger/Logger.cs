@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ClearsBot
+namespace ClearsBot.Modules
 {
     public class Logger : ILogger
     {

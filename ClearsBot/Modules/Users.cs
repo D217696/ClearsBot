@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using ClearsBot.Modules;
 
 namespace ClearsBot.Modules
 {
@@ -21,30 +22,33 @@ namespace ClearsBot.Modules
         readonly IBungieDestiny2RequestHandler _requestHandler;
         readonly IBungie _bungie;
         readonly IRaids _raids;
+        readonly IGuilds _guilds;
         readonly IStorage _storage;
-        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IRaids raids, IStorage storage)
+        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IRaids raids, IStorage storage, IGuilds guilds)
         {
             _requestHandler = requestHandler;
             _bungie = bungie;
             _raids = raids;
             _storage = storage;
+            _guilds = guilds;
 
             users = _storage.GetUsersFromStorage();
             Console.WriteLine($"{users.Count()}");
         }
         
-        public async Task GuildJoined(ulong guildId)
-        {
-            _ = SyncUsers(guildId);
-        }
         public async Task SyncUsers(ulong guildId)
         {
             SocketGuild guild = Program._client.Guilds.FirstOrDefault(x => x.Id == guildId);
+            if (guild == null) return;
+            if (_guilds.GetGuild(guildId) == null) return;
+            if (!_guilds.GetGuild(guildId).IsActive) return;
+
             foreach (IGuildUser guildUser in await guild.GetUsersAsync().FlattenAsync())
             {
                 foreach (User user in users.Where(x => x.DiscordID == guildUser.Id))
                 {
-                    user.GuildIDs.Add(guildId);
+                    if (!user.GuildIDs.Contains(guildId)) user.GuildIDs.Add(guildId);
+                    user.GuildIDs = user.GuildIDs.GroupBy(x => x).SelectMany(x => x).ToList(); // line can be taken out in the future
                 }
             }
         }
@@ -78,6 +82,7 @@ namespace ClearsBot.Modules
             var temp = new List<User>(usersToUpdate);
             foreach(User user in temp)
             {
+                //await UpdateUser(user);
                 updateTasks.Add(Task.Run(() => UpdateUser(user)));
             }
             usersToUpdate = new List<User>();
@@ -96,6 +101,12 @@ namespace ClearsBot.Modules
                     users.FirstOrDefault(x => x.MembershipId == getCompletionsResponse.User.MembershipId).DateLastPlayed = getCompletionsResponse.User.DateLastPlayed;
                 }
             }
+        }
+
+        public void ResetUserCompletions(User user)
+        {
+            users.FirstOrDefault(x => x.MembershipId == user.MembershipId).Completions = new Dictionary<long, Completion>();
+            users.FirstOrDefault(x => x.MembershipId == user.MembershipId).DateLastPlayed = new DateTime(2017, 9, 6);
         }
         public void SaveUsers()
         {

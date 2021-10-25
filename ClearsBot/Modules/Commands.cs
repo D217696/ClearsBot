@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+﻿using ClearsBot.Modules;
+using ClearsBot.Objects;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
@@ -17,21 +18,21 @@ namespace ClearsBot.Modules
         readonly Users _users;
         readonly IRaids _raids;
         readonly IPermissions _permissions;
-        readonly IUtilities _utilities;
         readonly IFormatting _formatting;
         readonly MessageTracking _messageTracking;
         readonly Buttons _buttons;
-        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IUtilities utilities, IFormatting formatting, MessageTracking messageTracking, Buttons buttons)
+        readonly ILanguages _languages;
+        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IFormatting formatting, MessageTracking messageTracking, Buttons buttons, ILanguages languages)
         {
             _bungie = bungie;
             _completions = completions;
             _users = users;
             _raids = raids;
             _permissions = permissions;
-            _utilities = utilities;
             _formatting = formatting;
             _messageTracking = messageTracking;
             _buttons = buttons;
+            _languages = languages;
         }
 
         //leaderboard commands
@@ -126,12 +127,29 @@ namespace ClearsBot.Modules
             }
             return embed;
         }
+
         //user commands
+        public EmbedBuilder FastestCommand(User user, ulong guildId, string raidString)
+        {
+            var embed = new EmbedBuilder();
+            Raid raid = _raids.GetRaid(guildId, raidString);
+            if (raid != null)
+            {
+                IEnumerable<Completion> completions = user.Completions.Values.Where(_raids.GetCriteriaByRaid(raid)).OrderBy(x => x.Time);
+                return _formatting.GetFastestEmbed(completions, user.Username, raid.DisplayName, guildId);
+            }
+
+            return _formatting.GetFastestEmbed(_completions.GetRaidCompletionsListForUser(user, guildId).OrderBy(x => x.Time), user.Username, "raid", guildId);
+        }
+        public EmbedBuilder CompletionsCommand(User user, ulong guildId)
+        {
+            return _formatting.GetCompletionsEmbed(user, _completions.GetRaidCompletionsForUser(user, guildId));
+        }
         public async Task RegisterUserCommand(ISocketMessageChannel channel, ulong guildId, ulong userId, string discordUsername, string membershipId = "", string membershipType = "", RestFollowupMessage restFollowupMessage = null)
         {
             if (membershipId == "")
             {
-                await channel.SendMessageAsync("Usage: /register (Joincode or bungie name)");
+                await channel.SendMessageAsync(_languages.GetLanguageText("en", "register-command"));
                 return;
             }
 
@@ -154,7 +172,7 @@ namespace ClearsBot.Modules
             RequestData requestData = await _bungie.GetRequestDataAsync(membershipId, membershipType);
             if (requestData.Code != 1 && requestData.Code != 8)
             {
-                await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription(_utilities.GetErrorCodeForUserSearch(requestData)).Build());
+                await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription(_languages.GetErrorCodeForUserSearch(requestData)).Build());
                 return;
             }
             else if (requestData.Code == 8)
@@ -162,15 +180,13 @@ namespace ClearsBot.Modules
                 int buttonCount = 0;
                 int buttonRow = 0;
                 var componentBuilder = new ComponentBuilder();
-                foreach (UserInfoCard userInfoCard in requestData.profiles)
+                IEnumerable<User> users = requestData.profiles.Select(x => new User()
                 {
-                    ButtonStyle buttonStyle = _buttons.GetButtonStyleForPlatform(userInfoCard.MembershipType);
-
-                    componentBuilder.WithButton(new ButtonBuilder().WithLabel(userInfoCard.DisplayName).WithCustomId($"register_{userInfoCard.MembershipId}_{userInfoCard.MembershipType}").WithStyle(buttonStyle), buttonRow);
-                    buttonCount++;
-                    if (buttonCount % 5 == 0) buttonRow++;
-                }
-                await restUserMessage.ModifyAsync(x => x.Components = componentBuilder.Build());
+                    MembershipId = x.MembershipId,
+                    MembershipType = x.MembershipType,
+                    Username = x.DisplayName
+                });
+                await restUserMessage.ModifyAsync(x => x.Components = _buttons.GetButtonsForUser(users.ToList(), "register", userId, guildId, channel.Id, null).Build());
                 await restUserMessage.ModifyAsync(x => x.Embed = embed.WithDescription("Multiple profiles found, select correct one below").Build());
                 return;
             }
@@ -207,5 +223,6 @@ namespace ClearsBot.Modules
 
             _users.SaveUsers();
         }
+
     }
 }

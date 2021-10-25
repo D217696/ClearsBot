@@ -1,8 +1,7 @@
-﻿using ClearsBot.Modules;
-using ClearsBot.Objects;
+﻿using ClearsBot.Objects;
 using System.Threading.Tasks;
 
-namespace ClearsBot
+namespace ClearsBot.Modules
 {
     public interface IBungieDestiny2RequestHandler
     {
@@ -12,5 +11,6 @@ namespace ClearsBot
         Task<GetProfile> GetProfileAsync(int membershipType, long membershipId, DestinyComponentType[] components = null);
         Task<SearchDestinyPlayer> SearchDestinyPlayerAsync(string membershipId, string membershipType = "");
         Task<GetPostGameCarnageReport> GetPostGameCarnageReportAsync(long postGameCarnageReportId);
+        Task<GetLinkedProfiles> GetLinkedProfilesAsync(int membershipType, long membershipId);
     }
 }
