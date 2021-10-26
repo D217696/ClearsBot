@@ -1,5 +1,4 @@
-﻿using ClearsBot.Modules.Logger;
-using ClearsBot.Objects;
+﻿using ClearsBot.Objects;
 using ComposableAsync;
 using Newtonsoft.Json;
 using RateLimiter;
@@ -11,7 +10,7 @@ namespace ClearsBot.Modules
 {
     public class BungieDestiny2RequestHandler : IBungieDestiny2RequestHandler
     {
-        private string ApiKey { get; set; } = Config.bot.apiKey;
+        private string ApiKey { get; set; } = ""; //Config.bot.apiKey;
         private string BaseUrl { get; set; } = "https://www.bungie.net/Platform";
         private readonly HttpClient client = new HttpClient();
         readonly ILogger _logger;

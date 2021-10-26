@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClearsBot
 {
-
-    class Program
+    public class Program
     {
         public static DiscordSocketClient _client;
         CommandService _commandService;
@@ -19,7 +18,7 @@ namespace ClearsBot
         => new Program().StartAsync().GetAwaiter().GetResult();
         public async Task StartAsync()
         {
-            if (Config.bot.token == "" || Config.bot.token == null) return;
+            //if (Config.bot.token == "" || Config.bot.token == null) return;
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
@@ -34,11 +33,13 @@ namespace ClearsBot
             });
 
             _services = ConfigureServices();
+
+
             _client.Log += Log;
 
             _handler = _services.GetRequiredService<DiscordEvents>();
             _ = _services.GetRequiredService<UpdateLoop>();
-            await _client.LoginAsync(TokenType.Bot, Config.bot.token);
+            //await _client.LoginAsync(TokenType.Bot, Config.bot.token);
             await _client.StartAsync();
             await _client.SetGameAsync("Spire of Stars is the best raid");
 

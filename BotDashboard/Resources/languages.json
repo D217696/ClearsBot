@@ -1,0 +1,9 @@
+{
+  "en": {
+    "rank-entry": "{0}) {1}: {2} completions \n",
+    "rank-entry-active": "**{0}) {1}: {2} completions** \n",
+    "unregistered-message": "\n you haven't registered",
+    "register-command": "Usage: $register (Joincode or bungie name)",
+    "user-unregistered": "Target user hasn't registered"
+  }
+}

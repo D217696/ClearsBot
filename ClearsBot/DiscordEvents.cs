@@ -1,14 +1,11 @@
 ﻿using ClearsBot.Modules;
-using ClearsBot.Modules.DiscordInterfaces;
-using ClearsBot.Modules.Logger;
-using ClearsBot.Modules.Raids;
-using ClearsBot.Modules.Slashes;
 using ClearsBot.Objects;
 using Discord;
 using Discord.Commands;
 using Discord.Net;
 using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -104,7 +101,7 @@ namespace ClearsBot
 
         private async void Init()
         {
-            await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
+            await _commandService.AddModulesAsync(Assembly.GetExecutingAssembly(), _serviceProvider);
         }
 
         public async Task InteractionCreatedAsync(SocketInteraction arg)

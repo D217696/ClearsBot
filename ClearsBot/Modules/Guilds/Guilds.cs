@@ -15,15 +15,17 @@ namespace ClearsBot.Modules
     {
         readonly ILogger _logger;
         readonly IStorage _storage;
+        readonly DiscordSocketClient _client;
         private Dictionary<ulong, InternalGuild> GuildsList { get; set; } = new Dictionary<ulong, InternalGuild>();
-        public Guilds(ILogger logger, IStorage storage)
+        public Guilds(ILogger logger, IStorage storage, DiscordSocketClient client)
         {
             _logger = logger;
             _storage = storage;
+            _client = client;
 
             GuildsList = _storage.GetGuildsFromStorage();
 
-            foreach (SocketGuild guild in Program._client.Guilds)
+            foreach (SocketGuild guild in _client.Guilds)
             {
                 if (GuildsList.ContainsKey(guild.Id)) continue;
                 GuildsList.Add(guild.Id, new InternalGuild() { GuildId = guild.Id });

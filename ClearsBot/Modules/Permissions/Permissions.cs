@@ -19,7 +19,7 @@ namespace ClearsBot.Modules
         {
             List<ulong> roles = new List<ulong>(user.RoleIds);// JsonConvert.DeserializeObject<List<ulong>>(JsonConvert.SerializeObject(user.RoleIds));
             InternalGuild guild = _guilds.GetGuild(user.Guild.Id);
-            if (user.Id == Config.bot.owner) return PermissionLevels.BotOwner;
+            //if (user.Id == Config.bot.owner) return PermissionLevels.BotOwner;
             if (user.Id == guild.GuildOwner) return PermissionLevels.AdminUser;
             if (roles.Contains(guild.AdminRole)) return PermissionLevels.AdminRole;
             foreach (ulong roleId in guild.ModRoles)

@@ -97,3 +97,7 @@ C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\obj\Debug\netcorea
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\obj\Debug\netcoreapp3.1\ClearsBot.genruntimeconfig.cache
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\ComposableAsync.Core.dll
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\RateLimiter.dll
+C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Primitives.dll

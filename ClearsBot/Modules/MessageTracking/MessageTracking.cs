@@ -23,12 +23,11 @@ namespace ClearsBot.Modules
                 {
                     try
                     {
-                        await message.message.DeleteAsync();
+                        await message.message.ModifyAsync(x => x.Components = null);
                     }
                     catch (Exception ex)
                     {
-                        await message.message.ModifyAsync(x => x.Components = null);
-                        Console.WriteLine("could not remove message");
+                        Console.WriteLine("could not remove components");
                     }
                     TrackedMessages.Remove(message);
                 }

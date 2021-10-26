@@ -1,4 +1,5 @@
 ﻿using ClearsBot.Objects;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,12 +13,14 @@ namespace ClearsBot.Modules
         readonly Users _users;
         readonly MessageTracking _messageTracking;
         readonly IGuilds _guilds;
-        public UpdateLoop(Roles roles, Users users, MessageTracking messageTracking, IGuilds guilds)
+        readonly DiscordSocketClient _client;
+        public UpdateLoop(Roles roles, Users users, MessageTracking messageTracking, IGuilds guilds, DiscordSocketClient client)
         {
             _roles = roles;
             _users = users;
             _guilds = guilds;
             _messageTracking = messageTracking;
+            _client = client;
 
             new Thread(new ThreadStart(UpdateUsers)).Start();
         }
@@ -26,7 +29,7 @@ namespace ClearsBot.Modules
         {
             while (true)
             {
-                if (Program._client.ConnectionState != Discord.ConnectionState.Connected) continue;
+                if (_client.ConnectionState != Discord.ConnectionState.Connected) continue;
                 if (DateTime.Now.Minute % 5 == 0) _users.AddUsersToUpdateUsersList();
                 if (DateTime.Now.Minute % 30 == 0) _ = _users.UpdateUsersAsync();
                 if (DateTime.Now.Minute % 30 == 0) _ = _roles.UpdateRolesForGuildsAsync();

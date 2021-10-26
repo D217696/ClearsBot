@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ITkvuV2dafxrGdA1ao0TcyM2OaWVAjXU7soHhYlKrBP8QcNCssuqbKYZcnnJZoonWSStwy0CwdTwUuryH56cwA==",
+  "dgSpecHash": "DCFqsOVFgQE1Dvj4qBhKgkBsLNgwT/OTfcMpirOtLtzJhIdDF+YD5HkCXgzT4pOv/miIhGcxZDjMpxPWgV0ClA==",
   "success": true,
   "projectFilePath": "C:\\Users\\Labra\\OneDrive\\Documenten\\GitHub\\ClearsBot\\ClearsBot\\ClearsBot.csproj",
   "expectedPackageFiles": [
@@ -11,8 +11,12 @@
     "C:\\Users\\Labra\\.nuget\\packages\\discord.net.labs.rest\\3.1.7\\discord.net.labs.rest.3.1.7.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\discord.net.labs.webhook\\3.1.7\\discord.net.labs.webhook.3.1.7.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\discord.net.labs.websocket\\3.1.7\\discord.net.labs.websocket.3.1.7.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\5.0.0\\microsoft.extensions.configuration.abstractions.5.0.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\5.0.2\\microsoft.extensions.dependencyinjection.5.0.2.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\5.0.0\\microsoft.extensions.dependencyinjection.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\5.0.0\\microsoft.extensions.fileproviders.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\5.0.0\\microsoft.extensions.hosting.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
