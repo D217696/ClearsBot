@@ -10,16 +10,19 @@ namespace ClearsBot.Modules
 {
     public class BungieDestiny2RequestHandler : IBungieDestiny2RequestHandler
     {
-        private string ApiKey { get; set; } = ""; //Config.bot.apiKey;
+        readonly ILogger _logger;
+        readonly Config _config;
+        private string ApiKey { get; set; }
         private string BaseUrl { get; set; } = "https://www.bungie.net/Platform";
         private readonly HttpClient client = new HttpClient();
-        readonly ILogger _logger;
         TimeLimiter timeConstraint = TimeLimiter.GetFromMaxCountByInterval(20, TimeSpan.FromSeconds(1));
 
-        public BungieDestiny2RequestHandler(ILogger logger)
+        public BungieDestiny2RequestHandler(ILogger logger, Config config)
         {
             client.DefaultRequestHeaders.Add("X-API-Key", ApiKey);
             _logger = logger;
+            _config = config;
+            ApiKey = _config.bot.apiKey;
         }
 
         public async Task<GetActivityHistory> GetActivityHistoryAsync(int membershipType, long membershipId, long characterId, int page)

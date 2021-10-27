@@ -1,0 +1,9 @@
+﻿@page
+@model BotDashboard.Pages.Users.IndexModel
+@{
+}
+
+<form action="/" method="post">
+    <h1>@Model._users.GetAllUsers().Count()</h1>
+    <h2>@Model._users.GetAllUsers().Sum(x => x.Completions.Count()) completions</h2>
+</form>

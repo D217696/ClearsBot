@@ -48,7 +48,7 @@ namespace ClearsBot.Modules
             Dictionary<ulong, InternalGuild> guildsCopy = new Dictionary<ulong, InternalGuild>(GuildsList);
             foreach (InternalGuild guild in guildsCopy.Values)
             {
-                if (Program._client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId) != null)
+                if (_client.Guilds.FirstOrDefault(x => x.Id == guild.GuildId) != null)
                 {
                     guild.IsActive = true;
                 }
@@ -59,7 +59,7 @@ namespace ClearsBot.Modules
             }
             GuildsList = guildsCopy;
 
-            foreach (SocketGuild guild in Program._client.Guilds.Where(x => !GuildsList.ContainsKey(x.Id)))
+            foreach (SocketGuild guild in _client.Guilds.Where(x => !GuildsList.ContainsKey(x.Id)))
             {
                 JoinedGuild(guild.Id, guild.OwnerId);
             }
@@ -94,7 +94,7 @@ namespace ClearsBot.Modules
 
         public SocketGuild GetGuildFromClient(ulong guildId)
         {
-            if (Program._client.Guilds.FirstOrDefault(x => x.Id == guildId) != null) return Program._client.Guilds.FirstOrDefault(x => x.Id == guildId);
+            if (_client.Guilds.FirstOrDefault(x => x.Id == guildId) != null) return _client.Guilds.FirstOrDefault(x => x.Id == guildId);
             _logger.LogError($"Tried to get guild: {guildId}, could not get from client");
             return null;
         }

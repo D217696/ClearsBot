@@ -24,13 +24,15 @@ namespace ClearsBot.Modules
         readonly IRaids _raids;
         readonly IGuilds _guilds;
         readonly IStorage _storage;
-        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IRaids raids, IStorage storage, IGuilds guilds)
+        readonly DiscordSocketClient _client;
+        public Users(IBungieDestiny2RequestHandler requestHandler, IBungie bungie, IRaids raids, IStorage storage, IGuilds guilds, DiscordSocketClient client)
         {
             _requestHandler = requestHandler;
             _bungie = bungie;
             _raids = raids;
             _storage = storage;
             _guilds = guilds;
+            _client = client;
 
             users = _storage.GetUsersFromStorage();
             Console.WriteLine($"{users.Count()}");
@@ -38,7 +40,7 @@ namespace ClearsBot.Modules
         
         public async Task SyncUsers(ulong guildId)
         {
-            SocketGuild guild = Program._client.Guilds.FirstOrDefault(x => x.Id == guildId);
+            SocketGuild guild = _client.Guilds.FirstOrDefault(x => x.Id == guildId);
             if (guild == null) return;
             if (_guilds.GetGuild(guildId) == null) return;
             if (!_guilds.GetGuild(guildId).IsActive) return;
@@ -144,7 +146,6 @@ namespace ClearsBot.Modules
             if (users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.SteamID == requestData.SteamID).FirstOrDefault() != null && requestData.SteamID != 0) return new UserResponse() { User = users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.SteamID == requestData.SteamID).FirstOrDefault(), Code = 3 };
             if (users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.MembershipId == requestData.MembershipId).FirstOrDefault() != null) return new UserResponse() { User = users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.MembershipId == requestData.MembershipId).FirstOrDefault(), Code = 4 };
 
-            Bungie bungie = new Bungie(new BungieDestiny2RequestHandler(new Logger()));
             GetHistoricalStatsForAccount getHistoricalStatsForAccount = await _requestHandler.GetHistoricalStatsForAccount(requestData.MembershipType, requestData.MembershipId);
             if (getHistoricalStatsForAccount.ErrorCode != 1) return new UserResponse() { User = null, Code = 5 };
 

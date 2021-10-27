@@ -101,3 +101,9 @@ C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcorea
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.FileProviders.Abstractions.dll
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Hosting.Abstractions.dll
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Primitives.dll
+C:\Users\Labra\Documents\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\ComposableAsync.Core.dll
+C:\Users\Labra\Documents\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\Labra\Documents\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Users\Labra\Documents\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\Labra\Documents\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Primitives.dll
+C:\Users\Labra\Documents\GitHub\ClearsBot\ClearsBot\bin\Debug\netcoreapp3.1\RateLimiter.dll
