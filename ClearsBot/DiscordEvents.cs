@@ -64,7 +64,7 @@ namespace ClearsBot
                 SlashCommands.Add(methodInfo.CustomAttributes.Where(x => x.AttributeType == typeof(SlashCommandAttribute)).FirstOrDefault().ConstructorArguments.FirstOrDefault().Value.ToString().ToLower(), methodInfo);
             }
 
-            Init();
+            //Init();
         }
 
         private Task _client_LeftGuild(SocketGuild arg)
@@ -99,10 +99,10 @@ namespace ClearsBot
         }
 
 
-        private async void Init()
-        {
-            await _commandService.AddModulesAsync(Assembly.GetExecutingAssembly(), _serviceProvider);
-        }
+        //private async void Init()
+        //{
+        //    await _commandService.AddModulesAsync(Assembly.GetExecutingAssembly(), _serviceProvider);
+        //}
 
         public async Task InteractionCreatedAsync(SocketInteraction arg)
         {

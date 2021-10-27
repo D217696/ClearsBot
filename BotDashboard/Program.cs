@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,43 +16,31 @@ namespace BotDashboard
     {
         public static void Main(string[] args)
         {
-            //GenericHost
-            //using var host  = new HostBuilder()
-            //    .ConfigureServices((context, services) => services 
-            //    .AddSingleton<ClearsBot.Program>()
-            //    .BuildServiceProvider()
-
-
-            //    )
-            //CreateHostBuilder(args).Build().Run();
-            _ = Start();
-        }
-
-        private static async Task Start()
-        {
-            using var host = new HostBuilder()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services
-                        .AddClearsBot();
-                }).Build();
+            using var host = CreateHostBuilder().Build();
 
             host.Run();
-            //await Host.CreateDefaultBuilder()
-            //    .ConfigureServices((hostContext, services) =>
-            //    {
-            //        services
-            //        .AddHostedService<ClearsBot.EntryPoint>()
-            //        .AddSingleton<ClearsBot.Modules.IRaids, ClearsBot.Modules.Raids>();
-
-            //    }).RunConsoleAsync();
         }
 
-        //public static IHostBuilder CreateHostBuilder(string[] args) =>
-        //    Host.CreateDefaultBuilder(args)
-        //        .ConfigureWebHostDefaults(webBuilder =>
-        //        {
-        //            webBuilder.UseStartup<Startup>();
-        //        });
+        public static IHostBuilder CreateHostBuilder()
+        {
+            return new HostBuilder()
+                .ConfigureWebHostDefaults(webBuilder => { 
+                    webBuilder
+                        .UseStartup<Startup>();
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddClearsBot();
+                })
+                .ConfigureLogging((context, builder) => {
+                    builder
+                        .AddConfiguration(context.Configuration.GetSection("Logging"))
+                        .AddConsole();
+
+                    if (context.HostingEnvironment.IsDevelopment())
+                        builder.AddDebug();
+                })
+                .UseContentRoot(Directory.GetCurrentDirectory());
+        }
     }
 }

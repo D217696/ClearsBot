@@ -17,33 +17,27 @@ namespace ClearsBot
         DiscordSocketClient _client;
         CommandService _commandService;
         ServiceProvider _services;
-        DiscordEvents _handler;
+        DiscordEvents _discordEvents;
+        UpdateLoop _updateLoop;
         Config _config;
-        IServiceProvider _serviceProvider;
 
-        public EntryPoint(Config config, IServiceProvider serviceProvider, DiscordSocketClient client)
+        public EntryPoint(Config config, DiscordSocketClient client, DiscordEvents discordEvents, UpdateLoop updateLoop)
         {
             _config = config;
-            _serviceProvider = serviceProvider;
             _client = client;
+            _discordEvents = discordEvents;
+            _updateLoop = updateLoop;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             if (_config.bot.token == "" || _config.bot.token == null) return;
 
-            _serviceProvider.GetRequiredService<DiscordEvents>();
-            _serviceProvider.GetRequiredService<UpdateLoop>();
-
             _client.Log += Log;
 
-            //_handler = _services.GetRequiredService<DiscordEvents>();
-            //_ = _services.GetRequiredService<UpdateLoop>();
             await _client.LoginAsync(TokenType.Bot, _config.bot.token);
             await _client.StartAsync();
             await _client.SetGameAsync("Spire of Stars is the best raid");
-
-            await Task.Delay(-1);
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {

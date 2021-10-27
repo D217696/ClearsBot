@@ -10,11 +10,13 @@ namespace BotDashboard.Pages
 {
     public class IndexModel : PageModel
     {
+        public ClearsBot.Modules.Users _users;
         private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(ILogger<IndexModel> logger, ClearsBot.Modules.Users users)
         {
             _logger = logger;
+            _users = users;
         }
 
         public void OnGet()

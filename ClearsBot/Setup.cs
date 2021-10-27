@@ -26,7 +26,17 @@ namespace ClearsBot
             return services
             .AddHostedService<EntryPoint>()
             .AddSingleton(client)
-            .AddSingleton(commandService)
+            .AddSingleton(serviceProvider => 
+            {
+                var commandService = new CommandService(new CommandServiceConfig()
+                {
+                    IgnoreExtraArgs = true
+                });
+
+                commandService.AddModuleAsync(typeof(TextCommands), serviceProvider);
+
+                return commandService;
+            })
             .AddSingleton<DiscordEvents>()
             .AddSingleton<UpdateLoop>()
             .AddSingleton<IBungie, Bungie>()
