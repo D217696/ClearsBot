@@ -1,8 +1,4 @@
 ﻿using ClearsBot.Modules;
-using ClearsBot.Modules.DiscordInterfaces;
-using ClearsBot.Modules.Logger;
-using ClearsBot.Modules.Raids;
-using ClearsBot.Modules.Slashes;
 using ClearsBot.Objects;
 using Discord;
 using Discord.Commands;

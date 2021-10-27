@@ -15,7 +15,12 @@
       "ProjectGuid": "1fcbdffd-9057-47de-89d9-865ff18504bf",
       "DisplayName": "BotDashboard",
       "ColorIndex": 1
+    },
+    "925a1952-b0c0-4f8b-8ac1-cb8c319b27e4": {
+      "ProjectGuid": "925a1952-b0c0-4f8b-8ac1-cb8c319b27e4",
+      "DisplayName": "BotDashboard",
+      "ColorIndex": 2
     }
   },
-  "NextColorIndex": 2
+  "NextColorIndex": 3
 }
