@@ -3,7 +3,56 @@
 @{
 }
 
-<form action="/" method="post">
-    <h1>@Model._users.GetAllUsers().Count()</h1>
-    <h2>@Model._users.GetAllUsers().Sum(x => x.Completions.Count()) completions</h2>
-</form>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<div id="app">
+    <input v-on:input="tbChange()" v-model="usernameSearch"/>
+    <div style="overflow-y: scroll; height: 200px;">
+        <div v-for="user in filteredUsers" v-if="users != null" v-on:click="SetActiveUser(user.guid)">
+            <h4>{{ user.username }}</h4>
+            <h5>{{ user.membershipId }} {{ user.membershipType }}</h5>
+        </div>
+    </div>
+    <div v-if="activeUser != null">
+         <h1>{{ activeUser.username }}</h1>
+         <h2>{{ activeUser.membershipId }}</h2>
+         <h2>{{ activeUser.membershipType }}</h2>
+         <h2>{{ activeUser.discordId }}</h2>
+    </div>
+</div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            usernameSearch: "",
+            users: [],
+            filteredUsers: [],
+            activeUser: null
+        },
+        mounted() {
+            fetch('api/Users/GetUsers', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then((data) => {
+                this.users = data;
+                this.filteredUsers = data;
+            });
+        },
+        methods: {
+            tbChange(){
+                this.filteredUsers = this.users.filter(user => user.username.toLowerCase().includes(this.usernameSearch.toLowerCase()) 
+                                                            || user.discordId.includes(this.usernameSearch)
+                                                            || user.membershipId.includes(this.usernameSearch));
+                console.log(this.filteredUsers);
+            },
+            SetActiveUser(guid){
+                this.activeUser = this.users.find(user => user.guid == guid);
+                console.log(guid);
+            }
+        }
+    });
+</script>

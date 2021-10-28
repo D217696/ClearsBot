@@ -66,8 +66,21 @@ namespace ClearsBot.Modules
                 });
             }
 
-            if (infoCards.Count >= 1)
+            if (infoCards.Count == 1)
             {
+                return new RequestData()
+                {
+                    Code = 1,
+                    MembershipId = infoCards.FirstOrDefault().MembershipId,
+                    MembershipType = infoCards.FirstOrDefault().MembershipType,
+                    DisplayName = infoCards.FirstOrDefault().DisplayName,
+                    profiles = infoCards.ToArray()
+                };
+            }
+
+            if (infoCards.Count > 1)
+            {
+                
                 List<Task<GetLinkedProfiles>> tasks = new List<Task<GetLinkedProfiles>>();
                 foreach (UserInfoCard userInfoCard in infoCards)
                 {

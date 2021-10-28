@@ -14,6 +14,7 @@ namespace ClearsBot.Objects
 
     public class User
     {
+        public Guid Guid { get; set; } = Guid.NewGuid();
         public string Username { get; set; }
         public ulong DiscordID { get; set; }
         public ulong GuildID { get; set; } = 0;

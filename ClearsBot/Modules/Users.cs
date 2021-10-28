@@ -33,8 +33,23 @@ namespace ClearsBot.Modules
             _storage = storage;
             _guilds = guilds;
             _client = client;
-
-            users = _storage.GetUsersFromStorage();
+            // remove select after first time running
+            users = _storage.GetUsersFromStorage().Select(user => new User()
+            {
+                Username = user.Username,
+                DiscordID = user.DiscordID,
+                MembershipId = user.MembershipId,
+                MembershipType = user.MembershipType,
+                DateLastPlayed = user.DateLastPlayed,
+                Completions = user.Completions,
+                Guid = user.Guid.ToString() != "00000000-0000-0000-0000-000000000000" ? user.Guid : Guid.NewGuid(),
+                DateRegistered = user.DateRegistered,
+                GuildID = user.GuildID,
+                GuildIDs = user.GuildIDs,
+                SteamID = user.SteamID,
+                Characters = user.Characters
+            }).ToList();
+            SaveUsers();
             Console.WriteLine($"{users.Count()}");
         }
         
