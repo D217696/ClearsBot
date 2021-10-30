@@ -88,6 +88,7 @@ namespace ClearsBot.Modules
             if (raid != null && raid.IconUrl != "")
             {
                 embed.WithThumbnailUrl(raid.IconUrl);
+                embed.WithColor(raid.Color.R, raid.Color.G, raid.Color.B);
             }
             return embed;
         }

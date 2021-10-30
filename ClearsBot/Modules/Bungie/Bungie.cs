@@ -33,37 +33,24 @@ namespace ClearsBot.Modules
                 membershipType = "-1";
             }
 
-            var getProfileTaskXb = Task.Run(() => _requestHandler.GetProfileAsync(1, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
-            var getProfileTaskPs = Task.Run(() => _requestHandler.GetProfileAsync(2, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
-            var getProfileTaskPc = Task.Run(() => _requestHandler.GetProfileAsync(3, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
-            var getProfileTaskSt = Task.Run(() => _requestHandler.GetProfileAsync(5, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }));
+            List<Task<GetProfile>> getProfileTasks = new List<Task<GetProfile>>()
+            {
+                Task.Run(() => _requestHandler.GetProfileAsync(1, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles })),
+                Task.Run(() => _requestHandler.GetProfileAsync(2, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles })),
+                Task.Run(() => _requestHandler.GetProfileAsync(3, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles })),
+                Task.Run(() => _requestHandler.GetProfileAsync(5, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }))
+            };
 
             var searchDestinyPlayerTask = Task.Run(() => _requestHandler.SearchDestinyPlayerAsync(membershipId, membershipType));
             var getMembershipFromHardlinkedCredentialTask = Task.Run(() => _requestHandler.GetMembershipFromHardLinkedCredentialAsync(membershipIdLong));
 
-            await Task.WhenAll(getProfileTaskXb);
-            await Task.WhenAll(getProfileTaskPs);
-            await Task.WhenAll(getProfileTaskPc);
-            await Task.WhenAll(getProfileTaskSt);
             await Task.WhenAll(searchDestinyPlayerTask);
             await Task.WhenAll(getMembershipFromHardlinkedCredentialTask);
 
             List<UserInfoCard> infoCards = new List<UserInfoCard>();
-            if (getProfileTaskXb.Result.Response != null)
+            foreach (var res in await Task.WhenAll(getProfileTasks))
             {
-                infoCards.Add(getProfileTaskXb.Result.Response.Profile.Data.UserInfo);
-            }
-            if (getProfileTaskPs.Result.Response != null)
-            {
-                infoCards.Add(getProfileTaskPs.Result.Response.Profile.Data.UserInfo);
-            }
-            if (getProfileTaskPc.Result.Response != null)
-            {
-                infoCards.Add(getProfileTaskPc.Result.Response.Profile.Data.UserInfo);
-            }
-            if (getProfileTaskSt.Result.Response != null)
-            {
-                infoCards.Add(getProfileTaskSt.Result.Response.Profile.Data.UserInfo);
+                if (res.Response != null) infoCards.Add(res.Response.Profile.Data.UserInfo);
             }
 
             if (searchDestinyPlayerTask.Result.Response.Count() > 0)
@@ -80,8 +67,21 @@ namespace ClearsBot.Modules
                 });
             }
 
-            if (infoCards.Count >= 1)
+            if (infoCards.Count == 1)
             {
+                return new RequestData()
+                {
+                    Code = 1,
+                    MembershipId = infoCards.FirstOrDefault().MembershipId,
+                    MembershipType = infoCards.FirstOrDefault().MembershipType,
+                    DisplayName = infoCards.FirstOrDefault().DisplayName,
+                    profiles = infoCards.ToArray()
+                };
+            }
+
+            if (infoCards.Count > 1)
+            {
+
                 List<Task<GetLinkedProfiles>> tasks = new List<Task<GetLinkedProfiles>>();
                 foreach (UserInfoCard userInfoCard in infoCards)
                 {
