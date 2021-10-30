@@ -155,6 +155,17 @@ namespace ClearsBot.Modules
             return users.Where(x => x.DiscordID == userId);
         }
 
+        public void EditUser(User user)
+        {
+            users[users.IndexOf(users.FirstOrDefault(x => x.Guid == user.Guid))] = user;
+            SaveUsers();
+        }
+
+        public User GetUserByGuid(Guid guid)
+        {
+            return users.FirstOrDefault(x => x.Guid == guid);
+        }
+
         public async Task<UserResponse> CreateAndAddUser(ulong guildId, ulong discordID, RequestData requestData)
         {
             //if (users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault() != null) return new UserResponse() { User = users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault(), Code = 2 };
@@ -169,7 +180,7 @@ namespace ClearsBot.Modules
             {
                 characters.Add(new Character()
                 {
-                    CharacterID = character.CharacterId,
+                    CharacterId = character.CharacterId,
                     Deleted = character.Deleted,
                     Handled = false
                 });

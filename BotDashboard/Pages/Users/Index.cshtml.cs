@@ -14,11 +14,9 @@ namespace BotDashboard.Pages.Users
         public IndexModel(ClearsBot.Modules.Users users)
         {
             _users = users;
-
         }
         public void OnGet()
         {
         }
-
     }
 }

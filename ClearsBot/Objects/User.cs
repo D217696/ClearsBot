@@ -39,7 +39,7 @@ namespace ClearsBot.Objects
     }
     public class Character
     {
-        public long CharacterID { get; set; }
+        public long CharacterId { get; set; }
         public bool Deleted { get; set; }
         public bool Handled { get; set; }
     }

@@ -146,16 +146,16 @@ namespace ClearsBot.Modules
             List<Task<GetActivityHistoryResponse>> tasks = new List<Task<GetActivityHistoryResponse>>();
             foreach (DestinyHistoricalStatsPerCharacter character in getHistoricalStatsForAccount.Response.Characters)
             {
-                Character characterFromUser = user.Characters.Where(x => x.CharacterID == character.CharacterId).FirstOrDefault();
+                Character characterFromUser = user.Characters.Where(x => x.CharacterId == character.CharacterId).FirstOrDefault();
                 if (characterFromUser == null)
                 {
                     user.Characters.Add(new Character()
                     {
-                        CharacterID = character.CharacterId,
+                        CharacterId = character.CharacterId,
                         Deleted = character.Deleted,
                         Handled = false
                     });
-                    characterFromUser = user.Characters.Where(x => x.CharacterID == character.CharacterId).FirstOrDefault();
+                    characterFromUser = user.Characters.Where(x => x.CharacterId == character.CharacterId).FirstOrDefault();
                 }
 
                 if (characterFromUser.Handled) continue;
@@ -205,7 +205,7 @@ namespace ClearsBot.Modules
                         })));
                     }
                 }
-                if (res.Character.Deleted) user.Characters.Where(x => x.CharacterID == res.Character.CharacterID).FirstOrDefault().Handled = true;
+                if (res.Character.Deleted) user.Characters.Where(x => x.CharacterId == res.Character.CharacterId).FirstOrDefault().Handled = true;
             }
 
             foreach (var res in await Task.WhenAll(TasksToGetPGCR))
@@ -256,7 +256,7 @@ namespace ClearsBot.Modules
             bool done = false;
             while (!done)
             {
-                GetActivityHistory activityPage = await _requestHandler.GetActivityHistoryAsync(membershipType, membershipId, character.CharacterID, page);
+                GetActivityHistory activityPage = await _requestHandler.GetActivityHistoryAsync(membershipType, membershipId, character.CharacterId, page);
                 if (activityPage.ErrorCode != 1)
                 {
                     getActivityHistoryResponse.Code = activityPage.ErrorCode;

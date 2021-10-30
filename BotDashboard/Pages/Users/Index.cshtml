@@ -2,21 +2,65 @@
 @model BotDashboard.Pages.Users.IndexModel
 @{
 }
-
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 <div id="app">
-    <input v-on:input="tbChange()" v-model="usernameSearch"/>
-    <div style="overflow-y: scroll; height: 200px;">
-        <div v-for="user in filteredUsers" v-if="users != null" v-on:click="SetActiveUser(user.guid)">
-            <h4>{{ user.username }}</h4>
-            <h5>{{ user.membershipId }} {{ user.membershipType }}</h5>
-        </div>
+    <div class="row align-items-center" v-if="hasChanged" style="position: fixed; top: 1.5%; left: 50%;">
+        {{ error }}
     </div>
-    <div v-if="activeUser != null">
-         <h1>{{ activeUser.username }}</h1>
-         <h2>{{ activeUser.membershipId }}</h2>
-         <h2>{{ activeUser.membershipType }}</h2>
-         <h2>{{ activeUser.discordId }}</h2>
+    <div class="row align-items-center" v-if="message != ''">
+        {{ message }}
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <input v-on:input="TbChange()" v-model="usernameSearch"/>
+                <div style="overflow-y: scroll;">
+                    <div v-for="user in filteredUsers" v-if="users != null" v-on:click="SetActiveUser(user.guid)">
+                        <h6>{{ user.username }}</h6>
+                        <div class="row">
+                            <p class="col-sm-9"> {{ user.membershipId }}</p>
+                            <img class="col-sm-3" v-bind:src="GetPlatformUrl(user.membershipType)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="activeUserBase != null" class="col-sm-9">
+                <div class="row">
+                    <label class="col-sm-6 text-right" for="activeUserBaseUsername">Username</label>
+                    <input class="col-sm-6" type="text" v-model="activeUserBase.username" id="activeUserBaseUsername"/>
+                </div>
+                <div class="row">
+                    <label class="col-sm-6 text-right" for="activeUserBaseMembershipId">Membership id</label>
+                    <input class="col-sm-6" type="text" v-model="activeUserBase.membershipId" id="activeUserBaseMembershipId" readonly/>
+                </div>
+                <div class="row">
+                    <img v-bind:src="GetPlatformUrl(activeUser.membershipType)"/>
+                </div>
+                <div class="row">
+                    <label class="col-sm-6 text-right" for="activeUserBaseDiscordId">Discord id</label>
+                    <input class="col-sm-6" type="text" v-model="activeUserBase.discordId" id="activeUserBaseDiscordId" />
+                </div>
+                <div class="row">
+                    <label class="col-sm-6 text-right " for="activeUserBaseDateRegistered">Date registered</label>
+                    <input class="col-sm-6" type="text" v-model="activeUserBase.dateRegistered"  id="activeUserBaseDateRegistered" readonly/>
+                </div>
+                <div class="row">
+                    <label class="col-sm-6 text-right" for="activeUserBaseLastPlayed">Last played</label>
+                    <input class="col-sm-6" type="text" v-model="activeUserBase.dateLastPlayed" id="activeUserBaseLastPlayed" />
+                </div>
+                <div class="row">
+                    <h4 class="col-sm-8 text-center">Character id</h4>
+                    <h4 class="col-sm-2 text-center">Handled</h4>
+                    <h4 class="col-sm-2 text-center">Deleted</h4>
+                </div>
+                <div class="row" v-for="character in activeUserBase.characters">
+                    <input class="col-sm-8" type="text" v-model="character.characterId" readonly/>
+                    <input class="col-sm-2" type="checkbox" v-model="character.handled"/>
+                    <input class="col-sm-2" type="checkbox" v-model="character.deleted"/>
+                </div>
+                <input type="submit" v-on:click="UpdateUser()"/> 
+            </div>
+        </div>
     </div>
 </div>
 <script>
@@ -26,24 +70,21 @@
             usernameSearch: "",
             users: [],
             filteredUsers: [],
-            activeUser: null
+            activeUser: null,
+            activeUserBase: null,
+            error: "You have unsaved changes.",
+            message: ""
         },
         mounted() {
-            fetch('api/Users/GetUsers', {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then((data) => {
-                this.users = data;
-                this.filteredUsers = data;
-            });
+            this.GetUserList();
+        },
+        computed: {
+            hasChanged() {
+                return JSON.stringify(this.activeUser) !== JSON.stringify(this.activeUserBase);
+            }
         },
         methods: {
-            tbChange(){
+            TbChange(){
                 this.filteredUsers = this.users.filter(user => user.username.toLowerCase().includes(this.usernameSearch.toLowerCase()) 
                                                             || user.discordId.includes(this.usernameSearch)
                                                             || user.membershipId.includes(this.usernameSearch));
@@ -51,7 +92,55 @@
             },
             SetActiveUser(guid){
                 this.activeUser = this.users.find(user => user.guid == guid);
-                console.log(guid);
+                this.activeUserBase = JSON.parse(JSON.stringify(this.activeUser));
+            },
+            GetPlatformUrl(platform){
+                if (platform == 1) return "img/xbox.svg";
+                if (platform == 2) return "img/ps.svg";
+                if (platform == 3) return "img/pc.svg"
+                return "";
+            },
+            UpdateUser(){
+                this.message = "Saving...";
+                fetch('api/Users/UpdateUser', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json'
+                    },
+                    body: JSON.stringify(this.activeUserBase)
+                })
+                .then(response => response.json())
+                .then((data) => {
+                    this.LogMessage(data.message);
+                    if (data.code == 1) 
+                    {
+                        this.GetUserList(this.activeUserBase.guid);
+                    }
+                });
+            },
+            LogMessage(message){
+                this.message = message;
+                setTimeout(() => {
+                    this.message = "";
+                }, 2000) 
+            },
+            GetUserList(guid){
+                fetch('api/Users/GetUsers', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then((data) => {
+                    this.users = data;  
+                    this.filteredUsers = data;
+                    if (guid != null){
+                        this.SetActiveUser(guid);
+                    }
+                });
             }
         }
     });
