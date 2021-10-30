@@ -63,7 +63,7 @@ namespace ClearsBot.Modules
             return embed;
         }
 
-        public EmbedBuilder GetFastestEmbed(IEnumerable<Completion> completions, string username, string raidName, ulong guildId)
+        public EmbedBuilder GetFastestEmbed(IEnumerable<Completion> completions, string username, string raidName, ulong guildId, Raid raid = null)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle($"Fastest {raidName} completions for {username}");
@@ -84,6 +84,11 @@ namespace ClearsBot.Modules
                 }
             }
             embed.Description = list;
+
+            if (raid != null && raid.IconUrl != "")
+            {
+                embed.WithThumbnailUrl(raid.IconUrl);
+            }
             return embed;
         }
         public string FormatUsername(string username)

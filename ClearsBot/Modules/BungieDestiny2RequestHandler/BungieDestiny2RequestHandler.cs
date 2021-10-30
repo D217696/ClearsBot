@@ -1,4 +1,4 @@
-﻿using ClearsBot.Modules.Logger;
+﻿using ClearsBot.Modules;
 using ClearsBot.Objects;
 using ComposableAsync;
 using Newtonsoft.Json;

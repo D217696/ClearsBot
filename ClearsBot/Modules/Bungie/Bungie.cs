@@ -1,4 +1,4 @@
-﻿using ClearsBot.Modules.BungieDestiny2RequestHandler;
+﻿using ClearsBot.Modules;
 using ClearsBot.Objects;
 using System;
 using System.Collections.Generic;
