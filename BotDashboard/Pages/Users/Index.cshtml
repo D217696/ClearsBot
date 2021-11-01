@@ -59,7 +59,8 @@
                     <input class="col-sm-2" type="checkbox" v-model="character.handled"/>
                     <input class="col-sm-2" type="checkbox" v-model="character.deleted"/>
                 </div>
-                <input type="submit" v-on:click="UpdateUser()"/> 
+                <input type="submit" value="Save changes" v-on:click="UpdateUser()"/> 
+                <input type="submit" value="Delete" v-on:click="DeleteUser"/>
             </div>
         </div>
     </div>
@@ -89,10 +90,17 @@
         },
         methods: {
             TbChange(){
-                this.filteredUsers = this.users.filter(user => user.username.toLowerCase().includes(this.usernameSearch.toLowerCase()) 
+                this.filteredUsers = this.GetFilteredUsers();
+                console.log(this.filteredUsers);
+            },
+            GetFilteredUsers(){
+                if (this.usernameSearch == ""){
+                    return this.users;
+                }else{
+                    return this.users.filter(user => user.username.toLowerCase().includes(this.usernameSearch.toLowerCase()) 
                                                             || user.discordId.includes(this.usernameSearch)
                                                             || user.membershipId.includes(this.usernameSearch));
-                console.log(this.filteredUsers);
+                }
             },
             SetActiveUser(guid){
                 this.activeUser = this.users.find(user => user.guid == guid);
@@ -140,7 +148,7 @@
                 .then(response => response.json())
                 .then((data) => {
                     this.users = data;  
-                    this.filteredUsers = data;
+                    this.filteredUsers = this.GetFilteredUsers();
                     if (guid != null){
                         this.SetActiveUser(guid);
                     }
@@ -153,7 +161,7 @@
                         'Content-Type': 'application/json',
                         Accept: 'application/json'
                     },
-                    body: this.activeUserBase.guid
+                    body: JSON.stringify(this.activeUserBase)
                 })
                 .then(response => response.json())
                 .then((data) => {

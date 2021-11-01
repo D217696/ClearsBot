@@ -13,6 +13,7 @@ namespace ClearsBot
         public static DiscordSocketClient _client;
         CommandService _commandService;
         ServiceProvider _services;
+        Config _config;
         DiscordEvents _handler;
         static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
@@ -34,12 +35,12 @@ namespace ClearsBot
 
             _services = ConfigureServices();
 
-
             _client.Log += Log;
 
             _handler = _services.GetRequiredService<DiscordEvents>();
+            _config = _services.GetRequiredService<Config>();
             _ = _services.GetRequiredService<UpdateLoop>();
-            //await _client.LoginAsync(TokenType.Bot, Config.bot.token);
+            await _client.LoginAsync(TokenType.Bot, _config.bot.token);
             await _client.StartAsync();
             await _client.SetGameAsync("Spire of Stars is the best raid");
 
@@ -50,34 +51,11 @@ namespace ClearsBot
         {
             Console.WriteLine(msg.Message);
         }
-        private ServiceProvider ConfigureServices()
+        private ServiceProvider ConfigureServices() 
         {
             return new ServiceCollection()
-                           .AddSingleton(_client)
-                           .AddSingleton(_commandService)
-                           .AddSingleton<DiscordEvents>()
-                           .AddSingleton<UpdateLoop>()
-                           .AddSingleton<IBungie, Bungie>()
-                           .AddSingleton<TextCommands>()
-                           .AddSingleton<Users>()
-                           .AddSingleton<IBungieDestiny2RequestHandler, BungieDestiny2RequestHandler>()
-                           .AddSingleton<ILogger, Logger>()
-                           .AddSingleton<IGuilds, Guilds>()
-                           .AddSingleton<IPermissions, Permissions>()
-                           .AddSingleton<ButtonsCommands>()
-                           .AddSingleton<IFormatting, Formatting>()
-                           .AddSingleton<Commands>()
-                           .AddSingleton<IRaids, Raids>()
-                           .AddSingleton<IStorage, Storage>()
-                           .AddSingleton<Roles>()
-                           .AddSingleton<SlashCommands>()
-                           .AddSingleton<Completions>()
-                           .AddSingleton<MessageTracking>()
-                           .AddSingleton<IFormatting, Formatting>()
-                           .AddSingleton<ILanguages, Languages>()
-                           .AddSingleton<Buttons>()
-                           .AddSingleton<ISlashes, Slashes>()
-                           .BuildServiceProvider();
+                            .AddClearsBot()
+                            .BuildServiceProvider();
         }
     }
 }

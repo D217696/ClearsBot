@@ -34,6 +34,7 @@ namespace ClearsBot.Modules
         {
             return raids[guildId];
         }
+        //NEW guilds JOINED FUNCTION PLEASE
         public Raid SetRaidTime(ulong guildId, string raidString, TimeSpan time)
         {
             Raid raid = GetRaid(guildId, raidString);

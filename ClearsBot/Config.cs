@@ -30,27 +30,6 @@ namespace ClearsBot
                 bot = JsonConvert.DeserializeObject<BotConfig>(json);
             }
         }
-        //static Config()
-        //{
-        //    if (!Directory.Exists(configFolder)) Directory.CreateDirectory(configFolder);
-
-        //    if (!File.Exists(configFolder + "/" + configFile))
-        //    {
-        //        bot = new BotConfig();
-        //        string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
-        //        File.WriteAllText(configFolder + "/" + configFile, json);
-        //    }
-        //    else
-        //    {
-        //        string json = File.ReadAllText(configFolder + "/" + configFile);
-        //        bot = JsonConvert.DeserializeObject<BotConfig>(json);
-        //    }
-        //}
-        //public static void EditPrefix(string newPrefix)
-        //{
-        //    bot.cmdPrefix = newPrefix;
-        //    File.WriteAllText(configFolder + configFile, bot.ToString());
-        //}
     }
 
     public struct BotConfig

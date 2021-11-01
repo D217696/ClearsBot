@@ -10,10 +10,8 @@ namespace BotDashboard.Pages.Users
 {
     public class IndexModel : PageModel
     {
-        public ClearsBot.Modules.Users _users;
-        public IndexModel(ClearsBot.Modules.Users users)
+        public IndexModel()
         {
-            _users = users;
         }
         public void OnGet()
         {
