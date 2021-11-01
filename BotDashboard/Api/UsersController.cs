@@ -79,6 +79,13 @@ namespace BotDashboard.Api
 
             return new Response() { code = 1, message = "Success!" };
         }
+
+        [HttpDelete("DeleteUser")]
+        public async Task<Response> DeleteUser(string guid) 
+        {
+            _users.DeleteUserByGuid(Guid.Parse(guid));
+            return new Response() { code = 1, message = "success" };
+        }
     }
 
     public class SimplifiedUser

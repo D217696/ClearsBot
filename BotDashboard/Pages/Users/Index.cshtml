@@ -7,7 +7,7 @@
     <div class="row align-items-center" v-if="hasChanged" style="position: fixed; top: 1.5%; left: 50%;">
         {{ error }}
     </div>
-    <div class="row align-items-center" v-if="message != ''">
+    <div class="row text-center" v-bind:style="errorMessageActive ? 'height: 100px; border-top: 2px solid red;' : 'height: 0px; border: none;'" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1f1f1f; margin: 0px; transition: height 0.6s; z-index: 10;">
         {{ message }}
     </div>
     <div class="container">
@@ -26,15 +26,16 @@
             </div>
             <div v-if="activeUserBase != null" class="col-sm-9">
                 <div class="row">
+                    {{ activeUserBase.username }}
+                    <img v-bind:src="GetPlatformUrl(activeUser.membershipType)"/>
+                </div>
+                <div class="row">
                     <label class="col-sm-6 text-right" for="activeUserBaseUsername">Username</label>
                     <input class="col-sm-6" type="text" v-model="activeUserBase.username" id="activeUserBaseUsername"/>
                 </div>
                 <div class="row">
                     <label class="col-sm-6 text-right" for="activeUserBaseMembershipId">Membership id</label>
                     <input class="col-sm-6" type="text" v-model="activeUserBase.membershipId" id="activeUserBaseMembershipId" readonly/>
-                </div>
-                <div class="row">
-                    <img v-bind:src="GetPlatformUrl(activeUser.membershipType)"/>
                 </div>
                 <div class="row">
                     <label class="col-sm-6 text-right" for="activeUserBaseDiscordId">Discord id</label>
@@ -49,11 +50,11 @@
                     <input class="col-sm-6" type="text" v-model="activeUserBase.dateLastPlayed" id="activeUserBaseLastPlayed" />
                 </div>
                 <div class="row">
-                    <h4 class="col-sm-8 text-center">Character id</h4>
+                    <h4 class="col-sm-8 text-left">Character id</h4>
                     <h4 class="col-sm-2 text-center">Handled</h4>
                     <h4 class="col-sm-2 text-center">Deleted</h4>
                 </div>
-                <div class="row" v-for="character in activeUserBase.characters">
+                <div class="row justify-content-center align-items-center" v-for="character in activeUserBase.characters">
                     <input class="col-sm-8" type="text" v-model="character.characterId" readonly/>
                     <input class="col-sm-2" type="checkbox" v-model="character.handled"/>
                     <input class="col-sm-2" type="checkbox" v-model="character.deleted"/>
@@ -81,6 +82,9 @@
         computed: {
             hasChanged() {
                 return JSON.stringify(this.activeUser) !== JSON.stringify(this.activeUserBase);
+            },
+            errorMessageActive() {
+                return this.message != "";
             }
         },
         methods: {
@@ -141,6 +145,25 @@
                         this.SetActiveUser(guid);
                     }
                 });
+            },
+            DeleteUser(){
+                fetch("api/Users/DeleteUser", {
+                    method: "DELETE",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json'
+                    },
+                    body: this.activeUserBase.guid
+                })
+                .then(response => response.json())
+                .then((data) => {
+                    if (data.code == 1){
+                        this.LogMessage("User deleted");
+                        this.GetUserList();
+                        this.activeUserBase = null;
+                        this.activeUser = null;
+                    }
+                })
             }
         }
     });

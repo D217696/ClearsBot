@@ -120,6 +120,12 @@ namespace ClearsBot.Modules
             }
         }
 
+        public void DeleteUserByGuid(Guid guid)
+        {
+            if (users.FirstOrDefault(x => x.Guid == guid) == null) return;
+            users.Remove(users.FirstOrDefault(x => x.Guid == guid));
+        }
+
         public void ResetUserCompletions(User user)
         {
             users.FirstOrDefault(x => x.MembershipId == user.MembershipId).Completions = new Dictionary<long, Completion>();

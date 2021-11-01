@@ -18,5 +18,6 @@ namespace ClearsBot.Objects
         public ulong FirstRole { get; set; }
         public ulong SecondRole { get; set; }
         public ulong ThirdRole { get; set; }
+        public string IconUrl { get; set; } = "";
     }
 }

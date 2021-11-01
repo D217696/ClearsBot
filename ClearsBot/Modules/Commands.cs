@@ -136,7 +136,7 @@ namespace ClearsBot.Modules
             if (raid != null)
             {
                 IEnumerable<Completion> completions = user.Completions.Values.Where(_raids.GetCriteriaByRaid(raid)).OrderBy(x => x.Time);
-                return _formatting.GetFastestEmbed(completions, user.Username, raid.DisplayName, guildId);
+                return _formatting.GetFastestEmbed(completions, user.Username, raid.DisplayName, guildId, raid);
             }
 
             return _formatting.GetFastestEmbed(_completions.GetRaidCompletionsListForUser(user, guildId).OrderBy(x => x.Time), user.Username, "raid", guildId);

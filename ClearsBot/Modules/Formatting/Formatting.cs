@@ -63,7 +63,7 @@ namespace ClearsBot.Modules
             return embed;
         }
 
-        public EmbedBuilder GetFastestEmbed(IEnumerable<Completion> completions, string username, string raidName, ulong guildId)
+        public EmbedBuilder GetFastestEmbed(IEnumerable<Completion> completions, string username, string raidName, ulong guildId, Raid raid = null)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle($"Fastest {raidName} completions for {username}");
@@ -82,6 +82,12 @@ namespace ClearsBot.Modules
                 {
                     list += $"[{_raids.GetRaids(guildId).FirstOrDefault(x => x.Hashes.Contains(completion.RaidHash)).DisplayName}: {string.Format("{0:hh\\:mm\\:ss}", completion.Time)}](https://raid.report/pgcr/{completion.InstanceID}) \n";
                 }
+            }
+
+            if (raid != null && raid.IconUrl != "")
+            {
+                embed.WithThumbnailUrl(raid.IconUrl);
+                embed.WithColor(raid.Color.R, raid.Color.G, raid.Color.B);
             }
             embed.Description = list;
             return embed;

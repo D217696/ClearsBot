@@ -40,7 +40,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539548251906068,
       "SecondRole": 871539548562260019,
-      "ThirdRole": 871539549606649876
+      "ThirdRole": 871539549606649876,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Eater of Worlds",
@@ -58,7 +59,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539550265159770,
       "SecondRole": 871539551099813898,
-      "ThirdRole": 871539551607324713
+      "ThirdRole": 871539551607324713,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Spire of Stars",
@@ -77,7 +79,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539552655929344,
       "SecondRole": 871539552983089213,
-      "ThirdRole": 871539554195226674
+      "ThirdRole": 871539554195226674,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Last Wish",
@@ -95,7 +98,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871539557437423676,
       "SecondRole": 871539558360154173,
-      "ThirdRole": 871539558989303869
+      "ThirdRole": 871539558989303869,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Scourge of the Past",
@@ -112,7 +116,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533634220343316,
       "SecondRole": 871533634820132885,
-      "ThirdRole": 871533635520573450
+      "ThirdRole": 871533635520573450,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Crown of Sorrow",
@@ -129,7 +134,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533636141338664,
       "SecondRole": 871533636799832124,
-      "ThirdRole": 871533637420601444
+      "ThirdRole": 871533637420601444,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Garden of Salvation",
@@ -148,7 +154,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533638062321725,
       "SecondRole": 871533638825672734,
-      "ThirdRole": 871533639480012810
+      "ThirdRole": 871533639480012810,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Deep Stone Crypt",
@@ -164,7 +171,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533640209817670,
       "SecondRole": 871533641082224640,
-      "ThirdRole": 871533641447120897
+      "ThirdRole": 871533641447120897,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Vault of Glass",
@@ -183,7 +191,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 871533642504101928,
       "SecondRole": 871533643091296308,
-      "ThirdRole": 871533644035018772
+      "ThirdRole": 871533644035018772,
+      "IconUrl": ""
     }
   ],
   "534813987091513381": [
@@ -227,7 +236,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Eater of Worlds",
@@ -245,7 +255,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Spire of Stars",
@@ -264,7 +275,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Last Wish",
@@ -282,7 +294,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Scourge of the Past",
@@ -299,7 +312,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Crown of Sorrow",
@@ -316,7 +330,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Garden of Salvation",
@@ -335,7 +350,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Deep Stone Crypt",
@@ -351,7 +367,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Vault of Glass",
@@ -370,7 +387,8 @@
       "StartingPhaseIndexToBeFresh": 0,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     }
   ],
   "896923363098910732": [
@@ -414,7 +432,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Eater of Worlds",
@@ -432,7 +451,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Spire of Stars",
@@ -451,7 +471,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Last Wish",
@@ -469,7 +490,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Scourge of the Past",
@@ -486,7 +508,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Crown of Sorrow",
@@ -503,7 +526,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Garden of Salvation",
@@ -522,7 +546,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Deep Stone Crypt",
@@ -538,7 +563,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Vault of Glass",
@@ -557,7 +583,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     }
   ]
 }
