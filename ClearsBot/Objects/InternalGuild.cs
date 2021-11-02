@@ -14,10 +14,13 @@ namespace ClearsBot.Objects
         public ulong ThirdRole { get; set; } = 0;
         public ulong GuildOwner { get; set; } = 0;
         public ulong AdminRole { get; set; } = 0;
+        public List<ulong> AdminUsers { get; set; } = new List<ulong>();
         public List<ulong> ModRoles { get; set; } = new List<ulong>();
         public List<Milestone> Milestones { get; set; } = new List<Milestone>();
         public bool IsActive { get; set; } = true;
         public bool UsesSlashCommands { get; set; } = true;
+        public bool GlobalLeaderboards { get; set; } = true;
+        public bool TimeCriteria { get; set; } = true;
     }
     public class Milestone
     {

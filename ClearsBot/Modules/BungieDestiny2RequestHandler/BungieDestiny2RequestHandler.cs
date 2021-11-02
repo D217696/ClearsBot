@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+using ClearsBot.Modules;
+using ClearsBot.Objects;
 using ComposableAsync;
 using Newtonsoft.Json;
 using RateLimiter;
@@ -10,10 +11,10 @@ namespace ClearsBot.Modules
 {
     public class BungieDestiny2RequestHandler : IBungieDestiny2RequestHandler
     {
-        readonly ILogger _logger;
-        readonly Config _config;
         private string BaseUrl { get; set; } = "https://www.bungie.net/Platform";
         private readonly HttpClient client = new HttpClient();
+        readonly ILogger _logger;
+        readonly Config _config;
         TimeLimiter timeConstraint = TimeLimiter.GetFromMaxCountByInterval(20, TimeSpan.FromSeconds(1));
 
         public BungieDestiny2RequestHandler(ILogger logger, Config config)

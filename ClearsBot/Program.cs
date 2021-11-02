@@ -19,7 +19,10 @@ namespace ClearsBot
         => new Program().StartAsync().GetAwaiter().GetResult();
         public async Task StartAsync()
         {
-            //if (Config.bot.token == "" || Config.bot.token == null) return;
+            _services = ConfigureServices();
+            _config = _services.GetRequiredService<Config>();
+
+            if (_config.bot.token == "" || _config.bot.token == null) return;
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
@@ -32,8 +35,6 @@ namespace ClearsBot
             {
                 IgnoreExtraArgs = true
             });
-
-            _services = ConfigureServices();
 
             _client.Log += Log;
 

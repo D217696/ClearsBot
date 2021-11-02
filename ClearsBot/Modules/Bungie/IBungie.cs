@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace ClearsBot.Modules
+namespace ClearsBot.Modules 
 { 
     public interface IBungie
     {

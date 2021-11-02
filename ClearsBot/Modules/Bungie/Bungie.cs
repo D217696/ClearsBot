@@ -1,4 +1,5 @@
-﻿using ClearsBot.Objects;
+using ClearsBot.Modules;
+using ClearsBot.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace ClearsBot.Modules
                 Task.Run(() => _requestHandler.GetProfileAsync(2, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles })),
                 Task.Run(() => _requestHandler.GetProfileAsync(3, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles })),
                 Task.Run(() => _requestHandler.GetProfileAsync(5, membershipIdLong, new DestinyComponentType[] { DestinyComponentType.Profiles }))
-            };  
+            };
 
             var searchDestinyPlayerTask = Task.Run(() => _requestHandler.SearchDestinyPlayerAsync(membershipId, membershipType));
             var getMembershipFromHardlinkedCredentialTask = Task.Run(() => _requestHandler.GetMembershipFromHardLinkedCredentialAsync(membershipIdLong));
@@ -47,7 +48,7 @@ namespace ClearsBot.Modules
             await Task.WhenAll(getMembershipFromHardlinkedCredentialTask);
 
             List<UserInfoCard> infoCards = new List<UserInfoCard>();
-            foreach(var res in await Task.WhenAll(getProfileTasks))
+            foreach (var res in await Task.WhenAll(getProfileTasks))
             {
                 if (res.Response != null) infoCards.Add(res.Response.Profile.Data.UserInfo);
             }
@@ -80,7 +81,6 @@ namespace ClearsBot.Modules
 
             if (infoCards.Count > 1)
             {
-                
                 List<Task<GetLinkedProfiles>> tasks = new List<Task<GetLinkedProfiles>>();
                 foreach (UserInfoCard userInfoCard in infoCards)
                 {
