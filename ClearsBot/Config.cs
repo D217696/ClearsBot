@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace ClearsBot
 {
-    class Config
+    public class Config
     {
         private const string configFolder = "Resources";
         private const string configFile = "config.json";
 
-        public static BotConfig bot;
+        public BotConfig bot;
 
-        static Config()
+        public Config()
         {
             if (!Directory.Exists(configFolder)) Directory.CreateDirectory(configFolder);
 
@@ -31,18 +31,19 @@ namespace ClearsBot
                 bot = JsonConvert.DeserializeObject<BotConfig>(json);
             }
         }
-        public static void EditPrefix(string newPrefix)
+        public void EditPrefix(string newPrefix)
         {
             bot.cmdPrefix = newPrefix;
             File.WriteAllText(configFolder + configFile, bot.ToString());
         }
     }
 
-    public struct BotConfig
+    public class BotConfig
     {
         public string token;
         public string cmdPrefix;
         public string apiKey;
-        public ulong owner;
+        public ulong Owner;
+        public List<ulong> BotAdmins = new List<ulong>();
     }
 }

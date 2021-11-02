@@ -14,12 +14,16 @@ namespace ClearsBot
         public static DiscordSocketClient _client;
         CommandService _commandService;
         ServiceProvider _services;
+        Config _config;
         DiscordEvents _handler;
         static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
         public async Task StartAsync()
         {
-            if (Config.bot.token == "" || Config.bot.token == null) return;
+            _services = ConfigureServices();
+            _config = _services.GetRequiredService<Config>();
+
+            if (_config.bot.token == "" || _config.bot.token == null) return;
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
@@ -33,12 +37,11 @@ namespace ClearsBot
                 IgnoreExtraArgs = true
             });
 
-            _services = ConfigureServices();
             _client.Log += Log;
 
             _handler = _services.GetRequiredService<DiscordEvents>();
             _ = _services.GetRequiredService<UpdateLoop>();
-            await _client.LoginAsync(TokenType.Bot, Config.bot.token);
+            await _client.LoginAsync(TokenType.Bot, _config.bot.token);
             await _client.StartAsync();
             await _client.SetGameAsync("Spire of Stars is the best raid");
 
@@ -76,6 +79,7 @@ namespace ClearsBot
                            .AddSingleton<ILanguages, Languages>()
                            .AddSingleton<Buttons>()
                            .AddSingleton<ISlashes, Slashes>()
+                           .AddSingleton<IGuilds, Guilds>()
                            .BuildServiceProvider();
         }
     }

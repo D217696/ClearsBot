@@ -32,6 +32,16 @@ namespace ClearsBot.Modules
             _languages = languages;
         }
 
+        //guild commands
+        [Command("Global leaderboards")]
+        public async Task GlobalLeaderboardToggle()
+        {
+            if (Context.User.Id == 204722865818304512)
+            {
+                 await ReplyAsync(_commands.GlobalLeaderboardToggleCommand(Context.Guild.Id));
+            }
+        }
+
         //leaderboard commands
         [Command("Rank")]
         public async Task Rank([Remainder] string raidString = "")
@@ -253,13 +263,14 @@ namespace ClearsBot.Modules
         }
 
         [Command("SetPrefix")]
+        [RequirePermission(PermissionLevel.BotOwner)]
         public async Task SetPrefix(string prefix)
         {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
-            {
-                await Context.Channel.SendMessageAsync("No permission");
-                return;
-            }
+            //if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevel.AdminRole)
+            //{
+            //    await Context.Channel.SendMessageAsync("No permission");
+            //    return;
+            //}
 
             _guilds.GetGuild(Context.Guild.Id).Prefix = prefix;
             _guilds.SaveGuilds();

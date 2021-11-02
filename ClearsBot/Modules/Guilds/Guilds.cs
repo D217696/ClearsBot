@@ -70,6 +70,16 @@ namespace ClearsBot.Modules
             if (GuildsList.ContainsKey(guildId)) GuildsList[guildId].IsActive = false;
         }
 
+        public bool EditGuildGlobalLeaderboards(ulong guildId)
+        {
+            if (GuildsList.ContainsKey(guildId))
+            {
+                GuildsList[guildId].GlobalLeaderboards = !GuildsList[guildId].GlobalLeaderboards;
+            }
+
+            return GuildsList[guildId].GlobalLeaderboards;
+        }
+
         public string GetGuildLanguage(ulong guildId)
         {
             if (GuildsList.ContainsKey(guildId))

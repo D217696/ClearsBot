@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ClearsBot.Modules
+namespace ClearsBot.Objects
 {
-        public enum PermissionLevels : int
+        public enum PermissionLevel : int
         {
-            BotOwner = 6,
-            AdminUser = 5,
-            GuildOwner = 4,
-            AdminRole = 3,
-            ModRole = 2,
+            BotOwner = 5,
+            BotAdmin = 4,
+            GuildOwner = 3,
+            GuildAdmin = 2,
             User = 1
         }
         public enum TimeFrameHours

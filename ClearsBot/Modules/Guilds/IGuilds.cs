@@ -14,5 +14,6 @@ namespace ClearsBot.Modules
         public InternalGuild GetGuild(ulong guildId);
         public void LeftGuild(ulong guildId);
         public string GetGuildLanguage(ulong guildId);
+        public bool EditGuildGlobalLeaderboards(ulong guildId);
     }
 }

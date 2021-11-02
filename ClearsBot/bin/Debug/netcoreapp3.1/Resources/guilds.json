@@ -22,7 +22,9 @@
       }
     ],
     "IsActive": true,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": false,
+    "TimeCriteria": true
   },
   "534813987091513381": {
     "GuildId": 534813987091513381,
@@ -36,7 +38,9 @@
     "ModRoles": [],
     "Milestones": [],
     "IsActive": true,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "867207403481333790": {
     "GuildId": 867207403481333790,
@@ -50,7 +54,9 @@
     "ModRoles": [],
     "Milestones": [],
     "IsActive": false,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "896801617192570930": {
     "GuildId": 896801617192570930,
@@ -64,7 +70,9 @@
     "ModRoles": [],
     "Milestones": [],
     "IsActive": false,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "896923363098910732": {
     "GuildId": 896923363098910732,
@@ -78,6 +86,8 @@
     "ModRoles": [],
     "Milestones": [],
     "IsActive": false,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   }
 }

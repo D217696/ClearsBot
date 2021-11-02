@@ -7,26 +7,43 @@ using System.Text;
 
 namespace ClearsBot.Modules
 {
-    public class Permissions : IPermissions
+    public class Permissions 
     {
         readonly IGuilds _guilds;
-        public Permissions(IGuilds guilds)
+        readonly Config _config;
+        public Permissions(IGuilds guilds, Config config)
         {
             _guilds = guilds;
+            _config = config;
         }
 
         public PermissionLevels GetPermissionForUser(IGuildUser user)
         {
-            List<ulong> roles = new List<ulong>(user.RoleIds);// JsonConvert.DeserializeObject<List<ulong>>(JsonConvert.SerializeObject(user.RoleIds));
-            InternalGuild guild = _guilds.GetGuild(user.Guild.Id);
-            if (user.Id == Config.bot.owner) return PermissionLevels.BotOwner;
-            if (user.Id == guild.GuildOwner) return PermissionLevels.AdminUser;
-            if (roles.Contains(guild.AdminRole)) return PermissionLevels.AdminRole;
-            foreach (ulong roleId in guild.ModRoles)
-            {
-                if (roles.Contains(roleId)) return PermissionLevels.ModRole;
-            }
+            if (IsBotOwner(user.Id)) return PermissionLevels.BotOwner;
+            if (IsBotAdmin(user.Id)) return PermissionLevels.BotAdmin;
+            if (IsGuildOwner(user.GuildId, user.Id)) return PermissionLevels.GuildOwner;
+            if (IsGuildAdmin(user.GuildId, user.Id)) return PermissionLevels.GuildAdmin;
             return PermissionLevels.User;
+        }
+
+        private bool IsBotOwner(ulong userId)
+        {
+            return _config.bot.Owner == userId;
+        }
+        
+        private bool IsBotAdmin(ulong userId)
+        {
+            return _config.bot.BotAdmins.Contains(userId);
+        }
+
+        private bool IsGuildOwner(ulong guildId, ulong userId)
+        {
+            return _guilds.GetGuild(guildId).GuildOwner == userId;
+        }
+        
+        private bool IsGuildAdmin(ulong guildId, ulong userId)
+        {
+            return _guilds.GetGuild(guildId).AdminUsers.Contains(userId);
         }
     }
 }

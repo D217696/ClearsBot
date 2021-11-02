@@ -22,7 +22,8 @@ namespace ClearsBot.Modules
         readonly MessageTracking _messageTracking;
         readonly Buttons _buttons;
         readonly ILanguages _languages;
-        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IFormatting formatting, MessageTracking messageTracking, Buttons buttons, ILanguages languages)
+        readonly IGuilds _guilds;
+        public Commands(IBungie bungie, Completions completions, Users users, IRaids raids, IPermissions permissions, IFormatting formatting, MessageTracking messageTracking, Buttons buttons, ILanguages languages, IGuilds guilds)
         {
             _bungie = bungie;
             _completions = completions;
@@ -33,6 +34,7 @@ namespace ClearsBot.Modules
             _messageTracking = messageTracking;
             _buttons = buttons;
             _languages = languages;
+            _guilds = guilds;
         }
 
         //leaderboard commands
@@ -61,16 +63,37 @@ namespace ClearsBot.Modules
                 embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
             }
 
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _completions.GetUserCompetionsByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
-            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _completions.GetUserCompetionsMaxByTimeframe(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, timeFrame);
+            IEnumerable<User> users = null;
+
+            if (_guilds.GetGuild(guildId).GlobalLeaderboards)
+            {
+                users = _users.GetAllUsers().Where(x => x.Completions.Count > 0);
+            }
+            else
+            {
+                users = _users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0);
+            }
+
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _completions.GetUserCompetionsByTimeframe(users.Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _completions.GetUserCompetionsMaxByTimeframe(users.Where(x => x.Completions.Count > 0), raid, timeFrame);
+
             embed.AddField($"{commandSyntax} raid completions", _formatting.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
             embed.AddField($"{commandSyntax} raid completion leaderboard", _formatting.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
+
             return embed;
         }
         public EmbedBuilder RankCommand(ulong userId, ulong guildId, string raidString)
         {
             Raid raid = _raids.GetRaid(guildId, raidString);
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletions = _completions.GetCompletionsForUsers(_users.GetAllUsers(), _bungie.ReleaseDate, DateTime.Now, new[] { raid });
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletions = null;
+            if (_guilds.GetGuild(guildId).GlobalLeaderboards)
+            {
+                usersWithCompletions = _completions.GetCompletionsForUsers(_users.GetAllUsers(), _bungie.ReleaseDate, DateTime.Now, new[] { raid });
+            }
+            else
+            {
+                usersWithCompletions = _completions.GetCompletionsForUsers(_users.GetGuildUsers(guildId), _bungie.ReleaseDate, DateTime.Now, new[] { raid });
+            }
 
             var embed = new EmbedBuilder();
 
@@ -224,5 +247,15 @@ namespace ClearsBot.Modules
             _users.SaveUsers();
         }
 
+        public string GlobalLeaderboardToggleCommand(ulong guildId)
+        {
+            bool newValue = _guilds.EditGuildGlobalLeaderboards(guildId);
+            if (newValue)
+            {
+                return "Global leaderboards have been turned on.";
+            }
+
+            return "Globlal leaderboards have been turned off";
+        }
     }
 }
