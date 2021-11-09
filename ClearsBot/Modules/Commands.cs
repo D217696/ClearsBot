@@ -5,6 +5,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,8 @@ namespace ClearsBot.Modules
         //leaderboard commands
         public EmbedBuilder TimeFrameCommand(ulong userId, ulong guildId, string raidString, TimeFrameHours timeFrame, string commandSyntax)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var embed = new EmbedBuilder();
 
             int currentTimeFrame = Convert.ToInt32(Math.Floor((DateTime.UtcNow - _bungie.ReleaseDate).TotalHours / (int)timeFrame));
@@ -73,15 +76,24 @@ namespace ClearsBot.Modules
             {
                 users = _users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0);
             }
+            Console.WriteLine(sw.ElapsedMilliseconds + " done init");
+            var filteredUsers = _completions.FilterCompletionsByRaidCriteria(users.Where(x => x.Completions.Count > 0), raid, guildId);
+            Console.WriteLine(sw.ElapsedMilliseconds + " done first filter");
 
-            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _completions.GetUserCompetionsByTimeframe(users.Where(x => x.Completions.Count > 0), raid, timeFrame, currentTimeFrame);
-            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _completions.GetUserCompetionsMaxByTimeframe(users.Where(x => x.Completions.Count > 0), raid, timeFrame);
+            IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _completions.FilterByTimeFrameCurrent(filteredUsers, timeFrame, currentTimeFrame);
+            Console.WriteLine(sw.ElapsedMilliseconds + " done current");
+
+            IEnumerable<(User user, int completions, int rank)> usersWithMaxCompletionsAndRank = _completions.FilterByTimeFrameMax(filteredUsers, timeFrame);
+            Console.WriteLine(sw.ElapsedMilliseconds + " done max");
 
             embed.AddField($"{commandSyntax} raid completions", _formatting.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
             embed.AddField($"{commandSyntax} raid completion leaderboard", _formatting.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
 
+            Console.WriteLine(sw.ElapsedMilliseconds + " created format");
+
             return embed;
         }
+
         public EmbedBuilder RankCommand(ulong userId, ulong guildId, string raidString)
         {
             Raid raid = _raids.GetRaid(guildId, raidString);
@@ -109,11 +121,67 @@ namespace ClearsBot.Modules
             embed.WithDescription(_formatting.CreateLeaderboardString(usersWithCompletions, userId, 10, true));
             return embed;
         }
-        //raid commands
-        public string EditRaidTimeCommand(IGuildUser guildUser, ulong guildId, string raidString, string timeString)
-        {
-            if (_permissions.GetPermissionForUser(guildUser) < PermissionLevels.AdminRole) return "No permission";
 
+        public EmbedBuilder RankFastestCommand(ulong userId, ulong guildId, string raidString)
+        {
+            Raid raid = _raids.GetRaid(guildId, raidString);
+            IEnumerable<(User user, Completion completion, int rank)> usersWithCompletions = null;
+            if (_guilds.GetGuild(guildId).GlobalLeaderboards)
+            {
+                var x = _users.GetAllUsers();
+                var b = x.Where(x => x.Completions != null && x.Completions.Count > 0);
+                usersWithCompletions = _completions.GetFastestRankList(x.Where(x => x.Completions.Count > 0), raid, guildId);
+            }
+            else
+            {
+                usersWithCompletions = _completions.GetFastestRankList(_users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0), raid, guildId);
+            }
+
+            var embed = new EmbedBuilder();
+
+            if (raid != null)
+            {
+                embed.WithTitle($"Fastest {raid.DisplayName} completions");
+                embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
+            }
+            else
+            {
+                embed.WithTitle("Fastest raid completions");
+            }
+            embed.WithDescription(_formatting.CreateFastestLeaderboardString(usersWithCompletions, guildId, userId, 10, true));
+            return embed;
+        }
+
+        //public EmbedBuilder RankSlowestCommand(ulong userId, ulong guildId, string raidString)
+        //{
+        //    Raid raid = _raids.GetRaid(guildId, raidString);
+        //    IEnumerable<(User user, Completion completion, int rank)> usersWithCompletions = null;
+        //    if (_guilds.GetGuild(guildId).GlobalLeaderboards)
+        //    {
+        //        usersWithCompletions = _completions.GetSlowestRankList(_users.GetAllUsers().Where(x => x.Completions.Count > 0), raid, guildId);
+        //    }
+        //    else
+        //    {
+        //        usersWithCompletions = _completions.GetSlowestRankList(_users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0), raid, guildId);
+        //    }
+
+        //    var embed = new EmbedBuilder();
+
+        //    if (raid != null)
+        //    {
+        //        embed.WithTitle($"Slowest {raid.DisplayName} completions");
+        //        embed.WithColor(new Color(raid.Color.R, raid.Color.G, raid.Color.B));
+        //    }
+        //    else
+        //    {
+        //        embed.WithTitle("Slowest raid completions");
+        //    }
+        //    embed.WithDescription(_formatting.CreateFastestLeaderboardString(usersWithCompletions, guildId, userId, 10, true));
+        //    return embed;
+        //}
+        //raid commands
+        public string EditRaidTimeCommand(ulong guildId, string raidString, string timeString)
+        {
             if (timeString.Length == 5 && timeString.Contains(":"))
             {
                 timeString = "00:" + timeString;
@@ -129,7 +197,7 @@ namespace ClearsBot.Modules
         }
         public string AddRaidShortcutCommand(IGuildUser guildUser, ulong guildId, string raidString, string shortcut)
         {
-            if (_permissions.GetPermissionForUser(guildUser) < PermissionLevels.AdminRole) return "No permission";
+            //if (_permissions.GetPermissionForUser(guildUser) < PermissionLevels.AdminRole) return "No permission";
 
             Raid raid = _raids.AddShortcut(guildId, raidString, shortcut);
             if (raid == null) return "No raid found";

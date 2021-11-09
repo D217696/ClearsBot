@@ -15,6 +15,7 @@ namespace ClearsBot
         ServiceProvider _services;
         Config _config;
         DiscordEvents _handler;
+
         static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
         public async Task StartAsync()
@@ -23,13 +24,7 @@ namespace ClearsBot
             _config = _services.GetRequiredService<Config>();
 
             if (_config.bot.token == "" || _config.bot.token == null) return;
-            _client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-                LogLevel = LogSeverity.Verbose,
-                MessageCacheSize = 1000,
-                AlwaysDownloadUsers = true,
-                GatewayIntents = GatewayIntents.All
-            });
+            _client = _services.GetRequiredService<DiscordSocketClient>();
 
             _commandService = new CommandService(new CommandServiceConfig
             {
@@ -38,8 +33,10 @@ namespace ClearsBot
 
             _client.Log += Log;
 
+            _ = _services.GetRequiredService<Globals>();
             _handler = _services.GetRequiredService<DiscordEvents>();
             _config = _services.GetRequiredService<Config>();
+
             _ = _services.GetRequiredService<UpdateLoop>();
             await _client.LoginAsync(TokenType.Bot, _config.bot.token);
             await _client.StartAsync();

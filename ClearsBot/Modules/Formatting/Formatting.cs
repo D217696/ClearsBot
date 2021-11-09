@@ -52,6 +52,40 @@ namespace ClearsBot.Modules
             return leaderboard.Length <= 1024 ? leaderboard : "leaderboard string was too long.";
         }
 
+        public string CreateFastestLeaderboardString(IEnumerable<(User user, Completion completion, int rank)> users, ulong guildId, ulong userDiscordId = 0, int count = 10, bool registerMessage = false)
+        {
+            string leaderboard = "";
+            foreach ((User user, Completion completion, int rank) user in users.Take(count))
+            {
+                if (user.user.DiscordID == userDiscordId)
+                {
+                    leaderboard += $"**{user.rank}) [{FormatUsername(user.user.Username)}: {_raids.GetRaids(guildId).FirstOrDefault(x => x.Hashes.Contains(user.completion.RaidHash)).DisplayName} ({user.completion.Time.ToString(@"mm\:ss")})](https://raid.report/pgcr/{user.completion.InstanceID})** \n";
+                    continue;
+                }
+
+                leaderboard += $"{user.rank}) [{FormatUsername(user.user.Username)}: {_raids.GetRaids(guildId).FirstOrDefault(x => x.Hashes.Contains(user.completion.RaidHash)).DisplayName} ({user.completion.Time.ToString(@"mm\:ss")})](https://raid.report/pgcr/{user.completion.InstanceID}) \n";
+              
+            }
+
+            leaderboard += "\n";
+
+            foreach ((User user, Completion completion, int rank) user in users.Where(x => x.user.DiscordID == userDiscordId))
+            {
+                if (users.Take(count).Contains(user)) continue;
+                leaderboard += $"{user.rank}) [{FormatUsername(user.user.Username)}: {_raids.GetRaids(guildId).FirstOrDefault(x => x.Hashes.Contains(user.completion.RaidHash)).DisplayName} ({user.completion.Time.ToString(@"mm\:ss")})](https://raid.report/pgcr/{user.completion.InstanceID}) \n";
+            }
+
+            if (registerMessage)
+            {
+                if (users.Where(x => x.user.DiscordID == userDiscordId).Count() <= 0)
+                {
+                    leaderboard += _languages.GetLanguageText("en", "unregistered-message");
+                }
+            }
+            return leaderboard;
+            //return leaderboard.Length <= 1024 ? leaderboard : "leaderboard string was too long.";
+        }
+
         public EmbedBuilder GetCompletionsEmbed(User user, IEnumerable<(Raid raid, int completions)> completions)
         {
             var embed = new EmbedBuilder();

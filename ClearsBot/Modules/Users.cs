@@ -18,7 +18,6 @@ namespace ClearsBot.Modules
     public class Users
     {
         private List<User> users = new List<User>();
-        private List<User> usersToUpdate = new List<User>();
         readonly IBungieDestiny2RequestHandler _requestHandler;
         readonly IBungie _bungie;
         readonly IRaids _raids;
@@ -81,28 +80,15 @@ namespace ClearsBot.Modules
         {
             return users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => users.Where(x => x.GuildIDs.Contains(guildId)).ToList().IndexOf(x) <= (index * 10) - 1 && users.Where(x => x.GuildIDs.Contains(guildId)).ToList().IndexOf(x) > (index * 10) - 11);
         }
-        public void AddUsersToUpdateUsersList()
-        {
-            var tempUsers = new List<User>(users);
-            foreach (User user in tempUsers)
-            {
-                if (DateTime.UtcNow - user.DateLastPlayed > new TimeSpan(1, 0, 0))
-                { 
-                    if (usersToUpdate.Contains(user)) continue;
-                    usersToUpdate.Add(user);
-                }
-            }
-        }
         public async Task UpdateUsersAsync()
         {
             List<Task> updateTasks = new List<Task>();
-            var temp = new List<User>(usersToUpdate);
+            var temp = new List<User>(users);
             foreach(User user in temp)
             {
                 //await UpdateUser(user);
                 updateTasks.Add(Task.Run(() => UpdateUser(user)));
             }
-            usersToUpdate = new List<User>();
             await Task.WhenAll(updateTasks);
             SaveUsers();
         }

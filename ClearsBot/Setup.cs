@@ -10,23 +10,16 @@ namespace ClearsBot
     {
         public static IServiceCollection AddClearsBot(this IServiceCollection services)
         {
-            DiscordSocketClient client = new DiscordSocketClient(new DiscordSocketConfig
+            return services
+            .AddHostedService<EntryPoint>()
+            .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000,
                 AlwaysDownloadUsers = true,
                 GatewayIntents = GatewayIntents.All
-            });
-
-            CommandService commandService = new CommandService(new CommandServiceConfig
-            {
-                IgnoreExtraArgs = true
-            });
-
-            return services
-            .AddHostedService<EntryPoint>()
-            .AddSingleton(client)
-            .AddSingleton(serviceProvider => 
+            }))
+            .AddSingleton(serviceProvider =>
             {
                 var commandService = new CommandService(new CommandServiceConfig()
                 {
@@ -59,7 +52,9 @@ namespace ClearsBot
             .AddSingleton<ILanguages, Languages>()
             .AddSingleton<Buttons>()
             .AddSingleton<ISlashes, Slashes>()
-            .AddSingleton<Config>();
+            .AddSingleton<Config>()
+            .AddSingleton<Globals>()
+            .AddSingleton<Database>();
         }
     }
 }

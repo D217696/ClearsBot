@@ -1,10 +1,12 @@
-[{
-    "DisplayName": "Leviathan",
-      "CompletionTime": "00:00:00",
+[
+    {
+      "DisplayName": "Leviathan",
+      "CompletionTime": "00:10:00",
       "Shortcuts": [
         "levi",
         "lev",
-        "leviathan"
+        "leviathan",
+        "the_leviathan"
       ],
       "Hashes": [
         89727599,
@@ -36,7 +38,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Eater of Worlds",
@@ -54,14 +57,16 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Spire of Stars",
       "CompletionTime": "00:00:00",
       "Shortcuts": [
         "sos",
-        "spire"
+        "spire",
+        "spire2"
       ],
       "Hashes": [
         119944200,
@@ -72,11 +77,12 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Last Wish",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:17:45",
       "Shortcuts": [
         "lw"
       ],
@@ -86,11 +92,12 @@
         2214608156,
         2214608157
       ],
-      "Color": "0, 253, 201, 255",
+      "Color": "0, 87, 172, 200",
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": "https://www.bungie.net/common/destiny2_content/icons/f0029bdda7836ab108f56796f27e22de.png"
     },
     {
       "DisplayName": "Scourge of the Past",
@@ -107,7 +114,8 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Crown of Sorrow",
@@ -124,11 +132,12 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": ""
     },
     {
       "DisplayName": "Garden of Salvation",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:11:30",
       "Shortcuts": [
         "gos",
         "garden"
@@ -139,15 +148,16 @@
         3458480158,
         3845997235
       ],
-      "Color": "0, 0, 255, 0",
+      "Color": "0, 81, 160, 103",
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": "https://www.bungie.net/common/destiny2_content/icons/5b7a12c6c14035b1b94999c486cc3afe.png"
     },
     {
       "DisplayName": "Deep Stone Crypt",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:12:50",
       "Shortcuts": [
         "dsc"
       ],
@@ -155,15 +165,16 @@
         910380154,
         3976949817
       ],
-      "Color": "0, 137, 207, 240",
+      "Color": "0, 49, 26, 71",
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": "https://www.bungie.net/common/destiny2_content/icons/4f9f0c288d9e1c365767f3b4a4dc409e.png"
     },
     {
       "DisplayName": "Vault of Glass",
-      "CompletionTime": "00:00:00",
+      "CompletionTime": "00:19:30",
       "Shortcuts": [
         "vog",
         "vault"
@@ -178,6 +189,7 @@
       "StartingPhaseIndexToBeFresh": 1,
       "FirstRole": 0,
       "SecondRole": 0,
-      "ThirdRole": 0
+      "ThirdRole": 0,
+      "IconUrl": "https://www.bungie.net/common/destiny2_content/icons/6fcac7c9b54d75251589d09ea4e91175.png"
     }
-    ]
+  ]

@@ -11,9 +11,11 @@ namespace ClearsBot.Modules
     {
         public DateTime ReleaseDate { get; set; } = new DateTime(2017, 09, 05, 17, 0, 0);
         readonly IBungieDestiny2RequestHandler _requestHandler;
-        public Bungie(IBungieDestiny2RequestHandler requestHandler)
+        readonly Database _database;
+        public Bungie(IBungieDestiny2RequestHandler requestHandler, Database database)
         {
             _requestHandler = requestHandler;
+            _database = database;
         }
 
         public async Task<RequestData> GetRequestDataAsync(string membershipId = "", string membershipType = "")
@@ -164,6 +166,7 @@ namespace ClearsBot.Modules
             }
 
             List<Task<GetFreshForCompletionResponse>> TasksToGetPGCR = new List<Task<GetFreshForCompletionResponse>>();
+           //List<Task<GetPostGameCarnageReport>> TasksToGetPgcrs = new List<Task<GetPostGameCarnageReport>>();
 
             foreach (var res in await Task.WhenAll(tasks))
             {
@@ -179,6 +182,7 @@ namespace ClearsBot.Modules
                     {
                         if (!(activity.Values["completionReason"].Basic.DisplayValue == "Objective Completed" && activity.Values["completed"].Basic.Value == 1.0)) continue;
                         if (user.Completions.ContainsKey(activity.ActivityDetails.InstanceId)) continue;
+                        //TasksToGetPgcrs.Add(Task.Run(() => GetPostGameCarnageReport(activity.ActivityDetails.InstanceId)));
                         if (activity.Period > new DateTime(2020, 11, 10, 17, 0, 0))
                         {
                             user.Completions.Add(activity.ActivityDetails.InstanceId, new Completion()
@@ -215,6 +219,8 @@ namespace ClearsBot.Modules
                 user.Completions.Add(res.Completion.InstanceID, res.Completion);
             }
 
+            //_database.InsertPgcrsIntoDb(await Task.WhenAll(TasksToGetPgcrs));
+
             if (user.Completions.Count > 0)
             {
                 user.DateLastPlayed = user.Completions.OrderByDescending(x => x.Value.Period).FirstOrDefault().Value.Period;
@@ -246,6 +252,12 @@ namespace ClearsBot.Modules
             getFreshForCompletionResponse.ErrorMessage = "Success";
             return getFreshForCompletionResponse;
         }
+
+        public async Task<GetPostGameCarnageReport> GetPostGameCarnageReport(long instanceId)
+        {
+            return await _requestHandler.GetPostGameCarnageReportAsync(instanceId);
+        }
+
         public async Task<GetActivityHistoryResponse> GetCharacterPagesAsync(int membershipType, long membershipId, Character character, DateTime releaseDate)
         {
             GetActivityHistoryResponse getActivityHistoryResponse = new GetActivityHistoryResponse()

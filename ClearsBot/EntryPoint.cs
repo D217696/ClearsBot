@@ -20,13 +20,15 @@ namespace ClearsBot
         DiscordEvents _discordEvents;
         UpdateLoop _updateLoop;
         Config _config;
+        Globals _globals;
 
-        public EntryPoint(Config config, DiscordSocketClient client, DiscordEvents discordEvents, UpdateLoop updateLoop)
+        public EntryPoint(Config config, DiscordSocketClient client, DiscordEvents discordEvents, UpdateLoop updateLoop, Globals globlas)
         {
             _config = config;
             _client = client;
             _discordEvents = discordEvents;
             _updateLoop = updateLoop;
+            _globals = globlas;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

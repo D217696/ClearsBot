@@ -1,4 +1,5 @@
 ﻿using ClearsBot.Objects;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,11 @@ namespace ClearsBot.Modules
         private Dictionary<ulong, List<Raid>> raids = new Dictionary<ulong, List<Raid>>();
         private List<Raid> RaidTemplate = new List<Raid>();
         readonly IStorage _storage;
-        public Raids(IStorage storage)
+        readonly DiscordSocketClient _client;
+        public Raids(IStorage storage, DiscordSocketClient client)
         {
             _storage = storage;
+            _client = client;
             raids = _storage.GetRaidsFromStorage();
             RaidTemplate = _storage.GetRaidTemplateFromStorage();
             SaveRaids();
@@ -35,6 +38,35 @@ namespace ClearsBot.Modules
             return raids[guildId];
         }
         //NEW guilds JOINED FUNCTION PLEASE
+        public void SyncRaids()
+        {
+            foreach(var guild in _client.Guilds)
+            {
+                if (!raids.ContainsKey(guild.Id))
+                {
+                    raids.Add(guild.Id, RaidTemplate);
+                }
+            }
+
+            SaveRaids();
+        }
+
+        public void SetAllTimeForRaid(Raid raid, TimeSpan time)
+        {
+            foreach(List<Raid> raidForServer in raids.Values)
+            {
+                foreach (Raid raidServer in raidForServer)
+                {
+                    if (raidServer.DisplayName == raid.DisplayName)
+                    {
+                        raidServer.CompletionTime = time;
+                    }
+                }
+            }
+
+            SaveRaids();
+        }
+
         public Raid SetRaidTime(ulong guildId, string raidString, TimeSpan time)
         {
             Raid raid = GetRaid(guildId, raidString);

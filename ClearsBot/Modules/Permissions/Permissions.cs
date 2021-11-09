@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ClearsBot.Modules
 {
-    public class Permissions 
+    public class Permissions : IPermissions
     {
         readonly IGuilds _guilds;
         readonly Config _config;
@@ -17,13 +17,13 @@ namespace ClearsBot.Modules
             _config = config;
         }
 
-        public PermissionLevels GetPermissionForUser(IGuildUser user)
+        public PermissionLevel GetPermissionForUser(IGuildUser user)
         {
-            if (IsBotOwner(user.Id)) return PermissionLevels.BotOwner;
-            if (IsBotAdmin(user.Id)) return PermissionLevels.BotAdmin;
-            if (IsGuildOwner(user.GuildId, user.Id)) return PermissionLevels.GuildOwner;
-            if (IsGuildAdmin(user.GuildId, user.Id)) return PermissionLevels.GuildAdmin;
-            return PermissionLevels.User;
+            if (IsBotOwner(user.Id)) return PermissionLevel.BotOwner;
+            if (IsBotAdmin(user.Id)) return PermissionLevel.BotAdmin;
+            if (IsGuildOwner(user.GuildId, user.Id)) return PermissionLevel.GuildOwner;
+            if (IsGuildAdmin(user.GuildId, user.Id)) return PermissionLevel.GuildAdmin;
+            return PermissionLevel.User;
         }
 
         private bool IsBotOwner(ulong userId)

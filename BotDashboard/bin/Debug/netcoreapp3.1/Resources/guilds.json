@@ -8,6 +8,7 @@
     "ThirdRole": 871764633608941658,
     "GuildOwner": 0,
     "AdminRole": 0,
+    "AdminUsers": [],
     "ModRoles": [],
     "Milestones": [
       {
@@ -22,7 +23,9 @@
       }
     ],
     "IsActive": true,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "534813987091513381": {
     "GuildId": 534813987091513381,
@@ -33,10 +36,13 @@
     "ThirdRole": 0,
     "GuildOwner": 0,
     "AdminRole": 0,
+    "AdminUsers": [],
     "ModRoles": [],
     "Milestones": [],
     "IsActive": true,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "867207403481333790": {
     "GuildId": 867207403481333790,
@@ -47,10 +53,13 @@
     "ThirdRole": 0,
     "GuildOwner": 0,
     "AdminRole": 0,
+    "AdminUsers": [],
     "ModRoles": [],
     "Milestones": [],
     "IsActive": false,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "896801617192570930": {
     "GuildId": 896801617192570930,
@@ -61,10 +70,13 @@
     "ThirdRole": 0,
     "GuildOwner": 0,
     "AdminRole": 0,
+    "AdminUsers": [],
     "ModRoles": [],
     "Milestones": [],
     "IsActive": false,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   },
   "896923363098910732": {
     "GuildId": 896923363098910732,
@@ -75,9 +87,12 @@
     "ThirdRole": 0,
     "GuildOwner": 0,
     "AdminRole": 0,
+    "AdminUsers": [],
     "ModRoles": [],
     "Milestones": [],
     "IsActive": false,
-    "UsesSlashCommands": true
+    "UsesSlashCommands": true,
+    "GlobalLeaderboards": true,
+    "TimeCriteria": true
   }
 }

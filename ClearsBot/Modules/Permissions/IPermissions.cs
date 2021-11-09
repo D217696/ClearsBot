@@ -1,9 +1,10 @@
 ﻿using Discord;
+using ClearsBot.Objects;
 
 namespace ClearsBot.Modules
 {
     public interface IPermissions
     {
-        PermissionLevels GetPermissionForUser(IGuildUser user);
+        PermissionLevel GetPermissionForUser(IGuildUser user);
     }
 }

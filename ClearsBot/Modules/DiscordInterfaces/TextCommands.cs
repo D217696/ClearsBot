@@ -14,32 +14,30 @@ namespace ClearsBot.Modules
     {
         readonly IBungie _bungie;
         readonly Users _users;
-        readonly IPermissions _permissions;
         readonly IGuilds _guilds;
         readonly Commands _commands;
         readonly IRaids _raids;
         readonly Buttons _buttons;
         readonly ILanguages _languages;
-        public TextCommands(IBungie bungie, Users users, IPermissions permissions, IGuilds guilds, Commands commands, IRaids raids, Buttons buttons, ILanguages languages)
+        readonly Database _database;
+        public TextCommands(IBungie bungie, Users users, IGuilds guilds, Commands commands, IRaids raids, Buttons buttons, ILanguages languages, Database database)
         {
             _bungie = bungie;
             _users = users;
-            _permissions = permissions;
             _guilds = guilds;
             _commands = commands;
             _raids = raids;
             _buttons = buttons;
             _languages = languages;
+            _database = database;
         }
 
-        //guild commands
+        //guild commandsb
         [Command("Global leaderboards")]
+        [RequirePermission(PermissionLevel.GuildOwner)]
         public async Task GlobalLeaderboardToggle()
         {
-            if (Context.User.Id == 204722865818304512)
-            {
-                 await ReplyAsync(_commands.GlobalLeaderboardToggleCommand(Context.Guild.Id));
-            }
+            await ReplyAsync(_commands.GlobalLeaderboardToggleCommand(Context.Guild.Id));
         }
 
         //leaderboard commands
@@ -157,34 +155,25 @@ namespace ClearsBot.Modules
             await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
         }
 
-        //raid commands
-        [Command("SetTime")]
-        public async Task SetTime(string raidString = "", string timeString = "")
+        [Command("Rankfastest")]
+        public async Task RankFastest(string raidString = "")
         {
-            await ReplyAsync(_commands.EditRaidTimeCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, timeString));
+            ulong targetUserId = _users.GetTargetUser(Context);
+            await ReplyAsync(embed: _commands.RankFastestCommand(targetUserId, Context.Guild.Id, raidString).Build());
         }
 
-        [Command("AddShortcut")]
-        public async Task AddShortcut(string raidString = "", string shortcut = "")
-        {
-            await ReplyAsync(_commands.AddRaidShortcutCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, shortcut));
-        }
+        //[Command("Rankslowest")]
+        //public async Task RankSlowest(string raidString = "")
+        //{
+        //    ulong targetUserId = _users.GetTargetUser(Context);
+        //    await ReplyAsync(embed: _commands.RankSlowestCommand(targetUserId, Context.Guild.Id, raidString).Build());
+        //}
 
-        [Command("ShowRaids")]
-        public async Task ShowRaids()
-        {
-            await ReplyAsync(embed: _commands.DisplayRaidsCommand(Context.Guild.Id).Build());
-        }
-
-
-        //Commands below need revision to be compliant with SOLID
         [Command("Register", RunMode = RunMode.Async)]
         public async Task Register([Remainder] string membershipId = "")
         {
             await _commands.RegisterUserCommand(Context.Channel, Context.Guild.Id, Context.User.Id, Context.User.Username, membershipId, "");
         }
-
-
 
         [Command("Update", RunMode = RunMode.Async)]
         public async Task Update()
@@ -205,7 +194,6 @@ namespace ClearsBot.Modules
             await ReplyAsync(description);
         }
 
-
         [Command("Profiles")]
         public async Task Profiles([Remainder] string remainder = "")
         {
@@ -221,16 +209,60 @@ namespace ClearsBot.Modules
             await ReplyAsync(embed: embed.Build());
         }
 
-        [Command("GenerateRoles")]
-        [RequireBotPermission(GuildPermission.ManageRoles)]
-        public async Task GenerateRoles()
+        //raid commands
+        [Command("SetTime")]
+        [RequirePermission(PermissionLevel.GuildAdmin)]
+        public async Task SetTime(string raidString = "", string timeString = "")
         {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminUser)
+            await ReplyAsync(_commands.EditRaidTimeCommand(Context.Guild.Id, raidString, timeString));
+        }
+        
+        [Command("SetAllTime")]
+        [RequirePermission(PermissionLevel.BotAdmin)]
+        public async Task SetAllTime(string raidString = "", string timeString = "")
+        {
+            if (timeString.Length == 5 && timeString.Contains(":"))
             {
-                await Context.Channel.SendMessageAsync("No permission");
-                return;
+                timeString = "00:" + timeString;
             }
 
+            bool parseSucceeded = TimeSpan.TryParse(timeString, out TimeSpan completionTime);
+            if (!parseSucceeded) 
+            { 
+                await ReplyAsync("Could not convert time to TimeSpan format: hh:mm:ss"); 
+                return; 
+            }
+
+            Raid raid = _raids.GetRaid(Context.Guild.Id, raidString);
+            if (raid == null) 
+            { 
+                await ReplyAsync("raid not found"); 
+                return; 
+            }
+
+            _raids.SetAllTimeForRaid(raid, completionTime);
+
+            await ReplyAsync(raid.DisplayName + " completion time has been set to " + completionTime.ToString(@"mm\:ss"));
+        }
+
+        [Command("AddShortcut")]
+        [RequirePermission(PermissionLevel.GuildAdmin)]
+        public async Task AddShortcut(string raidString = "", string shortcut = "")
+        {
+            await ReplyAsync(_commands.AddRaidShortcutCommand(Context.Guild.GetUser(Context.User.Id), Context.Guild.Id, raidString, shortcut));
+        }
+
+        [Command("ShowRaids")]
+        public async Task ShowRaids()
+        {
+            await ReplyAsync(embed: _commands.DisplayRaidsCommand(Context.Guild.Id).Build());
+        }
+
+        [Command("GenerateRoles")]
+        [RequireBotPermission(GuildPermission.ManageRoles)]
+        [RequirePermission(PermissionLevel.GuildOwner)]
+        public async Task GenerateRoles()
+        {
             var embed = new EmbedBuilder();
             foreach (Raid raid in _raids.GetRaids(Context.Guild.Id))
             {
@@ -263,7 +295,7 @@ namespace ClearsBot.Modules
         }
 
         [Command("SetPrefix")]
-        [RequirePermission(PermissionLevel.BotOwner)]
+        [RequirePermission(PermissionLevel.GuildOwner)]
         public async Task SetPrefix(string prefix)
         {
             //if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevel.AdminRole)
@@ -296,14 +328,9 @@ namespace ClearsBot.Modules
         }
 
         [Command("Unregister")]
+        [RequirePermission(PermissionLevel.BotAdmin)]
         public async Task Unregister()
         {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.BotOwner)
-            {
-                await Context.Channel.SendMessageAsync("No permission");
-                return;
-            }
-
             var embed = new EmbedBuilder();
             embed.WithTitle("Profiles linked to account");
             List<User> users = _users.GetUsers(Context);
@@ -313,8 +340,9 @@ namespace ClearsBot.Modules
                 embed.AddField(user.Username, $"{platform} \n Characters: {user.Characters.Count()} \n Saved pgcrs: {user.Completions.Count()} \n Date last played: {user.DateLastPlayed} \n SteamID: {user.SteamID}", true);
             }
 
-            //await ReplyAsync(embed: embed.Build(), component: _utilities.GetButtonsForUser(users, Context.Guild.Id, "unregister").Build());
+            await ReplyAsync(embed: embed.Build(), component: _buttons.GetButtonsForUser(users, "unregister", Context.User.Id, Context.Guild.Id, Context.Channel.Id, null).Build());
         }
+        
 
         //[Command("reglist")]
         //public async Task GetUsers()
@@ -344,13 +372,14 @@ namespace ClearsBot.Modules
         //}
 
         [Command("CreateMilestone")]
+        [RequirePermission(PermissionLevel.GuildAdmin)]
         public async Task CreateMilestone(string completions, string role)
         {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
-            {
-                await ReplyAsync("No permission");
-                return;
-            }
+            //if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
+            //{
+            //    await ReplyAsync("No permission");
+            //    return;
+            //}
 
             bool parseSucceed = int.TryParse(completions, out int completionCount);
             if (!parseSucceed)
@@ -377,13 +406,14 @@ namespace ClearsBot.Modules
         }
 
         [Command("Admin")]
+        [RequirePermission(PermissionLevel.GuildOwner)]
         public async Task AddAdmin(string role)
         {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminUser)
-            {
-                await ReplyAsync("No permission");
-                return;
-            }
+            //if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminUser)
+            //{
+            //    await ReplyAsync("No permission");
+            //    return;
+            //}
 
             SocketRole socketRole = Context.Guild.Roles.Where(x => x.Mention == role).FirstOrDefault();
             if (socketRole == null)
@@ -397,28 +427,8 @@ namespace ClearsBot.Modules
             await ReplyAsync($"{socketRole.Mention} set as Admin role");
         }
 
-        [Command("Mod")]
-        public async Task AddMod(string role)
-        {
-            if (_permissions.GetPermissionForUser(Context.Guild.GetUser(Context.User.Id)) < PermissionLevels.AdminRole)
-            {
-                await ReplyAsync("No permission");
-                return;
-            }
-
-            SocketRole socketRole = Context.Guild.Roles.Where(x => x.Mention == role).FirstOrDefault();
-            if (socketRole == null)
-            {
-                await ReplyAsync("Role not found.");
-                return;
-            }
-
-            _guilds.GetGuild(Context.Guild.Id).ModRoles.Add(socketRole.Id);
-            _guilds.SaveGuilds();
-            await ReplyAsync($"{socketRole.Mention} set as mod role");
-        }
-
         [Command("Verify", RunMode = RunMode.Async)]
+        [RequirePermission(PermissionLevel.BotAdmin)]
         public async Task Verify()
         {
             ulong targetUserId = _users.GetTargetUser(Context);
@@ -441,25 +451,7 @@ namespace ClearsBot.Modules
 
             await message.ModifyAsync(x => x.Content = $"Found {newCompletions - completions} new activities");
         }
-
-        [Command("Zero dawn")]
-        public async Task ZeroDawn()
-        {
-            if (Context.User.Id != 204722865818304512)
-            {
-                await ReplyAsync("no.");
-                return;
-            }
-
-            ulong targetUserId = _users.GetTargetUser(Context);
-            IEnumerable<User> users = _users.GetUsersByDiscordId(targetUserId);
-            foreach (User user in users)
-            {
-                _users.ResetUserCompletions(user);
-                await ReplyAsync($"User {user.Username}'s completions have been reset");
-            }
-        }
-
+    
         [Command("lev")]
         [Alias("levi")]
         public async Task Levi()
@@ -521,6 +513,33 @@ namespace ClearsBot.Modules
         public async Task Vault()
         {
             await Rank("vog");
+        }
+
+        //diagnostic commands
+        [Command("Zero dawn")]
+        [RequirePermission(PermissionLevel.BotOwner)]
+        public async Task ZeroDawn()
+        {
+            if (Context.User.Id != 204722865818304512)
+            {
+                await ReplyAsync("no.");
+                return;
+            }
+
+            ulong targetUserId = _users.GetTargetUser(Context);
+            IEnumerable<User> users = _users.GetUsersByDiscordId(targetUserId);
+            foreach (User user in users)
+            {
+                _users.ResetUserCompletions(user);
+                await ReplyAsync($"User {user.Username}'s completions have been reset");
+            }
+        }
+
+        [Command("test")]
+        public async Task Test()
+        {
+            var x = _database.GetPostGameCarnageReportsByMembershipId(4611686018467615099);
+            Console.WriteLine(x.Count());
         }
     }
 }

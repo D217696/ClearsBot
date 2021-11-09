@@ -6,10 +6,6 @@ namespace ClearsBot.Objects
 {
     public sealed class ButtonAttribute : Attribute
     {
-        public ButtonAttribute()
-        {
-
-        }
         public ButtonAttribute(string buttonName)
         {
 
