@@ -97,3 +97,4 @@ C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Release\netcor
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Release\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\Users\Labra\OneDrive\Documenten\GitHub\ClearsBot\ClearsBot\bin\Release\netcoreapp3.1\Dapper.dll

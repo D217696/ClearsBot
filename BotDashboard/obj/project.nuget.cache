@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "exxp6HICZjtTpxjw5AsPI8aoS5t1g38ha5dh8BbhXNfkgYMxqW8Zl4q/52SbLMJ4SciuXDLK/aWuo37XdoqU0A==",
+  "dgSpecHash": "4/GDnfnCzp+B1eXRcAnLszOZPcv3SsUYnEm33oIl/+BYU4Cg773+7/pqFg5BgzMw0Wub8I73sA85Gg/ZfJiBwA==",
   "success": true,
   "projectFilePath": "C:\\Users\\Labra\\OneDrive\\Documenten\\GitHub\\ClearsBot\\BotDashboard\\BotDashboard.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Labra\\.nuget\\packages\\bouncycastle.netcore\\1.8.5\\bouncycastle.netcore.1.8.5.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\composableasync.core\\1.3.0\\composableasync.core.1.3.0.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\dapper\\2.0.123\\dapper.2.0.123.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\discord.net.labs\\3.1.7\\discord.net.labs.3.1.7.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\discord.net.labs.commands\\3.1.7\\discord.net.labs.commands.3.1.7.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\discord.net.labs.core\\3.1.7\\discord.net.labs.core.3.1.7.nupkg.sha512",
@@ -42,6 +43,7 @@
     "C:\\Users\\Labra\\.nuget\\packages\\system.interactive.async\\5.0.0\\system.interactive.async.5.0.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.linq.async\\5.0.0\\system.linq.async.5.0.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\system.reflection.emit.lightweight\\4.7.0\\system.reflection.emit.lightweight.4.7.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.reflection.metadata\\1.6.0\\system.reflection.metadata.1.6.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.security.accesscontrol\\4.7.0\\system.security.accesscontrol.4.7.0.nupkg.sha512",

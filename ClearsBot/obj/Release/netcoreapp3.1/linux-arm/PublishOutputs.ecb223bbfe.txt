@@ -5,6 +5,7 @@ C:\Users\Labra\OneDrive\Bureaublad\discord bot\ClearsBot.runtimeconfig.json
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\ClearsBot.pdb
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\BouncyCastle.Crypto.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\ComposableAsync.Core.dll
+C:\Users\Labra\OneDrive\Bureaublad\discord bot\Dapper.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.Commands.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.Core.dll
 C:\Users\Labra\OneDrive\Bureaublad\discord bot\Discord.Net.Rest.dll

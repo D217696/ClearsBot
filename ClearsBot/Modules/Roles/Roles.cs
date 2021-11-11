@@ -53,6 +53,7 @@ namespace ClearsBot.Modules
             foreach (InternalGuild guild in _guilds.GetGuilds().Values)
             {
                 SocketGuild currentGuild = _guilds.GetGuildFromClient(guild.GuildId);
+                if (currentGuild == null) continue;
                 await currentGuild.DownloadUsersAsync();
                 foreach (Raid raid in _raids.GetRaids(guild.GuildId))
                 {

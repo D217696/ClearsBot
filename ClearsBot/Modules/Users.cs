@@ -161,8 +161,8 @@ namespace ClearsBot.Modules
         public async Task<UserResponse> CreateAndAddUser(ulong guildId, ulong discordID, RequestData requestData)
         {
             //if (users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault() != null) return new UserResponse() { User = users[guildID].Where(x => x.DiscordID == discordID).FirstOrDefault(), Code = 2 };
-            if (users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.SteamID == requestData.SteamID).FirstOrDefault() != null && requestData.SteamID != 0) return new UserResponse() { User = users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.SteamID == requestData.SteamID).FirstOrDefault(), Code = 3 };
-            if (users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.MembershipId == requestData.MembershipId).FirstOrDefault() != null) return new UserResponse() { User = users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.MembershipId == requestData.MembershipId).FirstOrDefault(), Code = 4 };
+            if (users.FirstOrDefault(x => x.SteamID == requestData.SteamID) != null && requestData.SteamID != 0) return new UserResponse() { User = users.FirstOrDefault(x => x.SteamID == requestData.SteamID), Code = 3 };
+            if (users.FirstOrDefault(x => x.MembershipId == requestData.MembershipId) != null) return new UserResponse() { User = users.FirstOrDefault(x => x.MembershipId == requestData.MembershipId), Code = 4 };
 
             GetHistoricalStatsForAccount getHistoricalStatsForAccount = await _requestHandler.GetHistoricalStatsForAccount(requestData.MembershipType, requestData.MembershipId);
             if (getHistoricalStatsForAccount.ErrorCode != 1) return new UserResponse() { User = null, Code = 5 };

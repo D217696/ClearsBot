@@ -87,7 +87,7 @@ namespace ClearsBot.Modules
             Console.WriteLine(sw.ElapsedMilliseconds + " done max");
 
             embed.AddField($"{commandSyntax} raid completions", _formatting.CreateLeaderboardString(usersWithCompletionsAndRank, userId, 10, true), true);
-            embed.AddField($"{commandSyntax} raid completion leaderboard", _formatting.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId), true);
+            embed.AddField($"{commandSyntax} raid completion leaderboard", _formatting.CreateLeaderboardString(usersWithMaxCompletionsAndRank, userId, 10), true);
 
             Console.WriteLine(sw.ElapsedMilliseconds + " created format");
 

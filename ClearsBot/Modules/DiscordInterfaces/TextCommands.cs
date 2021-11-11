@@ -1,4 +1,5 @@
-﻿using ClearsBot.Modules;
+﻿using ClearsBot.Models;
+using ClearsBot.Modules;
 using ClearsBot.Objects;
 using Discord;
 using Discord.Commands;
@@ -538,8 +539,11 @@ namespace ClearsBot.Modules
         [Command("test")]
         public async Task Test()
         {
-            var x = _database.GetPostGameCarnageReportsByMembershipId(4611686018467615099);
-            Console.WriteLine(x.Count());
+            UsersModel usersModel = new UsersModel();
+            var x = usersModel.GetUserById(2);
+            //var x = _database.GetPostGameCarnageReportsByMembershipId(4611686018467615099);
+            //Console.WriteLine(x.Count());
         }
+
     }
 }

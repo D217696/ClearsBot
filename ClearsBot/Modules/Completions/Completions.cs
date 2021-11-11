@@ -56,23 +56,11 @@ namespace ClearsBot.Modules
 
         public IEnumerable<(User user, int completions, int rank)> FilterByTimeFrameMax(IEnumerable<User> users, TimeFrameHours timeFrameHours)
         {
-            //DateTime releaseDate = _bungie.ReleaseDate;
-            //Func<Completion, string> groupByCriteria = completion => Convert.ToInt32(Math.Floor((completion.Period - releaseDate).TotalHours / (int)timeFrameHours)).ToString();
-            //if (timeFrameHours == TimeFrameHours.Month) groupByCriteria = completion => completion.Period.ToString("yyyyMM");
-
-            //var usersWithMaxCompletionCount = users.Select(x => (user: x, completions: x.Completions.Values.GroupBy(groupByCriteria).Max(completions => completions.Count())));
-            //var bv = users.Select(x => (user: x, completions: x.Completions.Values.GroupBy(groupByCriteria)));
-            //var cb = bv.Select(x => (x.user, completionCount: x.completions.Max(b => b.Count())));
-            //var UsersWithMaxCompletionsOrdered = usersWithMaxCompletionCount.OrderByDescending(x => x.completions).ToList();
-
-            //return UsersWithMaxCompletionsOrdered.Select(x => (x.user, x.completions, rank: UsersWithMaxCompletionsOrdered.IndexOf(x) + 1));
-
             Func<Completion, string> groupByCriteria = completion => Convert.ToInt32(Math.Floor((completion.Period - _bungie.ReleaseDate).TotalHours / (int)timeFrameHours)).ToString();
             if (timeFrameHours == TimeFrameHours.Month) groupByCriteria = completion => completion.Period.ToString("yyyyMM");
 
             List<(User user, int completions)> usersWithMaxCompletionCount = users.Select(x => (user: x, completions: x.Completions.Values.GroupBy(groupByCriteria).Max(completions => completions.Count()))).OrderByDescending(x => x.completions).ToList();
             return usersWithMaxCompletionCount.Select(x => (x.user, x.completions, rank: usersWithMaxCompletionCount.IndexOf(x) + 1));
-            Console.WriteLine("");
         }
 
         public IEnumerable<(User user, int completions, int rank)> FilterByTimeFrameCurrent(IEnumerable<User> users, TimeFrameHours timeFrameHours, int currentTimeFrame)

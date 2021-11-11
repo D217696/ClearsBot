@@ -11,7 +11,7 @@ namespace ClearsBot.Modules
 {
     public class Database
     {
-        private readonly MySqlConnection mySqlConnection;
+        public readonly MySqlConnection mySqlConnection;
         public Database()
         {
             mySqlConnection = new MySqlConnection("datasource=localhost;port=3306;username=root;password=;database=clearsbot;");
