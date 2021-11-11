@@ -9,3 +9,5 @@ ClearsBot/obj/project.nuget.cache
 ClearsBot/obj/project.assets.json
 ClearsBot/obj/Debug/netcoreapp3.1/ClearsBot.GeneratedMSBuildEditorConfig.editorconfig
 *.json
+ClearsBot/bin/**
+BotDashboard/bin/**

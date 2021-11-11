@@ -147,6 +147,7 @@ namespace ClearsBot
             if (msg.HasStringPrefix(_guilds.GetGuild(context.Guild.Id).Prefix, ref argPos) || msg.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
                 var result = await _commandService.ExecuteAsync(context, argPos, _serviceProvider, MultiMatchHandling.Best);
+                await msg.ReplyAsync("Leaderboards are currently not working properly, I am working on a full refresh, new users will be unregistered during this time, please do not register now");
                 if (!result.IsSuccess && result.Error == CommandError.UnknownCommand)
                 {
                     await context.Channel.SendMessageAsync(result.ErrorReason);

@@ -76,8 +76,9 @@ namespace ClearsBot.Modules
             {
                 users = _users.GetGuildUsers(guildId).Where(x => x.Completions.Count > 0);
             }
+
             Console.WriteLine(sw.ElapsedMilliseconds + " done init");
-            var filteredUsers = _completions.FilterCompletionsByRaidCriteria(users.Where(x => x.Completions.Count > 0), raid, guildId);
+            var filteredUsers = _completions.FilterCompletionsByRaidCriteria(users, raid, guildId);
             Console.WriteLine(sw.ElapsedMilliseconds + " done first filter");
 
             IEnumerable<(User user, int completions, int rank)> usersWithCompletionsAndRank = _completions.FilterByTimeFrameCurrent(filteredUsers, timeFrame, currentTimeFrame);

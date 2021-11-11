@@ -123,16 +123,16 @@ namespace ClearsBot.Modules
         }
         public List<User> GetAllUsers()
         {
-            return users;
+            return new List<User>(users);
         }
         public List<User> GetGuildUsers(ulong guildId)
         {
-            return users.Where(x => x.GuildIDs.Contains(guildId)).ToList();
+            return new List<User>(users.Where(x => x.GuildIDs.Contains(guildId)).ToList());
         }
         public List<User> GetUsers(SocketCommandContext context)
         {
             ulong userId = context.Message.MentionedUsers.Count == 0 ? context.User.Id : context.Message.MentionedUsers.FirstOrDefault().Id;
-            return users.Where(x => x.GuildIDs.Contains(context.Guild.Id)).Where(x => x.Completions.Count > 0).Where(x => x.DiscordID == userId).ToList();
+            return new List<User>(users.Where(x => x.GuildIDs.Contains(context.Guild.Id)).Where(x => x.Completions.Count > 0).Where(x => x.DiscordID == userId).ToList());
         }
         public User GetUserByMembershipId(long membershipId)
         {
@@ -140,7 +140,7 @@ namespace ClearsBot.Modules
         }
         public List<User> GetUsers(ulong guildId, ulong userId)
         {
-            return users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.DiscordID == userId).ToList();
+            return new List<User>(users.Where(x => x.GuildIDs.Contains(guildId)).Where(x => x.DiscordID == userId).ToList());
         }
         public IEnumerable<User> GetUsersByDiscordId(ulong userId)
         {

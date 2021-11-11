@@ -536,6 +536,26 @@ namespace ClearsBot.Modules
             }
         }
 
+        [Command("Horizon zero dawn")]
+        [RequirePermission(PermissionLevel.BotOwner)]
+        public async Task HorizonZeroDawn()
+        {
+            if (Context.User.Id != 204722865818304512)
+            {
+                await ReplyAsync("no.");
+                return;
+            }
+
+            IEnumerable<User> users = _users.GetAllUsers();
+            foreach(User user in users)
+            {
+                _users.ResetUserCompletions(user);
+            }
+
+            _ = _users.UpdateUsersAsync();
+            await ReplyAsync("refreshing..");
+        }
+
         [Command("test")]
         public async Task Test()
         {

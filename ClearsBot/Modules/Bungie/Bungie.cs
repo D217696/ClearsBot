@@ -183,22 +183,21 @@ namespace ClearsBot.Modules
                         if (!(activity.Values["completionReason"].Basic.DisplayValue == "Objective Completed" && activity.Values["completed"].Basic.Value == 1.0)) continue;
                         if (user.Completions.ContainsKey(activity.ActivityDetails.InstanceId)) continue;
                         //TasksToGetPgcrs.Add(Task.Run(() => GetPostGameCarnageReport(activity.ActivityDetails.InstanceId)));
-                        if (activity.Period > new DateTime(2020, 11, 10, 17, 0, 0))
-                        {
-                            user.Completions.Add(activity.ActivityDetails.InstanceId, new Completion()
-                            {
-                                InstanceID = activity.ActivityDetails.InstanceId,
-                                Period = activity.Period,
-                                RaidHash = activity.ActivityDetails.ReferenceId,
-                                Kills = activity.Values["kills"].Basic.Value,
-                                Time = TimeSpan.FromSeconds(activity.Values["activityDurationSeconds"].Basic.Value),
-                                StartingPhaseIndex = 0
-                            });
+                        //if (activity.Period > new DateTime(2020, 11, 10, 17, 0, 0))
+                        //{
+                        //    user.Completions.Add(activity.ActivityDetails.InstanceId, new Completion()
+                        //    {
+                        //        InstanceID = activity.ActivityDetails.InstanceId,
+                        //        Period = activity.Period,
+                        //        RaidHash = activity.ActivityDetails.ReferenceId,
+                        //        Kills = activity.Values["kills"].Basic.Value,
+                        //        Time = TimeSpan.FromSeconds(activity.Values["activityDurationSeconds"].Basic.Value),
+                        //        StartingPhaseIndex = 0
+                        //    });
 
-                            continue;
-                        }
+                        //    continue;
+                        //}
 
-                        await Task.Delay(100);
                         TasksToGetPGCR.Add(Task.Run(() => GetFreshForCompletionAsync(new Completion()
                         {
                             InstanceID = activity.ActivityDetails.InstanceId,
