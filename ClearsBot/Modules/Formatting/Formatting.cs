@@ -134,6 +134,7 @@ namespace ClearsBot.Modules
         }
         public string FormatUsername(string username)
         {
+            if (username == null) return "empty username";
             return username.Replace("_", "\\_");
         }
     }
