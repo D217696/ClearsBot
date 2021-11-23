@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "4/GDnfnCzp+B1eXRcAnLszOZPcv3SsUYnEm33oIl/+BYU4Cg773+7/pqFg5BgzMw0Wub8I73sA85Gg/ZfJiBwA==",
+  "dgSpecHash": "pJWkQ/MBvTXf65g2GAsbJKIh+sCPLbcQ63JRlPyEnY4WvIbBMkRCqxYPzfWO0F4fJhbzOAqdv2qNQrs85AkWMQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Labra\\OneDrive\\Documenten\\GitHub\\ClearsBot\\BotDashboard\\BotDashboard.csproj",
   "expectedPackageFiles": [
@@ -54,7 +54,8 @@
     "C:\\Users\\Labra\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.3\\system.threading.tasks.extensions.4.5.3.nupkg.sha512",
     "C:\\Users\\Labra\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512",
-    "C:\\Users\\Labra\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512"
+    "C:\\Users\\Labra\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512",
+    "C:\\Users\\Labra\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.21\\microsoft.netcore.app.host.win-x64.3.1.21.nupkg.sha512"
   ],
   "logs": []
 }
