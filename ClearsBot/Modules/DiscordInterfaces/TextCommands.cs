@@ -124,7 +124,7 @@ namespace ClearsBot.Modules
                 raid = _raids.GetRaid(Context.Guild.Id, raidString);
             }
 
-            await ReplyAsync(embed: _commands.FastestCommand(users.FirstOrDefault(), Context.Guild.Id, raidString).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "fastest", targetUserId, Context.Guild.Id, Context.Channel.Id, raid).Build());
+            await ReplyAsync(embed: _commands.FastestCommand(users.FirstOrDefault(), Context.Guild.Id, raidString).Build(), components: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "fastest", targetUserId, Context.Guild.Id, Context.Channel.Id, raid).Build());
         }
 
         [Command("Completions")]
@@ -138,7 +138,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
+            await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), components: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
         }
 
         [Command("Raids")]
@@ -152,7 +152,7 @@ namespace ClearsBot.Modules
                 return;
             }
 
-            await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
+            await ReplyAsync(embed: _commands.CompletionsCommand(users.FirstOrDefault(), Context.Guild.Id).Build(), components: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != users.FirstOrDefault().MembershipId).ToList(), "completions", targetUserId, Context.Guild.Id, Context.Channel.Id, null).Build()); ;
         }
 
         [Command("Rankfastest")]
@@ -340,7 +340,7 @@ namespace ClearsBot.Modules
                 embed.AddField(user.Username, $"{platform} \n Characters: {user.Characters.Count()} \n Saved pgcrs: {user.Completions.Count()} \n Date last played: {user.DateLastPlayed} \n SteamID: {user.SteamID}", true);
             }
 
-            await ReplyAsync(embed: embed.Build(), component: _buttons.GetButtonsForUser(users, "unregister", Context.User.Id, Context.Guild.Id, Context.Channel.Id, null).Build());
+            await ReplyAsync(embed: embed.Build(), components: _buttons.GetButtonsForUser(users, "unregister", Context.User.Id, Context.Guild.Id, Context.Channel.Id, null).Build());
         }
         
 
