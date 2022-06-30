@@ -40,7 +40,7 @@ namespace ClearsBot.Modules
             IEnumerable<User> users = _users.GetUsersByDiscordId(buttonData.DiscordUserId);
             var completions = _completions.GetRaidCompletionsForUser(user, buttonData.DiscordServerId);
 
-            await Context.Channel.SendMessageAsync(embed: _formatting.GetCompletionsEmbed(user, completions).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != user.MembershipId).ToList(), "completions", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, null).Build());
+            await Context.Channel.SendMessageAsync(embed: _formatting.GetCompletionsEmbed(user, completions).Build(), components: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != user.MembershipId).ToList(), "completions", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, null).Build());
         }
 
         [Button("Fastest")]
@@ -57,7 +57,7 @@ namespace ClearsBot.Modules
                 raid = buttonData.Raid;
                 raidName = buttonData.Raid.DisplayName;
             }
-            await Context.Channel.SendMessageAsync(embed: _commands.FastestCommand(user, buttonData.DiscordServerId, raidName).Build(), component: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != user.MembershipId).ToList(), "fastest", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, raid).Build());
+            await Context.Channel.SendMessageAsync(embed: _commands.FastestCommand(user, buttonData.DiscordServerId, raidName).Build(), components: _buttons.GetButtonsForUser(users.Where(x => x.MembershipId != user.MembershipId).ToList(), "fastest", buttonData.DiscordUserId, buttonData.DiscordServerId, buttonData.DiscordChannelId, raid).Build());
         }
 
         [Button("Register")]
